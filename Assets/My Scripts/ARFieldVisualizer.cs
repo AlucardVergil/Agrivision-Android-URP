@@ -427,6 +427,14 @@ public class ARFieldVisualizer : MonoBehaviour
         });
 
 
+        apisManager.GetComponent<CropGrowthDatesAPI>().GetCropGrowthDatesData("157212", (jsonResponseCropGrowthDates) =>
+        {
+            Debug.Log("CropGrowthDatesAPI => " + jsonResponseCropGrowthDates);
+
+
+        });
+
+
 
         // Recalibrate the position of the hologram as well to be in the center of the recalibrated field mesh
         if (hologramInstance != null)
