@@ -6,10 +6,10 @@ using System;
 public class CropGrowthImageAPI : FMIS_API
 {
 
-    private string sensingDate = "2025-01-04"; // Replace with the sensing date (YYYY-MM-DD)
-    private int width = 512; // Replace with desired image width
-    private int height = 512; // Replace with desired image height
-    private string bbox = "40.62563,22.95949,40.62588,22.95959"; // Replace with the bounding box coordinates
+    private string sensingDate = "2024-09-04";//"2025-01-04"; // Replace with the sensing date (YYYY-MM-DD)
+    private int width = 400; // Replace with desired image width
+    private int height = 400; // Replace with desired image height
+    private string bbox = "39.62955272340573,21.68499768346035,39.64197943254144,21.702216607555318"; // Replace with the bounding box coordinates
 
     public SpriteRenderer spriteRenderer; // Renderer to display the texture
 

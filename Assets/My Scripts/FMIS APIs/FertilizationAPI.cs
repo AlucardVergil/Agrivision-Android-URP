@@ -87,7 +87,7 @@ public class FertilizationAPI : FMIS_API
     public Texture2D Base64ToTexture(string base64)
     {
         byte[] imageBytes = System.Convert.FromBase64String(base64);
-        Texture2D texture = new Texture2D(2, 2);
+        Texture2D texture = new Texture2D(9, 16);
         texture.LoadImage(imageBytes); // Automatically resizes the texture based on image size
         return texture;
     }

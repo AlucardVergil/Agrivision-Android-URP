@@ -13,8 +13,23 @@ using System.Linq;
 public class ARFieldVisualizer : MonoBehaviour
 {
     // NOTE the order of the corner coords needs to be clockwise or else the mesh is upside down
-    [SerializeField] private Vector2[] fieldCorners; // Store GPS coordinates of the 4 corners
-    
+    //[SerializeField] private Vector2[] fieldCorners; // Store GPS coordinates of the 4 corners
+
+    //private Vector2[] fieldCorners = {
+    //    new Vector2((float)40.62588, (float)22.95959),
+    //    new Vector2((float)40.62573, (float)22.95973),
+    //    new Vector2((float)40.62563, (float)22.95949),
+    //    new Vector2((float)40.62579, (float)22.95937)
+    //};
+
+    private Vector2[] fieldCorners;
+    private Vector2[] fieldCorners2 = {
+        new Vector2(21.692269f, 39.636541f),
+        new Vector2(21.693132f, 39.635601f),
+        new Vector2(21.693572f, 39.635877f),
+        new Vector2(21.692695f, 39.636791f)
+    };
+
     #region Corner Markers Not Sure If Will Be Used
     [SerializeField] private GameObject fieldMarkerPrefab; // Prefab to represent corners and borders
     [SerializeField] private Material insideFieldMaterial; // Material to color inside field area
@@ -57,6 +72,8 @@ public class ARFieldVisualizer : MonoBehaviour
 
     void Start()
     {
+        fieldCorners = OrderFieldCornersClockwise(fieldCorners2);
+
         apisManager = GameObject.FindGameObjectWithTag("APIsManager");
 
         if (fieldCorners.Length != 4)
@@ -137,7 +154,8 @@ public class ARFieldVisualizer : MonoBehaviour
         float longitude = GetComponent<UDPListener>().longitude;
 
 #if UNITY_EDITOR
-        Vector2 currentPosition = new Vector2(40.62573397234498f, 22.959545477275366f);
+        //Vector2 currentPosition = new Vector2(40.62573397234498f, 22.959545477275366f);
+        Vector2 currentPosition = new Vector2(21.692269f, 39.636541f); 
 #else
         Vector2 currentPosition = new Vector2(latitude, longitude);
 #endif
@@ -288,10 +306,23 @@ public class ARFieldVisualizer : MonoBehaviour
 
         // Define UVs for texturing
         Vector2[] uv = new Vector2[vertices.Length];
-        uv[0] = new Vector2(0, 0); // Bottom-left
-        uv[1] = new Vector2(1, 0); // Bottom-right
-        uv[2] = new Vector2(1, 1); // Top-right
-        uv[3] = new Vector2(0, 1); // Top-left
+        //uv[0] = new Vector2(0, 0); // Bottom-left
+        //uv[1] = new Vector2(1, 0); // Bottom-right
+        //uv[2] = new Vector2(1, 1); // Top-right
+        //uv[3] = new Vector2(0, 1); // Top-left
+        uv[0] = new Vector2(0.5f, 0); // Midpoint on the bottom edge
+        uv[1] = new Vector2(1f, 0.5f); // Midpoint on the right edge
+        uv[2] = new Vector2(0.5f, 1); // Midpoint on the top edge
+        uv[3] = new Vector2(0, 0.5f); // Midpoint on the left edge
+        //uv[0] = new Vector2(0.1f, 0); // Left edge of the field
+        //uv[1] = new Vector2(0.9f, 0); // Right edge of the field
+        //uv[2] = new Vector2(0.9f, 1); // Top-right
+        //uv[3] = new Vector2(0.1f, 1); // Top-left
+        //uv[0] = new Vector2(0.1f, 0.1f); // Adjusted Bottom-left
+        //uv[1] = new Vector2(0.9f, 0);    // Adjusted Bottom-right
+        //uv[2] = new Vector2(0.8f, 0.9f); // Adjusted Top-right
+        //uv[3] = new Vector2(0.2f, 1);    // Adjusted Top-left
+
 
         // Set up how the mesh's triangles connect (counter-clockwise)
         int[] triangles = new int[]
@@ -386,11 +417,16 @@ public class ARFieldVisualizer : MonoBehaviour
         if (field != null)
             DestroyImmediate(field);
 
+
+
         apisManager.GetComponent<FertilizationAPI>().GetFertilizationData("5836", (jsonResponseFertilization) =>
         {
             Debug.Log("fertilizationData => " + jsonResponseFertilization);
 
-            Texture texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(jsonResponseFertilization);
+            Texture2D texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(jsonResponseFertilization);
+
+
+            var croppedTexture = CropWhiteSpaces(texture);
 
             CreateFieldMesh(texture);
         });
@@ -402,7 +438,7 @@ public class ARFieldVisualizer : MonoBehaviour
             {
                 Debug.Log("CROP IMAGE EXISTS");
 
-                CreateFieldMesh(jsonResponseCropGrowthImage);
+                //CreateFieldMesh(jsonResponseCropGrowthImage);
             }                
             else
                 Debug.Log("CROP IMAGE DOES NOT EXIST");
@@ -432,6 +468,11 @@ public class ARFieldVisualizer : MonoBehaviour
             Debug.Log("CropGrowthDatesAPI => " + jsonResponseCropGrowthDates);
 
 
+        });
+
+        apisManager.GetComponent<ParcelsListAPI>().GetParcelsListData((jsonResponseParcelsList) =>
+        {
+            Debug.Log("Parcels List API => " + jsonResponseParcelsList);
         });
 
 
@@ -587,4 +628,49 @@ public class ARFieldVisualizer : MonoBehaviour
         //    }
         //}
     }
+
+
+    public static Texture2D CropWhiteSpaces(Texture2D originalTexture, float tolerance = 0.95f)
+    {
+        // Get the pixel colors from the texture
+        Color[] pixels = originalTexture.GetPixels();
+        int width = originalTexture.width;
+        int height = originalTexture.height;
+
+        // Define crop boundaries
+        int minX = width, minY = height, maxX = 0, maxY = 0;
+
+        // Find the boundaries of the non-white area
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Color pixel = pixels[y * width + x];
+
+                // Check if the pixel is not white (within tolerance)
+                if (pixel.r < tolerance || pixel.g < tolerance || pixel.b < tolerance || pixel.a < tolerance)
+                {
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        // Calculate the new width and height
+        int croppedWidth = maxX - minX + 1;
+        int croppedHeight = maxY - minY + 1;
+
+        // Get the cropped pixels
+        Color[] croppedPixels = originalTexture.GetPixels(minX, minY, croppedWidth, croppedHeight);
+
+        // Create a new texture and apply the cropped pixels
+        Texture2D croppedTexture = new Texture2D(croppedWidth, croppedHeight);
+        croppedTexture.SetPixels(croppedPixels);
+        croppedTexture.Apply();
+
+        return croppedTexture;
+    }
+
 }
