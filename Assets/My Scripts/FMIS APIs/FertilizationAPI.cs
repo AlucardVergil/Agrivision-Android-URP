@@ -83,33 +83,6 @@ public class FertilizationAPI : FMIS_API
 
 
 
-
-    //public Texture2D ParseFertilizationData(string jsonResponse)
-    //{
-    //    // Parse the JSON response using the FertilizationData class
-    //    FertilizationData fertilizationData = JsonUtility.FromJson<FertilizationData>("{\"managementZones\":" + jsonResponse + "}");
-
-    //    // Example: Log the data for the most recent season
-    //    if (fertilizationData != null)
-    //    {
-    //        Debug.Log("Season: " + fertilizationData.season);
-    //        Debug.Log("Image (Base64): " + (string.IsNullOrEmpty(fertilizationData.image) ? "No image available" : "Image available"));
-    //    }
-
-    //    Debug.Log($"Season: {fertilizationData.season}, Image: {(string.IsNullOrEmpty(fertilizationData.image) ? "No image available" : "Image available")}");
-
-    //    // Set the image texture
-    //    if (!string.IsNullOrEmpty(fertilizationData.image))
-    //    {
-    //        Texture2D parcelImage = Base64ToTexture(fertilizationData.image);
-    //        //imageUI.texture = parcelImage;  // Set the texture to the RawImage component
-    //        return parcelImage;
-    //    }
-
-    //    return null;
-    //}
-
-
     // Function to convert Base64 string to Texture2D
     public Texture2D Base64ToTexture(string base64)
     {
