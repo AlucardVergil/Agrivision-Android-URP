@@ -57,21 +57,21 @@ public class FertilizationAPI : FMIS_API
         FertilizationData fertilizationData = JsonUtility.FromJson<FertilizationData>("{\"managementZones\":" + jsonResponse + "}");
 
         // Example: Log the data for the most recent season
-        if (fertilizationData.managementZones.Count > 0)
+        if (fertilizationData.managementZones.Length > 0)
         {
             Debug.Log("Season: " + fertilizationData.managementZones[0].season);
             Debug.Log("Image (Base64): " + (string.IsNullOrEmpty(fertilizationData.managementZones[0].image) ? "No image available" : "Image available"));
         }
 
         // Loop through the seasons and log each one
-        for (int i = 0; i < fertilizationData.managementZones.Count; i++)
+        for (int i = 0; i < fertilizationData.managementZones.Length; i++)
         {
             Debug.Log($"Season: {fertilizationData.managementZones[i].season}, Image: {(string.IsNullOrEmpty(fertilizationData.managementZones[i].image) ? "No image available" : "Image available")}");
         }
 
 
         // Set the image texture
-        if (fertilizationData.managementZones.Count > 0 && !string.IsNullOrEmpty(fertilizationData.managementZones[0].image))
+        if (fertilizationData.managementZones.Length > 0 && !string.IsNullOrEmpty(fertilizationData.managementZones[0].image))
         {
             Texture2D parcelImage = Base64ToTexture(fertilizationData.managementZones[0].image);
             //imageUI.texture = parcelImage;  // Set the texture to the RawImage component

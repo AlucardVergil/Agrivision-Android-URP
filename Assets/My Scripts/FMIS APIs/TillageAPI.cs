@@ -23,6 +23,8 @@ public class TillageAPI : FMIS_API
             yield break;
         }
 
+        Debug.Log("FROM date: " + fromDate);
+
         string url = $"https://api.cropapp.gr/external/tillage?parcel_id={parcelID}&from_date={fromDate}&to_date={toDate}";
 
         UnityWebRequest request = UnityWebRequest.Get(url);

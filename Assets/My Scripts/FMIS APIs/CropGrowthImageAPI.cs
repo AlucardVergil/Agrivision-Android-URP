@@ -9,7 +9,7 @@ public class CropGrowthImageAPI : FMIS_API
     private string sensingDate = "2025-01-04"; // Replace with the sensing date (YYYY-MM-DD)
     private int width = 512; // Replace with desired image width
     private int height = 512; // Replace with desired image height
-    private string bbox = "40.62588,22.95959,40.62563,22.95949"; // Replace with the bounding box coordinates
+    private string bbox = "40.62563,22.95949,40.62588,22.95959"; // Replace with the bounding box coordinates
 
     public SpriteRenderer spriteRenderer; // Renderer to display the texture
 
@@ -50,7 +50,8 @@ public class CropGrowthImageAPI : FMIS_API
             // Get the texture from the API response
             Texture2D cropGrowthImage = DownloadHandlerTexture.GetContent(request);
 
-
+            string jsonResponse = request.downloadHandler.text;
+            Debug.Log("CropGrowthImage Data: " + jsonResponse);
 
             if (cropGrowthImage != null) 
                 Debug.Log("Crop Growth Image fetched successfully.");

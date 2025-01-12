@@ -25898,6 +25898,7 @@ GameObject:
   - component: {fileID: 1997210416}
   - component: {fileID: 1997210415}
   - component: {fileID: 1997210414}
+  - component: {fileID: 1997210418}
   m_Layer: 0
   m_Name: APIsManager
   m_TagString: APIsManager
@@ -25991,6 +25992,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6934b7817ead48e45b0871d9a28c797b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1997210418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997210409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f5a9e7c7077abd48a34348d4f610082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2008534427

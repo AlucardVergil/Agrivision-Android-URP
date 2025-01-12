@@ -386,20 +386,18 @@ public class ARFieldVisualizer : MonoBehaviour
         if (field != null)
             DestroyImmediate(field);
 
-        //apisManager.GetComponent<FertilizationAPI>().GetFertilizationData("5836", (jsonResponseFertilization) =>
-        //{
-        //    Debug.Log("json => " + jsonResponseFertilization);
-        //    fertilizationData = JsonUtility.FromJson<FertilizationData>(jsonResponseFertilization);
-        //    Debug.Log("fertilizationData => " + jsonResponseFertilization);
+        apisManager.GetComponent<FertilizationAPI>().GetFertilizationData("5836", (jsonResponseFertilization) =>
+        {
+            Debug.Log("fertilizationData => " + jsonResponseFertilization);
 
-        //    Texture texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(fertilizationData.image);
+            Texture texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(jsonResponseFertilization);
 
-        //    CreateFieldMesh(texture);
-        //});
+            CreateFieldMesh(texture);
+        });
 
 
         Texture tempTexture = apisManager.GetComponent<FertilizationAPI>().Base64ToTexture("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 Oxn/s3DV3Lxgs7wAAAABJRU5ErkJggg==");
-        CreateFieldMesh(tempTexture);
+        //CreateFieldMesh(tempTexture);
 
         apisManager.GetComponent<CropGrowthImageAPI>().GetCropGrowthImage("157212", (jsonResponseCropGrowthImage) =>
         {
@@ -414,6 +412,23 @@ public class ARFieldVisualizer : MonoBehaviour
 
             
         });
+
+
+        apisManager.GetComponent<TillageAPI>().GetTillageData("10478", (jsonResponseTillage) =>
+        {
+            Debug.Log(jsonResponseTillage);
+
+
+        });
+
+
+        apisManager.GetComponent<IrrigationAPI>().GetIrrigationData("11256", (jsonResponseIrrigation) =>
+        {
+            Debug.Log(jsonResponseIrrigation);
+
+
+        });
+
 
 
         // Recalibrate the position of the hologram as well to be in the center of the recalibrated field mesh
