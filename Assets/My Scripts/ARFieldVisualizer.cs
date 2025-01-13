@@ -155,7 +155,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
 #if UNITY_EDITOR
         //Vector2 currentPosition = new Vector2(40.62573397234498f, 22.959545477275366f);
-        Vector2 currentPosition = new Vector2(21.692269f, 39.636541f); 
+        Vector2 currentPosition = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 userReferenceGPS in this script
 #else
         Vector2 currentPosition = new Vector2(latitude, longitude);
 #endif
@@ -374,7 +374,8 @@ public class ARFieldVisualizer : MonoBehaviour
     {
         // Reference point (the "origin" GPS point to convert everything relative to)
 #if UNITY_EDITOR
-        Vector2 userReferenceGPS = new Vector2(40.62573397234498f, 22.959545477275366f);
+        //Vector2 userReferenceGPS = new Vector2(40.62573397234498f, 22.959545477275366f);
+        Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 currentPosition in this script
 #else
         Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
 #endif
