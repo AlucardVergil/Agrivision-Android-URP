@@ -429,7 +429,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
             var croppedTexture = CropWhiteSpaces(texture);
 
-            CreateFieldMesh(texture);
+            CreateFieldMesh(croppedTexture);
         });
 
 
@@ -633,10 +633,14 @@ public class ARFieldVisualizer : MonoBehaviour
 
     public static Texture2D CropWhiteSpaces(Texture2D originalTexture, float tolerance = 0.95f)
     {
+        RotateTexture(originalTexture, 35);
+
         // Get the pixel colors from the texture
         Color[] pixels = originalTexture.GetPixels();
         int width = originalTexture.width;
         int height = originalTexture.height;
+
+        Debug.Log("Original w: " + width + " h: " + height);
 
         // Define crop boundaries
         int minX = width, minY = height, maxX = 0, maxY = 0;
@@ -649,7 +653,7 @@ public class ARFieldVisualizer : MonoBehaviour
                 Color pixel = pixels[y * width + x];
 
                 // Check if the pixel is not white (within tolerance)
-                if (pixel.r < tolerance || pixel.g < tolerance || pixel.b < tolerance || pixel.a < tolerance)
+                if (pixel.r < tolerance || pixel.g < tolerance || pixel.b < tolerance) // || pixel.a < tolerance
                 {
                     if (x < minX) minX = x;
                     if (x > maxX) maxX = x;
@@ -663,6 +667,10 @@ public class ARFieldVisualizer : MonoBehaviour
         int croppedWidth = maxX - minX + 1;
         int croppedHeight = maxY - minY + 1;
 
+
+        Debug.Log("Cropped w: " + croppedWidth + " h: " + croppedHeight);
+        Debug.Log("minX: " + minX + " minY: " + minY + " maxX: " + maxX + " maxY: "  + maxY);
+
         // Get the cropped pixels
         Color[] croppedPixels = originalTexture.GetPixels(minX, minY, croppedWidth, croppedHeight);
 
@@ -673,5 +681,58 @@ public class ARFieldVisualizer : MonoBehaviour
 
         return croppedTexture;
     }
+
+
+
+    public static Texture2D RotateTexture(Texture2D originalTexture, float angleDegrees)
+    {
+        int width = originalTexture.width;
+        int height = originalTexture.height;
+
+        Texture2D rotatedTexture = new Texture2D(width, height);
+        Color[] originalPixels = originalTexture.GetPixels();
+        Color[] rotatedPixels = new Color[originalPixels.Length];
+
+        float angleRadians = Mathf.Deg2Rad * angleDegrees;
+        float cos = Mathf.Cos(angleRadians);
+        float sin = Mathf.Sin(angleRadians);
+
+        int centerX = width / 2;
+        int centerY = height / 2;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                // Translate to origin
+                int translatedX = x - centerX;
+                int translatedY = y - centerY;
+
+                // Rotate around origin
+                int rotatedX = Mathf.RoundToInt(translatedX * cos - translatedY * sin);
+                int rotatedY = Mathf.RoundToInt(translatedX * sin + translatedY * cos);
+
+                // Translate back
+                int finalX = rotatedX + centerX;
+                int finalY = rotatedY + centerY;
+
+                // Assign pixel if within bounds
+                if (finalX >= 0 && finalX < width && finalY >= 0 && finalY < height)
+                {
+                    rotatedPixels[y * width + x] = originalPixels[finalY * width + finalX];
+                }
+                else
+                {
+                    rotatedPixels[y * width + x] = Color.clear; // Transparent
+                }
+            }
+        }
+
+        rotatedTexture.SetPixels(rotatedPixels);
+        rotatedTexture.Apply();
+
+        return rotatedTexture;
+    }
+
 
 }
