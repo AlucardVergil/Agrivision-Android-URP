@@ -3,8 +3,8 @@ using UnityEngine.Networking;
 using System.Collections;
 using System;
 using TMPro;
-using UnityEngine.UIElements;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 
 public class WeatherWeeklyForecastAPI : FMIS_API
@@ -14,6 +14,7 @@ public class WeatherWeeklyForecastAPI : FMIS_API
 
     private string jsonResponse;
 
+    public TMP_Text locationTitle;
     public TMP_Text weatherNowText;
     public TMP_Text temperatureText;   // Temperature unit (°C)
     public TMP_Text weatherIconText;
@@ -33,15 +34,7 @@ public class WeatherWeeklyForecastAPI : FMIS_API
     };
 
 
-    void Start()
-    {
-        // Start the coroutine to fetch weather data
-        //StartCoroutine(GetWeatherDataEnumerator());
-    }
-
-
-
-    public void GetWeatherData(string parcelID, Action<string> onWeatherDataReceived)
+    private void Awake()
     {
         weatherIconsDictionary = new Dictionary<string, Sprite>();
 
@@ -55,7 +48,19 @@ public class WeatherWeeklyForecastAPI : FMIS_API
         {
             weatherIconsDictionary[weatherConditions[i]] = weatherIconSprites[i];
         }
+    }
 
+
+    void Start()
+    {
+        // Start the coroutine to fetch weather data
+        //StartCoroutine(GetWeatherDataEnumerator());
+    }
+
+
+
+    public void GetWeatherData(string parcelID, Action<string> onWeatherDataReceived)
+    {
         StartCoroutine(GetWeatherDataEnumerator(parcelID, onWeatherDataReceived));
     }
 
@@ -110,15 +115,22 @@ public class WeatherWeeklyForecastAPI : FMIS_API
                 weatherData.data[0].weather_icon;
 
             if (weatherIconsDictionary.ContainsKey(weatherData.data[0].weather_icon))
-            {                
+            {
                 weatherIcon.sprite = weatherIconsDictionary[weatherData.data[0].weather_icon];
-            }
                 
+            }
 
-            //temperatureText.text = weatherData.data[0].temperature + weatherData.units.temperature;
+            locationTitle.text = weatherData.title;
+
             precipitation_probText.text = weatherData.data[0].precipitation_prob + weatherData.units.precipitation_prob + "\nPrecipitation Probability";
 
+            precipitationText.text = weatherData.data[0].precipitation + weatherData.units.precipitation + "\nPrecipitation";
+
             windText.text = weatherData.data[0].wind + weatherData.units.wind + "\nWind Speed";
+
+            humidityText.text = weatherData.data[0].humidity + weatherData.units.humidity + "\nHumidity";
+
+            evapotranspirationText.text = weatherData.data[0].evapotranspiration + weatherData.units.evapotranspiration + "\nEvaporation";
 
             for (int i = 0; i < weatherData.data.Length; i++)
             {
