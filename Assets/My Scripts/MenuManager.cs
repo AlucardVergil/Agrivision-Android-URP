@@ -67,14 +67,14 @@ public class MenuManager : MonoBehaviour
 
         activePanel = slate[i];
 
-        if (slate[i].activeSelf)
-        {
-            slate[i].GetComponent<Follow>().enabled = true;
+        //if (slate[i].activeSelf)
+        //{
+        //    slate[i].GetComponent<Follow>().enabled = true;
 
-            yield return new WaitForEndOfFrame();
+        //    yield return new WaitForEndOfFrame();
 
-            slate[i].GetComponent<Follow>().enabled = false;
-        }
+        //    slate[i].GetComponent<Follow>().enabled = false;
+        //}
 
         yield return null;
     }

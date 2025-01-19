@@ -1,11 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class TillageAPI : FMIS_API
 {
+    public TMP_Text label;
+    public TMP_Text infoText;
+
 
     public void GetTillageData(string parcelID, Action<string> onTillageDataReceived)
     {
@@ -62,6 +66,8 @@ public class TillageAPI : FMIS_API
         {
             Debug.Log("Date: " + tillageData.tillage_chart_data[0].date);
             Debug.Log("Soil Moisture: " + tillageData.tillage_chart_data[0].value);
+            infoText.text = "Date: " + tillageData.tillage_chart_data[0].date;
+            infoText.text += "\nSoil Moisture: " + tillageData.tillage_chart_data[0].value;
         }
 
         // Log the thresholds
@@ -69,5 +75,9 @@ public class TillageAPI : FMIS_API
         Debug.Log("Threshold 2 (Good): " + tillageData.threshold_2);
         Debug.Log("Threshold 3 (Average): " + tillageData.threshold_3);
         Debug.Log("Threshold 4 (Bad): " + tillageData.threshold_4);
+        infoText.text += "\n\nThreshold 1 (Ideal): " + tillageData.threshold_1;
+        infoText.text += "\nThreshold 1 (Ideal): " + tillageData.threshold_2;
+        infoText.text += "\nThreshold 1 (Ideal): " + tillageData.threshold_3;
+        infoText.text += "\nThreshold 1 (Ideal): " + tillageData.threshold_4;
     }
 }

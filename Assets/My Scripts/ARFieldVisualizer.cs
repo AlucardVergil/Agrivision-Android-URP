@@ -631,9 +631,9 @@ public class ARFieldVisualizer : MonoBehaviour
     }
 
 
-    public static Texture2D CropWhiteSpaces(Texture2D originalTexture, float tolerance = 0.95f)
+    public static Texture2D CropWhiteSpaces(Texture2D originalTexture, float tolerance = 0.9f)
     {
-        RotateTexture(originalTexture, 35);
+        RotateTexture(originalTexture, 45);
 
         // Get the pixel colors from the texture
         Color[] pixels = originalTexture.GetPixels();

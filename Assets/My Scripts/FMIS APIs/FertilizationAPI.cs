@@ -2,9 +2,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using TMPro;
 
 public class FertilizationAPI : FMIS_API
 {
+    public TMP_Text label;
+    public TMP_Text infoText;
+
+
 
     public void GetFertilizationData(string parcelID, Action<string> onFertilizationDataReceived)
     {
@@ -61,12 +66,15 @@ public class FertilizationAPI : FMIS_API
         {
             Debug.Log("Season: " + fertilizationData.managementZones[0].season);
             Debug.Log("Image (Base64): " + (string.IsNullOrEmpty(fertilizationData.managementZones[0].image) ? "No image available" : "Image available"));
+            infoText.text = "Season: " + fertilizationData.managementZones[0].season;
+            infoText.text += "\nImage (Base64): " + (string.IsNullOrEmpty(fertilizationData.managementZones[0].image) ? "No image available" : "Image available");
         }
 
         // Loop through the seasons and log each one
         for (int i = 0; i < fertilizationData.managementZones.Length; i++)
         {
             Debug.Log($"Season: {fertilizationData.managementZones[i].season}, Image: {(string.IsNullOrEmpty(fertilizationData.managementZones[i].image) ? "No image available" : "Image available")}");
+            infoText.text += $"\n\nSeason: {fertilizationData.managementZones[i].season}, Image: {(string.IsNullOrEmpty(fertilizationData.managementZones[i].image) ? "No image available" : "Image available")}";
         }
 
 

@@ -2,10 +2,12 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using TMPro;
 
 public class CropGrowthDatesAPI : FMIS_API
 {
-
+    public TMP_Text label;
+    public TMP_Text infoText;
 
     public void GetCropGrowthDatesData(string parcelID, Action<string> onCropGrowthDatesDataReceived)
     {

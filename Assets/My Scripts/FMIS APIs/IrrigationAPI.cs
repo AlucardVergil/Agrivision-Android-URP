@@ -2,9 +2,13 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using TMPro;
 
 public class IrrigationAPI : FMIS_API
 {
+    public TMP_Text label;
+    public TMP_Text infoText;
+
 
     public void GetIrrigationData(string parcelID, Action<string> onIrrigationDataReceived)
     {
@@ -63,6 +67,13 @@ public class IrrigationAPI : FMIS_API
             Debug.Log("Crop ET: " + irrigationData.chart[0].crop_et);
             Debug.Log("Precipitation: " + irrigationData.chart[0].precipitation);
             Debug.Log("Irrigation Amount: " + (irrigationData.chart[0].irrigation_amount.HasValue ? irrigationData.chart[0].irrigation_amount.Value.ToString() : "null"));
+
+            infoText.text = "\nDate: " + irrigationData.chart[0].date;
+            infoText.text += "\nCrop ET: " + irrigationData.chart[0].crop_et;
+            infoText.text += "\nPrecipitation: " + irrigationData.chart[0].precipitation;
+            infoText.text += "\nIrrigation Amount: " + (irrigationData.chart[0].irrigation_amount.HasValue ? irrigationData.chart[0].irrigation_amount.Value.ToString() : "null");
+
+
         }
 
         // Loop through the data and log each record

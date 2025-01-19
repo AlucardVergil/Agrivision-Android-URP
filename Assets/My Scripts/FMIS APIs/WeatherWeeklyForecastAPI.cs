@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using TMPro;
+using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 
 public class WeatherWeeklyForecastAPI : FMIS_API
@@ -10,6 +13,25 @@ public class WeatherWeeklyForecastAPI : FMIS_API
     //private string parcelID = "90328"; 
 
     private string jsonResponse;
+
+    public TMP_Text weatherNowText;
+    public TMP_Text temperatureText;   // Temperature unit (°C)
+    public TMP_Text weatherIconText;
+    public Image weatherIcon;
+    public TMP_Text precipitation_probText; // Precipitation probability unit (%)
+    public TMP_Text precipitationText; // Precipitation unit (mm)
+    public TMP_Text humidityText;      // Humidity unit (%)
+    public TMP_Text evapotranspirationText; // Evapotranspiration unit (mm)
+    public TMP_Text windText;
+    public TMP_Text alertText;
+
+    public Sprite[] weatherIconSprites;
+    private Dictionary<string, Sprite> weatherIconsDictionary;
+    private string[] weatherConditions =
+    {
+        "sun_clouds"
+    };
+
 
     void Start()
     {
@@ -21,6 +43,19 @@ public class WeatherWeeklyForecastAPI : FMIS_API
 
     public void GetWeatherData(string parcelID, Action<string> onWeatherDataReceived)
     {
+        weatherIconsDictionary = new Dictionary<string, Sprite>();
+
+        if (weatherIconSprites.Length != weatherConditions.Length)
+        {
+            Debug.LogError("The number of weather condition keys and sprites do not match.");
+            return;
+        }
+
+        for (int i = 0; i < weatherConditions.Length; i++)
+        {
+            weatherIconsDictionary[weatherConditions[i]] = weatherIconSprites[i];
+        }
+
         StartCoroutine(GetWeatherDataEnumerator(parcelID, onWeatherDataReceived));
     }
 
@@ -71,6 +106,20 @@ public class WeatherWeeklyForecastAPI : FMIS_API
         // Log some information about the forecast
         if (weatherData.data.Length > 0)
         {
+            weatherNowText.text = "Date: " + weatherData.data[0].span_label + "\n\n" + weatherData.data[0].temperature + weatherData.units.temperature + "\n" +
+                weatherData.data[0].weather_icon;
+
+            if (weatherIconsDictionary.ContainsKey(weatherData.data[0].weather_icon))
+            {                
+                weatherIcon.sprite = weatherIconsDictionary[weatherData.data[0].weather_icon];
+            }
+                
+
+            //temperatureText.text = weatherData.data[0].temperature + weatherData.units.temperature;
+            precipitation_probText.text = weatherData.data[0].precipitation_prob + weatherData.units.precipitation_prob + "\nPrecipitation Probability";
+
+            windText.text = weatherData.data[0].wind + weatherData.units.wind + "\nWind Speed";
+
             for (int i = 0; i < weatherData.data.Length; i++)
             {
                 Debug.Log("Date: " + weatherData.data[i].span_label);
@@ -78,12 +127,16 @@ public class WeatherWeeklyForecastAPI : FMIS_API
                 Debug.Log("Precipitation Probability: " + weatherData.data[i].precipitation_prob + weatherData.units.precipitation_prob);
                 Debug.Log("Wind Speed: " + weatherData.data[i].wind + weatherData.units.wind);
 
+                
+
+
                 // If there are alerts, display them
                 if (weatherData.data[i].alerts.Length > 0)
                 {
                     foreach (var alert in weatherData.data[i].alerts)
                     {
                         Debug.Log("Alert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level);
+                        alertText.text += "\n\nAlert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level;
                     }
                 }
             }
