@@ -28,6 +28,9 @@ public class WeatherWeeklyForecastAPI : FMIS_API
 
     public Sprite[] weatherIconSprites;
     private Dictionary<string, Sprite> weatherIconsDictionary;
+    WeatherData weatherData;
+
+
     private string[] weatherConditions =
     {
         "sun_clouds"
@@ -98,58 +101,48 @@ public class WeatherWeeklyForecastAPI : FMIS_API
 
 
             // Parse the JSON response into C# objects
-            ParseWeatherData(jsonResponse);
+            weatherData = JsonUtility.FromJson<WeatherData>(jsonResponse);
+            ParseWeatherData(0);
         }
     }
 
     // Method to parse the JSON data and log some information
-    void ParseWeatherData(string jsonResponse)
+    void ParseWeatherData(int dayNumber)
     {
         // Parse the JSON response into the WeatherData structure
-        WeatherData weatherData = JsonUtility.FromJson<WeatherData>(jsonResponse);
+        weatherData = JsonUtility.FromJson<WeatherData>(jsonResponse);
 
         // Log some information about the forecast
         if (weatherData.data.Length > 0)
         {
-            weatherNowText.text = "Date: " + weatherData.data[0].span_label + "\n\n" + weatherData.data[0].temperature + weatherData.units.temperature + "\n" +
-                weatherData.data[0].weather_icon;
+            weatherNowText.text = "Date: " + weatherData.data[dayNumber].span_label + "\n\n" + weatherData.data[dayNumber].temperature + weatherData.units.temperature + "\n" +
+                weatherData.data[dayNumber].weather_icon;
 
-            if (weatherIconsDictionary.ContainsKey(weatherData.data[0].weather_icon))
+            if (weatherIconsDictionary.ContainsKey(weatherData.data[dayNumber].weather_icon))
             {
-                weatherIcon.sprite = weatherIconsDictionary[weatherData.data[0].weather_icon];
+                weatherIcon.sprite = weatherIconsDictionary[weatherData.data[dayNumber].weather_icon];
                 
             }
 
             locationTitle.text = weatherData.title;
 
-            precipitation_probText.text = weatherData.data[0].precipitation_prob + weatherData.units.precipitation_prob + "\nPrecipitation Probability";
+            precipitation_probText.text = weatherData.data[dayNumber].precipitation_prob + weatherData.units.precipitation_prob + "\nPrecipitation Probability";
 
-            precipitationText.text = weatherData.data[0].precipitation + weatherData.units.precipitation + "\nPrecipitation";
+            precipitationText.text = weatherData.data[dayNumber].precipitation + weatherData.units.precipitation + "\nPrecipitation";
 
-            windText.text = weatherData.data[0].wind + weatherData.units.wind + "\nWind Speed";
+            windText.text = weatherData.data[dayNumber].wind + weatherData.units.wind + "\nWind Speed";
 
-            humidityText.text = weatherData.data[0].humidity + weatherData.units.humidity + "\nHumidity";
+            humidityText.text = weatherData.data[dayNumber].humidity + weatherData.units.humidity + "\nHumidity";
 
-            evapotranspirationText.text = weatherData.data[0].evapotranspiration + weatherData.units.evapotranspiration + "\nEvaporation";
+            evapotranspirationText.text = weatherData.data[dayNumber].evapotranspiration + weatherData.units.evapotranspiration + "\nEvaporation";
 
-            for (int i = 0; i < weatherData.data.Length; i++)
+            alertText.text = "";
+            // If there are alerts, display them
+            if (weatherData.data[dayNumber].alerts.Length > 0)
             {
-                Debug.Log("Date: " + weatherData.data[i].span_label);
-                Debug.Log("Temperature: " + weatherData.data[i].temperature + weatherData.units.temperature);
-                Debug.Log("Precipitation Probability: " + weatherData.data[i].precipitation_prob + weatherData.units.precipitation_prob);
-                Debug.Log("Wind Speed: " + weatherData.data[i].wind + weatherData.units.wind);
-
-                
-
-
-                // If there are alerts, display them
-                if (weatherData.data[i].alerts.Length > 0)
+                foreach (var alert in weatherData.data[dayNumber].alerts)
                 {
-                    foreach (var alert in weatherData.data[i].alerts)
-                    {
-                        Debug.Log("Alert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level);
-                        alertText.text += "\n\nAlert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level;
-                    }
+                    alertText.text += "\n\nAlert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level;
                 }
             }
         }
