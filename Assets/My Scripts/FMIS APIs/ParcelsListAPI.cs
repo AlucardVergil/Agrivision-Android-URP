@@ -47,37 +47,25 @@ public class ParcelsListAPI : FMIS_API
 
 
             // Parse the JSON response into C# objects
-            //ParseParcelsListData(jsonResponse);
+            ParseParcelsListData(jsonResponse);
         }
     }
 
-    //// Method to parse the JSON data and log some information
-    //void ParseParcelsListData(string jsonResponse)
-    //{
-    //    // Parse the JSON response into the WeatherData structure
-    //    WeatherData weatherData = JsonUtility.FromJson<WeatherData>(jsonResponse);
+    // Method to parse the JSON data and log some information
+    void ParseParcelsListData(string jsonResponse)
+    {
+        // Parse the JSON response into the ParcelsListData structure
+        ParcelsData parcelsData = JsonUtility.FromJson<ParcelsData>(jsonResponse);
 
-    //    // Log some information about the forecast
-    //    if (weatherData.data.Length > 0)
-    //    {
-    //        for (int i = 0; i < weatherData.data.Length; i++)
-    //        {
-    //            Debug.Log("Date: " + weatherData.data[i].span_label);
-    //            Debug.Log("Temperature: " + weatherData.data[i].temperature + weatherData.units.temperature);
-    //            Debug.Log("Precipitation Probability: " + weatherData.data[i].precipitation_prob + weatherData.units.precipitation_prob);
-    //            Debug.Log("Wind Speed: " + weatherData.data[i].wind + weatherData.units.wind);
-
-    //            // If there are alerts, display them
-    //            if (weatherData.data[i].alerts.Length > 0)
-    //            {
-    //                foreach (var alert in weatherData.data[i].alerts)
-    //                {
-    //                    Debug.Log("Alert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level);
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
+        // Log some information about the forecast
+        if (parcelsData.parcels.Length > 0)
+        {
+            for (int i = 0; i < parcelsData.parcels.Length; i++)
+            {
+                Debug.Log("PARCELS NUMBER= " + parcelsData.parcels.Length);
+            }
+        }
+    }
 
 }
 

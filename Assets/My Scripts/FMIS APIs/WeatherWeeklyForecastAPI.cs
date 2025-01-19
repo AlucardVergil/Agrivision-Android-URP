@@ -110,7 +110,7 @@ public class WeatherWeeklyForecastAPI : FMIS_API
     void ParseWeatherData(int dayNumber)
     {
         // Parse the JSON response into the WeatherData structure
-        weatherData = JsonUtility.FromJson<WeatherData>(jsonResponse);
+        //weatherData = JsonUtility.FromJson<WeatherData>(jsonResponse);
 
         // Log some information about the forecast
         if (weatherData.data.Length > 0)
