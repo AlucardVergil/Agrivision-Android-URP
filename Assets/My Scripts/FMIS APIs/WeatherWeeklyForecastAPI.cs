@@ -142,7 +142,7 @@ public class WeatherWeeklyForecastAPI : FMIS_API
             {
                 foreach (var alert in weatherData.data[dayNumber].alerts)
                 {
-                    alertText.text += "\n\nAlert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level;
+                    alertText.text += "Alert: " + alert.title + " | Type: " + alert.type + " | Severity: " + alert.severity_level;
                 }
             }
         }
