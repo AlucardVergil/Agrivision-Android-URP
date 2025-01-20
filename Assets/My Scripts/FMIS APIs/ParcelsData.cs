@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Numerics;
 
 [System.Serializable]
 public class ParcelsData
@@ -22,6 +21,7 @@ public class Parcel
     public bool crop_type_support_diseases;
 }
 
+
 [System.Serializable]
 public class Shape
 {
@@ -34,7 +34,7 @@ public class Shape
 public class Bbox
 {
     public string type;
-    public List<List<List<Coordinate>>> coordinates;
+    public Coordinate[][][] coordinates;
 }
 
 

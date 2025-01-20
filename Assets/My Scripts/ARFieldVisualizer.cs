@@ -471,6 +471,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
         });
 
+
         apisManager.GetComponent<ParcelsListAPI>().GetParcelsListData((jsonResponseParcelsList) =>
         {
             Debug.Log("Parcels List API => " + jsonResponseParcelsList);

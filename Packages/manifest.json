@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.al-enterprise.rainbowsdk": "file:C:/Users/AlucardVergil/OneDrive/Έγγραφα/AgrivisionAR/rainbow-unity-package-v-2.6.33/rainbow-unity-package-v-2.6.33",
+    "com.al-enterprise.rainbowsdk": "file:C:/Users/user/UnityProjects/Agrivision/rainbow-unity-package-master",
     "com.atteneder.gltfast": "https://github.com/atteneder/glTFast.git",
     "com.microsoft.mixedreality.openxr": "file:MixedReality/com.microsoft.mixedreality.openxr-1.11.1.tgz",
     "com.microsoft.mrtk.graphicstools.unity": "file:MixedReality/com.microsoft.mrtk.graphicstools.unity-0.7.1.tgz",
