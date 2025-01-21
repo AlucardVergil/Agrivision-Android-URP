@@ -698,6 +698,7 @@ GameObject:
   - component: {fileID: 3980220684233961726}
   - component: {fileID: 6613681636946875147}
   - component: {fileID: 2341274283943628543}
+  - component: {fileID: 8868335364734496841}
   m_Layer: 5
   m_Name: Parcel Item Button
   m_TagString: Untagged
@@ -812,19 +813,40 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6613681636946875147}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
-        m_MethodName: OpenCloseSlateMenu
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+--- !u!114 &8868335364734496841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6476397813686017624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d18423990c7bfb4db2a30f2b1440572, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parcelId: 
+  parcelTitle: {fileID: 2778014576822051219}
+  parcelAcreage: {fileID: 2296716076642746353}
+  temperatureRange: {fileID: 2334976359906362087}
+  parcelText: {fileID: 5989304765660039567}
+  pests: {fileID: 2693601914330736249}
+  temperatureToday: {fileID: 4532627301177895249}
+  parcelData:
+    id: 0
+    name: 
+    size: 0
+    crop_type: 
+    sowing_date: 
+    harvesting_date: 
+    shape:
+      type: 
+      coordinates: []
+    bbox:
+      type: 
+      coordinates: []
+    crop_type_support_diseases: 0
 --- !u!1 &8117002569031958380
 GameObject:
   m_ObjectHideFlags: 0

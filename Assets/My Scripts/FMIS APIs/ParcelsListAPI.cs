@@ -2,15 +2,27 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using Unity.XR.CoreUtils;
+using UnityEngine.UI;
+using TMPro;
+using Unity.PlasticSCM.Editor.WebApi;
 
 
 public class ParcelsListAPI : FMIS_API
 {
     private string jsonResponse;
 
+    public GameObject parcelListScrollViewContent;
+    public GameObject parcelItemPrefab;
+
+    public string selectedParcelId;
+
+
+
     public void GetParcelsListData(Action<string> onParcelsDataReceived)
     {
-        StartCoroutine(GetParcelsListDataEnumerator(onParcelsDataReceived));
+        if (parcelListScrollViewContent.transform.childCount == 0) // Only execute this once if content has no children and so it never instantiated the parcels in the list
+            StartCoroutine(GetParcelsListDataEnumerator(onParcelsDataReceived));
     }
 
 
@@ -62,6 +74,12 @@ public class ParcelsListAPI : FMIS_API
         {
             for (int i = 0; i < parcelsData.parcels.Length; i++)
             {
+                var parcelItem = Instantiate(parcelItemPrefab, parcelListScrollViewContent.transform);
+                parcelItem.GetComponent<ParcelsListItem>().parcelId = parcelsData.parcels[i].id.ToString();                
+                parcelItem.GetComponent<ParcelsListItem>().parcelData = parcelsData.parcels[i];
+                parcelItem.GetComponent<ParcelsListItem>().InstantiateParcelItem();
+
+                
                 Debug.Log("PARCELS size= " + parcelsData.parcels[0].id);
                 Debug.Log("PARCELS name= " + parcelsData.parcels[0].name);
                 Debug.Log("PARCELS size= " + parcelsData.parcels[0].size);
@@ -73,7 +91,7 @@ public class ParcelsListAPI : FMIS_API
                 Debug.Log("PARCELS shape.type= " + parcelsData.parcels[0].shape.type);
 
                 Debug.Log("Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0]);
-                Debug.Log("2 Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0].coordinates[0]);
+                //Debug.Log("2 Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0].coordinates[0]);
 
 
                 var test = parcelsData.parcels[i].shape.coordinates[0];

@@ -420,62 +420,62 @@ public class ARFieldVisualizer : MonoBehaviour
 
 
 
-        apisManager.GetComponent<FertilizationAPI>().GetFertilizationData("5836", (jsonResponseFertilization) =>
-        {
-            Debug.Log("fertilizationData => " + jsonResponseFertilization);
+        //apisManager.GetComponent<FertilizationAPI>().GetFertilizationData("5836", (jsonResponseFertilization) =>
+        //{
+        //    Debug.Log("fertilizationData => " + jsonResponseFertilization);
 
-            Texture2D texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(jsonResponseFertilization);
-
-
-            var croppedTexture = CropWhiteSpaces(texture);
-
-            CreateFieldMesh(croppedTexture);
-        });
+        //    Texture2D texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(jsonResponseFertilization);
 
 
-        apisManager.GetComponent<CropGrowthImageAPI>().GetCropGrowthImage("157212", (jsonResponseCropGrowthImage) =>
-        {
-            if (jsonResponseCropGrowthImage != null)
-            {
-                Debug.Log("CROP IMAGE EXISTS");
+        //    var croppedTexture = CropWhiteSpaces(texture);
 
-                //CreateFieldMesh(jsonResponseCropGrowthImage);
-            }                
-            else
-                Debug.Log("CROP IMAGE DOES NOT EXIST");
+        //    CreateFieldMesh(croppedTexture);
+        //});
+
+
+        //apisManager.GetComponent<CropGrowthImageAPI>().GetCropGrowthImage("157212", (jsonResponseCropGrowthImage) =>
+        //{
+        //    if (jsonResponseCropGrowthImage != null)
+        //    {
+        //        Debug.Log("CROP IMAGE EXISTS");
+
+        //        //CreateFieldMesh(jsonResponseCropGrowthImage);
+        //    }                
+        //    else
+        //        Debug.Log("CROP IMAGE DOES NOT EXIST");
 
             
-        });
+        //});
 
 
-        apisManager.GetComponent<TillageAPI>().GetTillageData("10478", (jsonResponseTillage) =>
-        {
-            Debug.Log(jsonResponseTillage);
+        //apisManager.GetComponent<TillageAPI>().GetTillageData("10478", (jsonResponseTillage) =>
+        //{
+        //    Debug.Log(jsonResponseTillage);
 
 
-        });
+        //});
 
 
-        apisManager.GetComponent<IrrigationAPI>().GetIrrigationData("11256", (jsonResponseIrrigation) =>
-        {
-            Debug.Log(jsonResponseIrrigation);
+        //apisManager.GetComponent<IrrigationAPI>().GetIrrigationData("11256", (jsonResponseIrrigation) =>
+        //{
+        //    Debug.Log(jsonResponseIrrigation);
 
 
-        });
+        //});
 
 
-        apisManager.GetComponent<CropGrowthDatesAPI>().GetCropGrowthDatesData("157212", (jsonResponseCropGrowthDates) =>
-        {
-            Debug.Log("CropGrowthDatesAPI => " + jsonResponseCropGrowthDates);
+        //apisManager.GetComponent<CropGrowthDatesAPI>().GetCropGrowthDatesData("157212", (jsonResponseCropGrowthDates) =>
+        //{
+        //    Debug.Log("CropGrowthDatesAPI => " + jsonResponseCropGrowthDates);
 
 
-        });
+        //});
 
 
-        apisManager.GetComponent<ParcelsListAPI>().GetParcelsListData((jsonResponseParcelsList) =>
-        {
-            Debug.Log("Parcels List API => " + jsonResponseParcelsList);
-        });
+        //apisManager.GetComponent<ParcelsListAPI>().GetParcelsListData((jsonResponseParcelsList) =>
+        //{
+        //    Debug.Log("Parcels List API => " + jsonResponseParcelsList);
+        //});
 
 
 

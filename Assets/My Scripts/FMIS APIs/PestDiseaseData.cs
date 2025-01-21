@@ -28,14 +28,14 @@ public class Diseases
     public bool[] BlackAphid;
 
 
-    /*
-    public bool[] CottonPinkBollworm;
-    public bool[] CottonBollworm;
-    public bool[] TarnishedPlantBug;
-    public bool[] Jassids;
-    public bool[] Aphids;
-    public bool[] Thrips;
-    public bool[] Whitefly;
-    public bool[] TwoSpottedSpiderMite;
-    */
+    
+    //public bool[] CottonPinkBollworm;
+    //public bool[] CottonBollworm;
+    //public bool[] TarnishedPlantBug;
+    //public bool[] Jassids;
+    //public bool[] Aphids;
+    //public bool[] Thrips;
+    //public bool[] Whitefly;
+    //public bool[] TwoSpottedSpiderMite;
+    
 }
