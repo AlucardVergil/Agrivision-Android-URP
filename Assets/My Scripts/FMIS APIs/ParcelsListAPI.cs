@@ -72,7 +72,21 @@ public class ParcelsListAPI : FMIS_API
 
                 Debug.Log("PARCELS shape.type= " + parcelsData.parcels[0].shape.type);
 
-                Debug.Log("Parcel" + i + " " + parcelsData.parcels[i].shape.coordinates.ToArray().ToString());
+                Debug.Log("Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0]);
+                Debug.Log("2 Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0].coordinates[0]);
+
+
+                var test = parcelsData.parcels[i].shape.coordinates[0];
+                Debug.Log("Parcel" + i + " " + parcelsData.parcels[i].shape.coordinates[0]);
+               // Debug.Log("Parcel length" + i + " " + parcelsData.parcels[i].shape.coordinates.Count);
+
+
+
+
+                Debug.Log("parcel Type of coordinates: " + parcelsData.parcels[i].shape.coordinates.GetType());
+                Debug.Log("parcel Value: " + JsonUtility.ToJson(parcelsData.parcels[i].shape.coordinates));
+
+
             }
         }
     }

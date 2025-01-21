@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Numerics;
 
 [System.Serializable]
 public class ParcelsData
@@ -26,7 +27,7 @@ public class Parcel
 public class Shape
 {
     public string type;
-    public List<List<List<Coordinate>>> coordinates;
+    public List<float> coordinates;
 }
 
 
@@ -34,13 +35,5 @@ public class Shape
 public class Bbox
 {
     public string type;
-    public Coordinate[][][] coordinates;
-}
-
-
-[System.Serializable]
-public class Coordinate
-{
-    public float latitude;
-    public float longitude;
+    public float[] coordinates;
 }
