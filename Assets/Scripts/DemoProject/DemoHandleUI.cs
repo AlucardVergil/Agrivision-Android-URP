@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Cortex.Template
 {
@@ -18,6 +20,9 @@ namespace Cortex.Template
         private GameObject InCall;
         [SerializeField]
         private CallState CallState;
+
+
+        public GameObject agrivisionFirstPanel;
 
         protected override void OnStartOrEnable()
         {
@@ -78,8 +83,13 @@ namespace Cortex.Template
                 {
                     LoginScreen.gameObject.SetActive(false);
                     LoggingIn.SetActive(false);
-                    LoggedInScreen.gameObject.SetActive(true);
+                    //LoggedInScreen.gameObject.SetActive(true);
                     InCall.SetActive(false);
+
+                    //redirect to agrivision after loggin
+                    agrivisionFirstPanel.SetActive(true);
+
+
                 }
             }
         }

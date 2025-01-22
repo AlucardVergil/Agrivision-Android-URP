@@ -30,8 +30,6 @@ public class MenuManager : MonoBehaviour
         {
             slate[j].SetActive(false);
         }
-
-
     }
 
 
