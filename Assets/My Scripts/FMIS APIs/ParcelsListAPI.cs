@@ -2,10 +2,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
-using Unity.XR.CoreUtils;
-using UnityEngine.UI;
-using TMPro;
-using Unity.PlasticSCM.Editor.WebApi;
 
 
 public class ParcelsListAPI : FMIS_API
