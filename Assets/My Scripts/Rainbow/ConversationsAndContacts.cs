@@ -5,12 +5,12 @@ using Rainbow;
 using Rainbow.Model;
 using Rainbow.Events;
 using System;
-using MixedReality.Toolkit.UX;
 using TMPro;
 using System.IO;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using System.Xml;
+using Cortex;
 
 public class ConversationsAndContacts : MonoBehaviour
 {
@@ -28,7 +28,7 @@ public class ConversationsAndContacts : MonoBehaviour
     public Transform conversationScrollViewContent;
 
 
-    public MRTKTMPInputField messageInputField;
+    public TMP_InputField messageInputField;
     private Conversation currentSelectedConversation;
 
     private bool initializationPerformedFlag = false;
@@ -58,11 +58,19 @@ public class ConversationsAndContacts : MonoBehaviour
 
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
     {
+        ConnectionModel model = ConnectionModel.Instance;
+
+        instantMessaging = model.InstantMessaging;
+        rbConversations = model.Conversations;
+        rbContacts = model.Contacts;
+        
+        /*
         rbApplication = RainbowManager.Instance.GetRainbowApplication();
 
         instantMessaging = rbApplication.GetInstantMessaging();
         rbConversations = rbApplication.GetConversations();
         rbContacts = rbApplication.GetContacts();
+        */
 
         // Attach event listeners for message receipt and typing status
         instantMessaging.MessageReceived += MyApp_MessageReceived;
@@ -321,8 +329,11 @@ public class ConversationsAndContacts : MonoBehaviour
                     layout.childForceExpandWidth = true;
                     layout.childControlWidth = true;
 
-                    
-                    
+                    layout.GetComponent<RectTransform>().sizeDelta = new Vector2(938, layout.GetComponent<RectTransform>().sizeDelta.y);
+
+
+
+
                 }
 
 
@@ -337,7 +348,9 @@ public class ConversationsAndContacts : MonoBehaviour
 
                     contactGameobject.GetComponentInChildren<TMP_Text>().text = contactList[i].DisplayName;
 
-                    contactGameobject.GetComponent<PressableButton>().OnClicked.AddListener(() => {
+                    contactGameobject.GetComponent<Button>().onClick.AddListener(() => {
+
+                        //GetComponent<MenuManager>().OpenCloseChatPanels(1);
 
                         // Used siblingIndex instead of i because in addlistener it used the last assigned value of i in everything
                         Conversation conversationWithContact = OpenConversationWithContact(contactList[contactGameobject.transform.GetSiblingIndex()]);
@@ -379,7 +392,7 @@ public class ConversationsAndContacts : MonoBehaviour
                             alreadyFetchedMessagesForThisContactOnce[contactGameobject.transform.GetSiblingIndex()] = true;
                             FetchLastMessagesReceivedInConversation(conversationWithContact);
                         }
-                            
+                        //GetComponent<MenuManager>().OpenCloseChatPanels(1);
                     });
 
 
@@ -389,7 +402,7 @@ public class ConversationsAndContacts : MonoBehaviour
 
 
                     // Display the contact's avatar image
-                    avatarImage[i] = contactGameobject.transform.Find("Frontplate/AnimatedContent/Icon/UIButtonSpriteIcon").GetComponent<Image>();
+                    avatarImage[i] = contactGameobject.GetComponent<Image>();
 
                     tempContacts[i] = contactList[i];
 

@@ -5,7 +5,8 @@ using Rainbow.Model;
 using System;
 using System.Collections;
 using System.IO;
-using MixedReality.Toolkit.UX;
+using UnityEngine.UI;
+using TMPro;
 
 public class RainbowManager : MonoBehaviour
 {
@@ -16,8 +17,8 @@ public class RainbowManager : MonoBehaviour
     public string appId = "e5001db070e011efa6661b0bb9c90370";
     public string appSecretKey = "qYeZc3HRs9I4b04RhOwYSuXg8ZgzpN1rxs4uXL3mT32APaESr3TDzkrUlqY9RvXl";
     public string hostName = "web-sandbox.openrainbow.com"; // Or "openrainbow.com" for production
-    public MRTKTMPInputField loginInputField;
-    public MRTKTMPInputField passwordInputField;
+    public TMP_InputField loginInputField;
+    public TMP_InputField passwordInputField;
     //public string login = "";
     //public string password = "";
 
@@ -207,12 +208,15 @@ public class RainbowManager : MonoBehaviour
         //the FetchCurrentProfile() from the event handler but only called the coroutine from the Update() it worked correctly.
         if (initializationPerformedFlag)
         {
+            //GetComponent<MenuManager>().OpenCloseMenuPanel(1);
+
             StartCoroutine(HandleAvatarData(avatarData));
             initializationPerformedFlag = false;
 
 
             GetComponent<ConversationsAndContacts>().InitializeConversationsAndContacts();
             GetComponent<BubbleManager>().InitializeBubblesManager();
+            GetComponent<ConferenceManager>().InitializeConferenceManager();
         }
     }
 
