@@ -1,7 +1,7 @@
-using MixedReality.Toolkit.UX;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.VFX;
 
 public class DissolvingController : MonoBehaviour
@@ -38,8 +38,8 @@ public class DissolvingController : MonoBehaviour
     // Function to dissolve the object using a coroutine
     public IEnumerator Dissolve()
     {
-        toggleHologramButton = GameObject.Find("ToggleHologramsButton");
-        toggleHologramButton.GetComponent<PressableButton>().enabled = false;
+        toggleHologramButton = GameObject.Find("Toggle Holograms Button");
+        toggleHologramButton.GetComponent<Button>().enabled = false;
 
         yield return new WaitForSeconds(0.2f); // Suspend execution for 0.2 secs
 
@@ -68,7 +68,7 @@ public class DissolvingController : MonoBehaviour
 
         yield return new WaitForSeconds(0.4f);
 
-        toggleHologramButton.GetComponent<PressableButton>().enabled = true;
+        toggleHologramButton.GetComponent<Button>().enabled = true;
 
         yield return new WaitForEndOfFrame();
 

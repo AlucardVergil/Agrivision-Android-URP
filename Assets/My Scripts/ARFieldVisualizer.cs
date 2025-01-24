@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using static UnityEngine.UI.GridLayoutGroup;
-using MixedReality.Toolkit.SpatialManipulation;
 using UnityEngine.Timeline;
-using MixedReality.Toolkit;
+
 using System.Collections;
 using static UnityEngine.Rendering.DebugUI;
 using System.Linq;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class ARFieldVisualizer : MonoBehaviour
 {
@@ -188,8 +189,8 @@ public class ARFieldVisualizer : MonoBehaviour
             {
                 doOnceBool = true;
 
-                if (field != null)
-                    DestroyImmediate(field);
+                //if (field != null)
+                //    DestroyImmediate(field);
             }
         }
         else
@@ -199,78 +200,80 @@ public class ARFieldVisualizer : MonoBehaviour
 
             doOnceBool = true;
 
-            if (field != null)
-                DestroyImmediate(field);
+            //if (field != null)
+            //    DestroyImmediate(field);
         }
     }
 
 
     // Create the mesh for the field area
-    public void CreateFieldMeshBackup()
-    {
-        if (field != null)
-            DestroyImmediate(field);
+    //public void CreateFieldMeshBackup()
+    //{
+    //    if (field != null)
+    //        DestroyImmediate(field);
 
-        field = new GameObject("FieldMesh", typeof(MeshFilter), typeof(MeshRenderer)); //Note: box collider needs to be added before ObjectManipulator
-        meshFilter = field.GetComponent<MeshFilter>();
-        meshRenderer = field.GetComponent<MeshRenderer>();
+    //    field = new GameObject("FieldMesh", typeof(MeshFilter), typeof(MeshRenderer)); //Note: box collider needs to be added before ObjectManipulator
+    //    meshFilter = field.GetComponent<MeshFilter>();
+    //    meshRenderer = field.GetComponent<MeshRenderer>();
         
-        meshRenderer.material = fieldMaterial;
+    //    meshRenderer.material = fieldMaterial;
 
-        Mesh mesh = new Mesh();
-        mesh.name = "Mesh";
+    //    Mesh mesh = new Mesh();
+    //    mesh.name = "Mesh";
 
-        Vector3[] vertices = new Vector3[fieldCorners.Length];
-        for (int i = 0; i < fieldCorners.Length; i++)
-        {
-            vertices[i] = GPSPositionToWorldPosition(fieldCorners[i]);
-            PlaceFieldMarkers(vertices[i]);
-        }
+    //    Vector3[] vertices = new Vector3[fieldCorners.Length];
+    //    for (int i = 0; i < fieldCorners.Length; i++)
+    //    {
+    //        vertices[i] = GPSPositionToWorldPosition(fieldCorners[i]);
+    //        PlaceFieldMarkers(vertices[i]);
+    //    }
 
-        // Set up how the mesh's triangles connect (counter-clockwise)
-        int[] triangles = new int[]
-        {
-            0, 1, 2, // First triangle
-            0, 2, 3  // Second triangle
-        };
+    //    // Set up how the mesh's triangles connect (counter-clockwise)
+    //    int[] triangles = new int[]
+    //    {
+    //        0, 1, 2, // First triangle
+    //        0, 2, 3  // Second triangle
+    //    };
 
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
-        mesh.RecalculateNormals();
+    //    mesh.vertices = vertices;
+    //    mesh.triangles = triangles;
+    //    mesh.RecalculateNormals();
 
-        meshFilter.mesh = mesh;
+    //    meshFilter.mesh = mesh;
 
-        var meshCollider = field.AddComponent<MeshCollider>();
-        meshCollider.sharedMesh = mesh;
+    //    var meshCollider = field.AddComponent<MeshCollider>();
+    //    meshCollider.sharedMesh = mesh;
 
 
-        var manipulator = field.AddComponent<ObjectManipulator>();
-        // Can grab with both hands to rotate and scale field mesh
-        manipulator.selectMode = UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Multiple; 
+    //    var manipulator = field.AddComponent<ObjectManipulator>();
+    //    // Can grab with both hands to rotate and scale field mesh
+    //    manipulator.selectMode = UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Multiple; 
 
-        RotationAxisConstraint rotationConstraint = field.AddComponent<RotationAxisConstraint>();
+    //    RotationAxisConstraint rotationConstraint = field.AddComponent<RotationAxisConstraint>();
 
-        // Disable manipulation on all axes, except y
-        rotationConstraint.ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
+    //    // Disable manipulation on all axes, except y
+    //    rotationConstraint.ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
 
-        MoveAxisConstraint moveConstraint = field.AddComponent<MoveAxisConstraint>();
+    //    MoveAxisConstraint moveConstraint = field.AddComponent<MoveAxisConstraint>();
 
-        // Disable manipulation on y axis
-        moveConstraint.ConstraintOnMovement = AxisFlags.YAxis;
+    //    // Disable manipulation on y axis
+    //    moveConstraint.ConstraintOnMovement = AxisFlags.YAxis;
 
-        // Make movement, rotation and scaling of field mesh smoother / slower
-        manipulator.MoveLerpTime = 0.3f;
-        manipulator.RotateLerpTime = 0.3f;
-        manipulator.ScaleLerpTime = 0.3f;
+    //    // Make movement, rotation and scaling of field mesh smoother / slower
+    //    manipulator.MoveLerpTime = 0.3f;
+    //    manipulator.RotateLerpTime = 0.3f;
+    //    manipulator.ScaleLerpTime = 0.3f;
 
-        // Allow manipulation for movement and rotation only
-        manipulator.AllowedManipulations = TransformFlags.Move | TransformFlags.Rotate;
+    //    // Allow manipulation for movement and rotation only
+    //    manipulator.AllowedManipulations = TransformFlags.Move | TransformFlags.Rotate;
 
-        manipulator.enabled = false;
-    }
+    //    manipulator.enabled = false;
+    //}
 
 
     // Create the mesh for the field area
+
+
     public void CreateFieldMesh(Texture texture)
     {
         if (field != null)
@@ -296,6 +299,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
         Mesh mesh = new Mesh();
         mesh.name = "Mesh";
+
 
         Vector3[] vertices = new Vector3[fieldCorners.Length];
         for (int i = 0; i < fieldCorners.Length; i++)
@@ -340,31 +344,62 @@ public class ARFieldVisualizer : MonoBehaviour
 
         var meshCollider = field.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = mesh;
+        var rigidbody = field.AddComponent<Rigidbody>();
+        rigidbody.isKinematic = true;
 
 
-        var manipulator = field.AddComponent<ObjectManipulator>();
-        // Can grab with both hands to rotate and scale field mesh
-        manipulator.selectMode = UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Multiple;
 
-        RotationAxisConstraint rotationConstraint = field.AddComponent<RotationAxisConstraint>();
 
-        // Disable manipulation on all axes, except y
-        rotationConstraint.ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
 
-        MoveAxisConstraint moveConstraint = field.AddComponent<MoveAxisConstraint>();
+        //var manipulator = field.AddComponent<XRGrabInteractable>();
+        //// Can grab with both hands to rotate and scale field mesh
+        //manipulator.selectMode = UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Multiple;
 
-        // Disable manipulation on y axis
-        moveConstraint.ConstraintOnMovement = AxisFlags.YAxis;
+        //RotationAxisConstraint rotationConstraint = field.AddComponent<RotationAxisConstraint>();
 
-        // Make movement, rotation and scaling of field mesh smoother / slower
-        manipulator.MoveLerpTime = 0.3f;
-        manipulator.RotateLerpTime = 0.3f;
-        manipulator.ScaleLerpTime = 0.3f;
+        //// Disable manipulation on all axes, except y
+        //rotationConstraint.ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
 
-        // Allow manipulation for movement and rotation only
-        manipulator.AllowedManipulations = TransformFlags.Move | TransformFlags.Rotate;
+        //MoveAxisConstraint moveConstraint = field.AddComponent<MoveAxisConstraint>();
 
-        manipulator.enabled = false;
+        //// Disable manipulation on y axis
+        //moveConstraint.ConstraintOnMovement = AxisFlags.YAxis;
+
+        //// Make movement, rotation and scaling of field mesh smoother / slower
+        //manipulator.MoveLerpTime = 0.3f;
+        //manipulator.RotateLerpTime = 0.3f;
+        //manipulator.ScaleLerpTime = 0.3f;
+
+        //// Allow manipulation for movement and rotation only
+        //manipulator.AllowedManipulations = TransformFlags.Move | TransformFlags.Rotate;
+
+        //manipulator.enabled = false;
+
+        var grabInteractable = field.AddComponent<XRGrabInteractable>();
+
+        // Set the grab interactable to allow rotation and scaling
+        grabInteractable.trackRotation = true; // Allows rotation
+        grabInteractable.trackPosition = true; // Allows position changes
+        grabInteractable.throwOnDetach = false; // Prevent throwing on release
+
+        // Implement rotation constraints (Custom Script)
+        var rotationConstraint = field.AddComponent<CustomRotationConstraint>();
+        rotationConstraint.RestrictedAxes = CustomRotationConstraint.AxisFlags.XAxis | CustomRotationConstraint.AxisFlags.ZAxis;
+
+        // Implement movement constraints (Custom Script)
+        var movementConstraint = field.AddComponent<CustomMovementConstraint>();
+        movementConstraint.RestrictedAxes = CustomMovementConstraint.AxisFlags.YAxis;
+
+        // Configure grab interaction settings
+        grabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
+
+        // To simulate "smoother/slower" movement/rotation
+        grabInteractable.attachEaseInTime = 0.3f; // Smooth interaction attachment
+
+        // If you want to disable interactions initially
+        grabInteractable.enabled = false;
+
+
     }
 
 
@@ -502,7 +537,7 @@ public class ARFieldVisualizer : MonoBehaviour
         GameObject marker = Instantiate(fieldMarkerPrefab, corner, Quaternion.identity);
         
         marker.AddComponent<BoxCollider>();
-        marker.AddComponent<ObjectManipulator>();
+        marker.AddComponent<XRGrabInteractable>();
 
         fieldMarkers.Add(marker);
 
@@ -522,7 +557,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
     public void EnableManualFieldMeshAdjustment()
     {
-        var fieldManipulator = field.GetComponent<ObjectManipulator>();
+        var fieldManipulator = field.GetComponent<XRGrabInteractable>();
         fieldManipulator.enabled = !fieldManipulator.isActiveAndEnabled;
     }
 

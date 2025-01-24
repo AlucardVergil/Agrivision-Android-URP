@@ -1,8 +1,7 @@
-using MixedReality.Toolkit.SpatialManipulation;
-using MixedReality.Toolkit.UX;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
@@ -44,7 +43,7 @@ public class MenuManager : MonoBehaviour
     {
         // Find 1st game object with FollowButton tag and untoggle it since i only have 1 panel active at a time
         // Placed ? for nullable to fix null reference exception
-        GameObject.FindGameObjectWithTag("FollowButton")?.GetComponent<PressableButton>().ForceSetToggled(false);
+       // GameObject.FindGameObjectWithTag("FollowButton")?.GetComponent<Button>().ForceSetToggled(false);
 
         for (int slateIndex = 0; slateIndex < slate.Length; slateIndex++)
         {
@@ -202,26 +201,26 @@ public class MenuManager : MonoBehaviour
         pest = Instantiate(pestsPrefabs[0], new Vector3(0, 0, 0), Quaternion.identity);
 
         // Bring them in front of you
-        pest.GetComponent<Follow>().enabled = true;
+        //pest.GetComponent<Follow>().enabled = true;
 
         if (!onlyHologram)
         {
             pestPanel = Instantiate(pestsInfoPanels[0], new Vector3(0, 0, 0), Quaternion.identity);
-            pestPanel.GetComponent<Follow>().enabled = true;
+            //pestPanel.GetComponent<Follow>().enabled = true;
         }
 
         yield return new WaitForEndOfFrame();
 
-        pest.GetComponent<Follow>().enabled = false;
+        //pest.GetComponent<Follow>().enabled = false;
 
         if (!onlyHologram)
         {
-            pestPanel.GetComponent<Follow>().enabled = false;
+            //pestPanel.GetComponent<Follow>().enabled = false;
 
             // Add onClick event during runtime because I can't assign the event from inspector due to pestPanel being an instantiated prefab and the MenuManager is already in scene
-            pestPanel.transform.Find("TitleBar/Buttons/ToggleHologramButton").GetComponent<PressableButton>().OnClicked.AddListener(() => EnableDisableHolograms());
+            pestPanel.transform.Find("TitleBar/Buttons/ToggleHologramButton").GetComponent<Button>().onClick.AddListener(() => EnableDisableHolograms());
 
-            pestPanel.transform.Find("TitleBar/Buttons/CloseButton").GetComponent<PressableButton>().OnClicked.AddListener(() => DestroyPest3DModel());
+            pestPanel.transform.Find("TitleBar/Buttons/CloseButton").GetComponent<Button>().onClick.AddListener(() => DestroyPest3DModel());
         }
 
     }
@@ -325,16 +324,16 @@ public class MenuManager : MonoBehaviour
     IEnumerator InstantiatePanelEnumerator(int i)
     {
         pestPanel = Instantiate(pestsInfoPanels[i], new Vector3(0, 0, 0), Quaternion.identity);
-        pestPanel.GetComponent<Follow>().enabled = true;
+        //pestPanel.GetComponent<Follow>().enabled = true;
 
         yield return new WaitForEndOfFrame();
 
-        pestPanel.GetComponent<Follow>().enabled = false;
+        //pestPanel.GetComponent<Follow>().enabled = false;
 
         // Add onClick event during runtime because I can't assign the event from inspector due to pestPanel being an instantiated prefab and the MenuManager is already in scene
-        pestPanel.transform.Find("TitleBar/Buttons/ToggleHologramButton").GetComponent<PressableButton>().OnClicked.AddListener(() => EnableDisableHolograms2());
+        pestPanel.transform.Find("TitleBar/Buttons/ToggleHologramButton").GetComponent<Button>().onClick.AddListener(() => EnableDisableHolograms2());
 
-        pestPanel.transform.Find("TitleBar/Buttons/CloseButton").GetComponent<PressableButton>().OnClicked.AddListener(() => DestroyPest3DModels());
+        pestPanel.transform.Find("TitleBar/Buttons/Close Button").GetComponent<Button>().onClick.AddListener(() => DestroyPest3DModels());
     }
 
 

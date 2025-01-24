@@ -1,8 +1,8 @@
-using MixedReality.Toolkit.SpatialManipulation;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.EventSystems;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 #if UNITY_ANDROID
 public class SpriteDropHandler : MonoBehaviour
@@ -27,7 +27,7 @@ public class SpriteDropHandler : MonoBehaviour
         spriteInstance = new GameObject[transform.childCount];
         modelInstance = new GameObject[transform.childCount];
 
-        ObjectManipulator objManipulator;
+        XRGrabInteractable objManipulator;
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -35,7 +35,7 @@ public class SpriteDropHandler : MonoBehaviour
             spriteInstance[i] = transform.GetChild(i).gameObject;
 
             // Subscribe to the OnManipulationEnded event
-            if ( !spriteInstance[i].TryGetComponent<ObjectManipulator>(out objManipulator) ) 
+            if ( !spriteInstance[i].TryGetComponent<XRGrabInteractable>(out objManipulator) ) 
                 return;
 
             objManipulator.lastSelectExited.AddListener(OnObjectDropped);
@@ -69,7 +69,7 @@ public class SpriteDropHandler : MonoBehaviour
                         modelInstance[i] = Instantiate(modelPrefab[i], eventData.interactableObject.transform.position, Quaternion.identity);
                         modelInstance[i].AddComponent<PrefabReference>().prefabSource = modelPrefab[i];
 
-                        modelInstance[i].GetComponent<ObjectManipulator>().lastSelectExited.AddListener(OnObjectDropped);
+                        modelInstance[i].GetComponent<XRGrabInteractable>().lastSelectExited.AddListener(OnObjectDropped);
 
                         Destroy(eventData.interactableObject.transform.gameObject);
                     }
@@ -102,7 +102,7 @@ public class SpriteDropHandler : MonoBehaviour
                         spriteInstance[i].transform.localPosition = spritePrefab[i].transform.localPosition;
                         spriteInstance[i].transform.localRotation = spritePrefab[i].transform.localRotation;
 
-                        spriteInstance[i].GetComponent<ObjectManipulator>().lastSelectExited.AddListener(OnObjectDropped);
+                        spriteInstance[i].GetComponent<XRGrabInteractable>().lastSelectExited.AddListener(OnObjectDropped);
 
                         Destroy(eventData.interactableObject.transform.gameObject);
                     }
