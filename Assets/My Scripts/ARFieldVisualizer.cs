@@ -200,8 +200,8 @@ public class ARFieldVisualizer : MonoBehaviour
 
             doOnceBool = true;
 
-            //if (field != null)
-            //    DestroyImmediate(field);
+            if (field != null)
+                DestroyImmediate(field);
         }
     }
 
@@ -344,8 +344,10 @@ public class ARFieldVisualizer : MonoBehaviour
 
         var meshCollider = field.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = mesh;
+
         var rigidbody = field.AddComponent<Rigidbody>();
         rigidbody.isKinematic = true;
+
 
 
 

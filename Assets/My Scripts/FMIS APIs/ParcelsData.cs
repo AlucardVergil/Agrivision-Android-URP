@@ -27,7 +27,7 @@ public class Parcel
 public class Shape
 {
     public string type;
-    public List<float> coordinates;
+    public float[][][] coordinates;
 }
 
 
@@ -35,5 +35,5 @@ public class Shape
 public class Bbox
 {
     public string type;
-    public float[] coordinates;
+    public float[][][] coordinates;
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using Newtonsoft.Json;
 
 
 public class ParcelsListAPI : FMIS_API
@@ -63,7 +64,10 @@ public class ParcelsListAPI : FMIS_API
     void ParseParcelsListData(string jsonResponse)
     {
         // Parse the JSON response into the ParcelsListData structure
-        ParcelsData parcelsData = JsonUtility.FromJson<ParcelsData>(("{\"parcels\":" + jsonResponse + "}"));
+        //ParcelsData parcelsData = JsonUtility.FromJson<ParcelsData>(("{\"parcels\":" + jsonResponse + "}"));
+        ParcelsData parcelsData = JsonConvert.DeserializeObject<ParcelsData>(("{\"parcels\":" + jsonResponse + "}"));
+
+        
 
         // Log some information about the forecast
         if (parcelsData.parcels.Length > 0)
@@ -86,13 +90,13 @@ public class ParcelsListAPI : FMIS_API
 
                 Debug.Log("PARCELS shape.type= " + parcelsData.parcels[0].shape.type);
 
-                Debug.Log("Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0]);
+                Debug.Log("Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0][0][0]);
                 //Debug.Log("2 Parcel test" + i + " " + parcelsData.parcels[i].shape.coordinates[0].coordinates[0]);
 
 
                 var test = parcelsData.parcels[i].shape.coordinates[0];
                 Debug.Log("Parcel" + i + " " + parcelsData.parcels[i].shape.coordinates[0]);
-               // Debug.Log("Parcel length" + i + " " + parcelsData.parcels[i].shape.coordinates.Count);
+                Debug.Log("Parcel length" + i + " " + parcelsData.parcels[i].shape.coordinates.Length);
 
 
 
