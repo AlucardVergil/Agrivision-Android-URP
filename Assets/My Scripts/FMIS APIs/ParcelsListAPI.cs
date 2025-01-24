@@ -13,6 +13,9 @@ public class ParcelsListAPI : FMIS_API
     public GameObject parcelItemPrefab;
 
     public string selectedParcelId;
+    public ARFieldVisualizer arFieldVisualizer;
+
+    public string email;
 
 
 
@@ -20,6 +23,7 @@ public class ParcelsListAPI : FMIS_API
     {
         if (parcelListScrollViewContent.transform.childCount == 0) // Only execute this once if content has no children and so it never instantiated the parcels in the list
             StartCoroutine(GetParcelsListDataEnumerator(onParcelsDataReceived));
+        Debug.Log("EMAIL= " + email);
     }
 
 
@@ -35,6 +39,7 @@ public class ParcelsListAPI : FMIS_API
 
         // Set the API key header
         request.SetRequestHeader("apiKey", apiKey);
+        request.SetRequestHeader("X-USER-EMAIL", email);
 
         // Send the request and wait for the response
         yield return request.SendWebRequest();
@@ -65,9 +70,9 @@ public class ParcelsListAPI : FMIS_API
     {
         // Parse the JSON response into the ParcelsListData structure
         //ParcelsData parcelsData = JsonUtility.FromJson<ParcelsData>(("{\"parcels\":" + jsonResponse + "}"));
-        ParcelsData parcelsData = JsonConvert.DeserializeObject<ParcelsData>(("{\"parcels\":" + jsonResponse + "}"));
+        ParcelsData parcelsData = JsonConvert.DeserializeObject<ParcelsData>(("{\"parcels\":" + jsonResponse + "}")); // I used this instead of JsonUtility.FromJson bcz it didn't support complex types like nested array for coordinates
 
-        
+
 
         // Log some information about the forecast
         if (parcelsData.parcels.Length > 0)
@@ -79,7 +84,8 @@ public class ParcelsListAPI : FMIS_API
                 parcelItem.GetComponent<ParcelsListItem>().parcelData = parcelsData.parcels[i];
                 parcelItem.GetComponent<ParcelsListItem>().InstantiateParcelItem();
 
-                
+                arFieldVisualizer.parcels = parcelsData.parcels;
+
                 Debug.Log("PARCELS size= " + parcelsData.parcels[0].id);
                 Debug.Log("PARCELS name= " + parcelsData.parcels[0].name);
                 Debug.Log("PARCELS size= " + parcelsData.parcels[0].size);

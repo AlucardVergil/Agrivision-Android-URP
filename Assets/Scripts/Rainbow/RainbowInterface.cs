@@ -464,6 +464,8 @@ namespace Cortex
                 if (result.Result.Success)
                 {
                     Debug.Log($"Login successfull {login}");
+
+                    GameObject.FindGameObjectWithTag("APIsManager").GetComponent<ParcelsListAPI>().email = login;
                 }
                 else
                 {

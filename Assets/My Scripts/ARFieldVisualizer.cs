@@ -31,6 +31,7 @@ public class ARFieldVisualizer : MonoBehaviour
         new Vector2(21.692695f, 39.636791f)
     };
 
+
     #region Corner Markers Not Sure If Will Be Used
     [SerializeField] private GameObject fieldMarkerPrefab; // Prefab to represent corners and borders
     [SerializeField] private Material insideFieldMaterial; // Material to color inside field area
@@ -62,6 +63,8 @@ public class ARFieldVisualizer : MonoBehaviour
 
     GameObject apisManager;
     FertilizationData fertilizationData;
+
+    public Parcel[] parcels;
 
 
     void Awake()
@@ -98,6 +101,30 @@ public class ARFieldVisualizer : MonoBehaviour
         // Update the field coloring based on the current position
         InvokeRepeating("UpdateFieldVisualization", 1.0f, 1.0f);
     }
+
+
+
+    // Returns the current selected parcel field coordinates and puts them in clockwise order
+    public void GetSelectedParcelCoordinates()
+    {
+        foreach (var parcel in parcels)
+        {
+            if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
+            {
+                Vector2[] tempFieldCorners = new Vector2[4];
+
+                for (int i = 0; i < parcel.shape.coordinates[0].Length; i++)
+                {
+                    tempFieldCorners[i].x = parcel.shape.coordinates[0][i][0];
+                    tempFieldCorners[i].y = parcel.shape.coordinates[0][i][1];
+                }
+
+                fieldCorners = OrderFieldCornersClockwise(tempFieldCorners);
+            }            
+        }
+
+    }
+
 
 
 
@@ -156,7 +183,16 @@ public class ARFieldVisualizer : MonoBehaviour
 
 #if UNITY_EDITOR
         //Vector2 currentPosition = new Vector2(40.62573397234498f, 22.959545477275366f);
+        //Vector2 currentPosition = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 userReferenceGPS in this script
         Vector2 currentPosition = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 userReferenceGPS in this script
+        foreach (var parcel in parcels)
+        {
+            if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
+            {
+                currentPosition.x = parcel.shape.coordinates[0][0][0]; // NOTE: also see Vector2 userReferenceGPS in this script
+                currentPosition.y = parcel.shape.coordinates[0][0][1];
+            }
+        }
 #else
         Vector2 currentPosition = new Vector2(latitude, longitude);
 #endif
@@ -412,7 +448,16 @@ public class ARFieldVisualizer : MonoBehaviour
         // Reference point (the "origin" GPS point to convert everything relative to)
 #if UNITY_EDITOR
         //Vector2 userReferenceGPS = new Vector2(40.62573397234498f, 22.959545477275366f);
-        Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 currentPosition in this script
+        //Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 currentPosition in this script
+        Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f);
+        foreach (var parcel in parcels)
+        {
+            if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
+            {
+                userReferenceGPS.x = parcel.shape.coordinates[0][0][0]; // NOTE: also see Vector2 currentPosition in this script
+                userReferenceGPS.y = parcel.shape.coordinates[0][0][1];
+            }
+        }
 #else
         Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
 #endif
