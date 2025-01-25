@@ -11,6 +11,21 @@ public class ConfirmationDialog : MonoBehaviour
 
     private System.Action onConfirmAction;
 
+
+    private void Start()
+    {
+        confirmButton.onClick.AddListener(() =>
+        {
+            Confirm();
+        });
+
+        cancelButton.onClick.AddListener(() =>
+        {
+            Cancel();
+        });
+    }
+
+
     public void Show(string message, System.Action onConfirm)
     {
         dialogMessage.text = message; // Set the message

@@ -120,6 +120,8 @@ public class ConversationsManager : MonoBehaviour
         //        SearchContactByName(nameToSearch);
         //});
 
+        contactsToInvite = new List<Contact>();
+
         searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
             emails[0] = nameToSearch;
 
@@ -1006,10 +1008,12 @@ public class ConversationsManager : MonoBehaviour
     // Search for contacts by display name
     public void SearchContactByEmails(List<string> emailsToSearch, int maxNbResult = 20)
     {
-        foreach (Transform child in searchedContactsScrollviewContent.transform)
-        {
-            Destroy(child);
-        }
+        //foreach (Transform child in searchedContactsScrollviewContent.transform)
+        //{
+        //    DestroyImmediate(child);
+        //}
+
+        //Task.Delay(1000);
 
         rbContacts.SearchContactByEmails(emailsToSearch, callback =>
         {
@@ -1026,15 +1030,15 @@ public class ConversationsManager : MonoBehaviour
 
                 foreach (Contact contact in searchResult.ContactsList)
                 {
-                    var contact2 = GetContactById(contact.Id);
-                    Debug.Log($"Contact found: {contact2.DisplayName}");
+                    //var contact2 = GetContactById(contact.Id);
+                    //Debug.Log($"Contact found: {contact2.DisplayName}");
                                         
                     if (contact != null)
                     {
-                        UnityMainThreadDispatcher.Instance().Enqueue(() => { 
+                        UnityMainThreadDispatcher.Instance().Enqueue(() => {                            
                             var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
-                            foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact2;
-                            foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact2.FirstName + " " + contact2.LastName;                           
+                            foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
+                            foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;                           
                         });
                     }
                 }

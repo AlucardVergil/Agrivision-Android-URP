@@ -4,6 +4,7 @@ using Rainbow.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,7 +34,9 @@ public class ContactGameobject : MonoBehaviour
         instantMessaging = model.InstantMessaging;
         rbConversations = model.Conversations;
         rbContacts = model.Contacts;
-        
+
+        Task.Delay(500);
+
         GetComponent<Button>().onClick.AddListener(() => {
             GameObject.Find("Rainbow").GetComponent<ConversationsManager>().contactsToInvite.Add(currentGameobjectContact);
         });

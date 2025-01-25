@@ -22016,7 +22016,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2118862160}
+  m_Material: {fileID: 1190093427}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -27204,6 +27204,46 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1188494042}
   m_CullTransparentMesh: 1
+--- !u!21 &1190093427
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/RoundedCorners/RoundedCorners
+  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ColorMask: 15
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - _OuterUV: {r: 0, g: 0, b: 1, a: 1}
+    - _WidthHeightRadius: {r: 679.24, g: 382.07245, b: 40, a: 0}
+  m_BuildTextureStacks: []
 --- !u!1 &1195322858
 GameObject:
   m_ObjectHideFlags: 0
@@ -29025,7 +29065,7 @@ GameObject:
   - component: {fileID: 1311937388}
   - component: {fileID: 1311937387}
   m_Layer: 5
-  m_Name: LeaveBubbleButton
+  m_Name: LeaveOrDeleteBubbleButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29097,7 +29137,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2065763552}
         m_TargetAssemblyTypeName: BubbleManager, Assembly-CSharp
-        m_MethodName: LeaveSelectedBubble
+        m_MethodName: LeaveOrDeleteSelectedBubble
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -36684,6 +36724,11 @@ PrefabInstance:
       propertyPath: rainbowGameobject
       value: 
       objectReference: {fileID: 2065763548}
+    - target: {fileID: 5069775089209381657, guid: 185a24fd8071a72498beb57d231a1fe6,
+        type: 3}
+      propertyPath: DeleteOrLeaveBubbleButtonText
+      value: 
+      objectReference: {fileID: 983209985}
     - target: {fileID: 5069775089338265909, guid: 185a24fd8071a72498beb57d231a1fe6,
         type: 3}
       propertyPath: m_Spacing
@@ -43607,8 +43652,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -46161,6 +46206,8 @@ MonoBehaviour:
   bubbleName: {fileID: 1681417468}
   bubbleSubject: {fileID: 299441906}
   bubblePanel: {fileID: 1217798680}
+  bubblesListPanel: {fileID: 1466175547}
+  bubbleDetailsPanel: {fileID: 510559931}
   confirmationDialog: {fileID: 2065763556}
 --- !u!114 &2065763553
 MonoBehaviour:
@@ -48104,46 +48151,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116532094}
   m_CullTransparentMesh: 1
---- !u!21 &2118862160
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/RoundedCorners/RoundedCorners
-  m_Shader: {fileID: 4800000, guid: 0bd2ec5d73751e34a814274a454bec41, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_LockedProperties: 
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _ColorMask: 15
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _UseUIAlphaClip: 0
-    m_Colors:
-    - _OuterUV: {r: 0, g: 0, b: 1, a: 1}
-    - _WidthHeightRadius: {r: 679.24, g: 382.07245, b: 40, a: 0}
-  m_BuildTextureStacks: []
 --- !u!1 &2125125547
 GameObject:
   m_ObjectHideFlags: 0

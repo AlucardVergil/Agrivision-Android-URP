@@ -6,6 +6,7 @@ using Rainbow;
 using Rainbow.Events;
 using Rainbow.Model;
 using Rainbow.WebRTC.Unity;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,8 +36,12 @@ namespace Cortex
         private readonly Dictionary<string, ResetCancellationToken> bubbleEntryTokens = new();
 
         // vagelis
+        [Header("Vagelis")]
         public GameObject bubblesGameobject;
         public GameObject rainbowGameobject;
+        public TMP_Text DeleteOrLeaveBubbleButtonText;
+
+
 
 
         override protected void OnStartOrEnable()
@@ -90,7 +95,8 @@ namespace Cortex
             }
         }
 
-        private async void UpdateUi()
+        //Vagelis - I made this public to use it from bubble manager
+        public async void UpdateUi()
         {
             if (!HasStarted)
             {
@@ -154,7 +160,17 @@ namespace Cortex
                 Bubble cur = b;
                 entry.OnClick += (e) =>
                 {
+                    // Vagelis
+                    //Change the button text if i am owner 
+                    if (bubbles.GetBubbleByIdFromCache(cur.Id).Creator == model.Contacts.GetCurrentContactId())                    
+                        DeleteOrLeaveBubbleButtonText.text = "Delete Bubble";                    
+                    else
+                        DeleteOrLeaveBubbleButtonText.text = "Leave Bubble";
+
+                    //Set selected bubble variable for use in other scripts
+                    rainbowGameobject.GetComponent<BubbleManager>().currentSelectedBubble = bubbles.GetBubbleByIdFromCache(cur.Id);
                     rainbowGameobject.GetComponent<BubbleManager>().DisplayConversationsWithBubble(bubbles.GetBubbleByIdFromCache(cur.Id));
+                    
 
                     lock (bubbleLock)
                     {

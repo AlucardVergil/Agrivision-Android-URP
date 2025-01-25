@@ -35,13 +35,20 @@ public class BubbleManager : MonoBehaviour
     public Transform bubbleConversationScrollViewContent;
     public GameObject bubbleConversationScrollView;
 
-    
+    [Header("For create bubble")]
     public GameObject createBubblePanel;
     public TMP_InputField bubbleName;
     public TMP_InputField bubbleSubject;
-    public GameObject bubblePanel;
 
+    [Header("Bubble Panels")]
+    public GameObject bubblePanel;
+    public GameObject bubblesListPanel;
+    public GameObject bubbleDetailsPanel;
+
+    [Header("Confirmation Dialog")]
     public ConfirmationDialog confirmationDialog; // Reference to the ConfirmationDialog
+
+
 
 
 
@@ -173,10 +180,21 @@ public class BubbleManager : MonoBehaviour
 
 
 
-    public void LeaveSelectedBubble()
-    {
-        string confirmationMessage = $"Are you sure you want to leave this bubble ( {currentSelectedBubble.Name} )?";
-        confirmationDialog.Show(confirmationMessage, () => LeaveBubble(currentSelectedBubble));
+    // If I am the owner of the bubble, delete it, otherwise leave bubble
+    public void LeaveOrDeleteSelectedBubble()
+    {        
+        if (currentSelectedBubble.Creator == myContact.Id)
+        {
+            string confirmationMessage = $"Are you sure you want to delete this bubble ( {currentSelectedBubble.Name} )?";
+            confirmationDialog.Show(confirmationMessage, () => DeleteBubble(currentSelectedBubble));
+        }
+        else
+        {
+            string confirmationMessage = $"Are you sure you want to leave this bubble ( {currentSelectedBubble.Name} )?";
+            confirmationDialog.Show(confirmationMessage, () => LeaveBubble(currentSelectedBubble));
+        }
+
+        
     }
 
 
@@ -187,6 +205,13 @@ public class BubbleManager : MonoBehaviour
             if (callback.Result.Success)
             {
                 Debug.Log("You left the bubble: " + bubble.Name);
+
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    bubbleDetailsPanel.SetActive(false);
+                    bubblesListPanel.SetActive(true);
+                    bubblePanel.GetComponent<BubbleView>().UpdateUi();
+                });
             }
             else
             {
@@ -282,9 +307,7 @@ public class BubbleManager : MonoBehaviour
                 
                 // Refresh bubble panel to show new bubble after creation
                 UnityMainThreadDispatcher.Instance().Enqueue(() => {
-                    bubblePanel.SetActive(false);
-                    Task.Delay(100);
-                    bubblePanel.SetActive(true);
+                    bubblePanel.GetComponent<BubbleView>().UpdateUi();
                 });
             }
             else
@@ -332,6 +355,13 @@ public class BubbleManager : MonoBehaviour
             if (callback.Result.Success)
             {
                 Debug.Log("Bubble deleted: " + bubble.Name);
+
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    bubbleDetailsPanel.SetActive(false);
+                    bubblesListPanel.SetActive(true);
+                    bubblePanel.GetComponent<BubbleView>().UpdateUi();
+                });                
             }
             else
             {
