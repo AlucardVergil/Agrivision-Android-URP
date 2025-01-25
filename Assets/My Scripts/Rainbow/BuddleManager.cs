@@ -48,7 +48,7 @@ public class BubbleManager : MonoBehaviour
     [Header("Confirmation Dialog")]
     public ConfirmationDialog confirmationDialog; // Reference to the ConfirmationDialog
 
-
+    ConnectionModel model;
 
 
 
@@ -64,7 +64,9 @@ public class BubbleManager : MonoBehaviour
 
     public void InitializeBubblesManager() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
     {
-        ConnectionModel model = ConnectionModel.Instance;
+        if (model != null) return;
+
+        model = ConnectionModel.Instance;
 
         instantMessaging = model.InstantMessaging;
         rbConversations = model.Conversations;

@@ -18,11 +18,14 @@ public class FileManager : MonoBehaviour
     public TMP_Text uploadFilePath;
     public TMP_Text downloadFilePath;
 
+    ConnectionModel model;
 
 
     public void InitializeFileManager() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
     {
-        ConnectionModel model = ConnectionModel.Instance;
+        if (model != null) return;
+
+        model = ConnectionModel.Instance;
         
         instantMessaging = model.InstantMessaging;
         fileStorage = model.FileStorage;

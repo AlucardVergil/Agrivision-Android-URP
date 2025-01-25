@@ -71,10 +71,14 @@ public class ConversationsManager : MonoBehaviour
 
     public Button test;
 
+    ConnectionModel model;
+
 
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
     {
-        ConnectionModel model = ConnectionModel.Instance;
+        if (model != null) return;
+
+        model = ConnectionModel.Instance;
 
         instantMessaging = model.InstantMessaging;
         rbConversations = model.Conversations;
@@ -115,19 +119,20 @@ public class ConversationsManager : MonoBehaviour
             //SearchContactByEmails(emails);
         });
 
-        //searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
-        //    if (nameToSearch != "" && nameToSearch.Length > 1)
-        //        SearchContactByName(nameToSearch);
-        //});
+        searchContactInputField.onEndEdit.AddListener((string nameToSearch) =>
+        {
+            if (nameToSearch != "" && nameToSearch.Length > 1)
+                SearchContactByName(nameToSearch);
+        });
 
         contactsToInvite = new List<Contact>();
 
-        searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
-            emails[0] = nameToSearch;
+        //searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
+        //    emails[0] = nameToSearch;
 
-            if (nameToSearch != "" && nameToSearch.Length > 1)
-                SearchContactByEmails(emails);
-        });
+        //    if (nameToSearch != "" && nameToSearch.Length > 1)
+        //        SearchContactByEmails(emails);
+        //});
     }
 
 
@@ -954,6 +959,14 @@ public class ConversationsManager : MonoBehaviour
     // Search for contacts by display name
     public void SearchContactByName(string nameToSearch, int maxNbResult = 20)
     {
+        foreach (Transform child in searchedContactsScrollviewContent.transform)
+        {
+            DestroyImmediate(child);
+        }
+
+        Task.Delay(1000);
+
+
         rbContacts.SearchContactsByDisplayName(nameToSearch, maxNbResult, callback =>
         {
             if (callback.Result.Success)
@@ -969,32 +982,33 @@ public class ConversationsManager : MonoBehaviour
 
                 foreach (Contact contact in searchResult.ContactsList)
                 {
-                    var temp = GetContactById(contact.Id);
-                    Debug.Log($"Contact found: {temp.DisplayName}");
+                    //var temp = GetContactById(contact.Id);
+                    //Debug.Log($"Contact found: {temp.DisplayName}");
 
                     if (contact != null)
                     {
                         UnityMainThreadDispatcher.Instance().Enqueue(() => {
                             var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
                             foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;
                         });
                     }
                 }
 
-                //foreach (Phonebook phonebook in searchResult.PhonebooksList)
-                //{
-                //    Debug.Log("Phonebook contact found.");
-                //}
+                foreach (Phonebook phonebook in searchResult.PhonebooksList)
+                {
+                    Debug.Log("Phonebook contact found.");
+                }
 
-                //foreach (O365AdContact contact in searchResult.O365AdContactsList)
-                //{
-                //    Debug.Log("Office 365 contact found.");
-                //}
+                foreach (O365AdContact contact in searchResult.O365AdContactsList)
+                {
+                    Debug.Log("Office 365 contact found.");
+                }
 
-                //foreach (DirectoryContact contact in searchResult.DirectoryContactsList)
-                //{
-                //    Debug.Log("Enterprise directory contact found.");
-                //}
+                foreach (DirectoryContact contact in searchResult.DirectoryContactsList)
+                {
+                    Debug.Log("Enterprise directory contact found.");
+                }
             }
             else
             {
@@ -1008,12 +1022,12 @@ public class ConversationsManager : MonoBehaviour
     // Search for contacts by display name
     public void SearchContactByEmails(List<string> emailsToSearch, int maxNbResult = 20)
     {
-        //foreach (Transform child in searchedContactsScrollviewContent.transform)
-        //{
-        //    DestroyImmediate(child);
-        //}
+        foreach (Transform child in searchedContactsScrollviewContent.transform)
+        {
+            DestroyImmediate(child);
+        }
 
-        //Task.Delay(1000);
+        Task.Delay(1000);
 
         rbContacts.SearchContactByEmails(emailsToSearch, callback =>
         {
@@ -1043,20 +1057,20 @@ public class ConversationsManager : MonoBehaviour
                     }
                 }
 
-                //foreach (Phonebook phonebook in searchResult.PhonebooksList)
-                //{
-                //    Debug.Log("Phonebook contact found.");
-                //}
+                foreach (Phonebook phonebook in searchResult.PhonebooksList)
+                {
+                    Debug.Log("Phonebook contact found.");
+                }
 
-                //foreach (O365AdContact contact in searchResult.O365AdContactsList)
-                //{
-                //    Debug.Log("Office 365 contact found.");
-                //}
+                foreach (O365AdContact contact in searchResult.O365AdContactsList)
+                {
+                    Debug.Log("Office 365 contact found.");
+                }
 
-                //foreach (DirectoryContact contact in searchResult.DirectoryContactsList)
-                //{
-                //    Debug.Log("Enterprise directory contact found.");
-                //}
+                foreach (DirectoryContact contact in searchResult.DirectoryContactsList)
+                {
+                    Debug.Log("Enterprise directory contact found.");
+                }
             }
             else
             {

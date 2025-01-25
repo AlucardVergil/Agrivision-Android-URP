@@ -389,6 +389,10 @@ namespace Cortex
         }
 
 
+        [Header("LoginScreen and Loggedin Panels, to redirect you back when it \nsends you to login screen after searching contact by name, but are still logged in")]
+        public GameObject loginScreenPanel;
+        public GameObject loggedInPanel;
+
 
         // Vagelis end
 
@@ -947,6 +951,7 @@ namespace Cortex
                 // we might get disconnected
                 if (isDisconnected)
                 {
+                    Debug.Log("VAGELIS " + State);
                     State = ConnectionState.Initial;
 
                     OnLogout?.Invoke(this);
@@ -989,7 +994,20 @@ namespace Cortex
             }
             else
             {
+                Debug.Log("STATE= " + State.ToString());
                 Debug.LogError("[ConnectionModel] Invalid state transition");
+
+                
+                // Vagelis - When i use SearchContactByName(), it works but redirects me to login panel, so i check if i am logged in and redirect back to where is was left
+               // if (State == ConnectionState.LoggedIn)
+               // {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        loginScreenPanel.SetActive(false);
+                        loggedInPanel.SetActive(true);
+                    });
+                    
+               // }                    
             }
         }
 

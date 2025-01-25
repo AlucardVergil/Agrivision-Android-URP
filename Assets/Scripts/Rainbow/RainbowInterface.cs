@@ -203,6 +203,8 @@ namespace Cortex
 
         // vagelis
         public GameObject incomingCallPanel;
+        private string lastState = "";
+        private bool doOnce = false;
 
 
         #region Unity entry points
@@ -960,18 +962,25 @@ namespace Cortex
             Debug.Log($"Connection State changed {e.ConnectionState.State}");
             UnityExecutor.Execute(() =>
             {
+                //if (lastState == e.ConnectionState.State && doOnce) return;
+
+                doOnce = true;
+                Debug.Log("TEST " + lastState);
                 ConnectionChanged?.Invoke(e.ConnectionState.State);
 
                 //vagelis
                 if (e.ConnectionState.State == ConnectionState.Connected)
                 {                    
                     UnityMainThreadDispatcher.Instance().Enqueue(() => {
+                        Debug.Log("TESTING");
                         GetComponent<ConversationsManager>().InitializeConversationsAndContacts();
                         GetComponent<BubbleManager>().InitializeBubblesManager();
-                        GetComponent<FileManager>().InitializeFileManager();
+                        GetComponent<FileManager>().InitializeFileManager();                        
                     });
                 }
             });
+
+            lastState = e.ConnectionState.State;
         }
 
         #endregion Core SDK events
