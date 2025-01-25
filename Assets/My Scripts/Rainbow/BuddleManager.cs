@@ -24,7 +24,7 @@ public class BubbleManager : MonoBehaviour
     public GameObject bubblePrefab;
     public Transform bubblesScrollViewContent;
 
-    private Bubble currentSelectedBubble;
+    public Bubble currentSelectedBubble;
 
     private InstantMessaging instantMessaging;
     private Conversations rbConversations;
@@ -388,4 +388,8 @@ public class BubbleManager : MonoBehaviour
         //    FetchLastMessagesReceivedInConversation(conversationWithContact);
         //}
     }
+
+
+
+
 }

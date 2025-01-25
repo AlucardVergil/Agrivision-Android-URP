@@ -1,4 +1,6 @@
+using Cortex;
 using Rainbow;
+using Rainbow.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,15 +16,27 @@ public class ContactGameobject : MonoBehaviour
 
     public Image spriteRenderer;
 
+    public Contact currentGameobjectContact;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        rbApplication = RainbowManager.Instance.GetRainbowApplication();
+        //rbApplication = RainbowManager.Instance.GetRainbowApplication();
 
-        instantMessaging = rbApplication.GetInstantMessaging();
-        rbConversations = rbApplication.GetConversations();
-        rbContacts = rbApplication.GetContacts();
+        //instantMessaging = rbApplication.GetInstantMessaging();
+        //rbConversations = rbApplication.GetConversations();
+        //rbContacts = rbApplication.GetContacts();
+
+        ConnectionModel model = ConnectionModel.Instance;
+
+        instantMessaging = model.InstantMessaging;
+        rbConversations = model.Conversations;
+        rbContacts = model.Contacts;
+        
+        GetComponent<Button>().onClick.AddListener(() => {
+            GameObject.Find("Rainbow").GetComponent<ConversationsManager>().contactsToInvite.Add(currentGameobjectContact);
+        });
     }
 
 

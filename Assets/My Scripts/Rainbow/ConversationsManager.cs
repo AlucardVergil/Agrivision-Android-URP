@@ -13,6 +13,7 @@ using System.Xml;
 using Cortex;
 using Unity.VisualScripting;
 using System.Diagnostics.Contracts;
+using Unity.XR.CoreUtils;
 
 public class ConversationsManager : MonoBehaviour
 {
@@ -56,6 +57,19 @@ public class ConversationsManager : MonoBehaviour
 
     public GameObject conversationScrollView;
 
+    [Header("For Search Contact Panel")]
+    public GameObject searchedContactsScrollviewContent;
+    public TMP_InputField searchContactInputField;
+    public List<Contact> contactsToInvite; 
+    public GameObject searchContactsPanel;
+
+    // Bcz the search panel is the same for both add to contacts and add to bubbles, when you click the open search panel button, this bool becomes true if it was opened from
+    // bubbles or false if opened from contacts, so that when i hit the send invitation button it knows whether to send invite for contacts or for bubbles
+    private bool isSearchPanelOpenedFromBubbles; 
+
+    public GameObject selectedContactToAddContent;
+
+    public Button test;
 
 
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
@@ -90,6 +104,28 @@ public class ConversationsManager : MonoBehaviour
 
         FetchAllConversations();
         //FetchAllContactsInRoster();
+
+        List<string> emails = new List<string>();
+        emails.Add("vagelisro2023@gmail.com");
+
+        test.onClick.AddListener(() =>
+        {
+            SearchContactByName("vagelis test");
+            //AddContact("6702478b66a930b91f72cfe6");
+            //SearchContactByEmails(emails);
+        });
+
+        //searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
+        //    if (nameToSearch != "" && nameToSearch.Length > 1)
+        //        SearchContactByName(nameToSearch);
+        //});
+
+        searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
+            emails[0] = nameToSearch;
+
+            if (nameToSearch != "" && nameToSearch.Length > 1)
+                SearchContactByEmails(emails);
+        });
     }
 
 
@@ -908,6 +944,11 @@ public class ConversationsManager : MonoBehaviour
 
 
     #region Contacts Methods
+
+
+
+
+
     // Search for contacts by display name
     public void SearchContactByName(string nameToSearch, int maxNbResult = 20)
     {
@@ -917,25 +958,41 @@ public class ConversationsManager : MonoBehaviour
             {
                 var searchResult = callback.Data;
 
+                Debug.Log("Searched Contacts= " + searchResult.ContactsList.Count);
+                Debug.Log("Searched Contacts2= " + searchResult.ContactsList[0].Id.ToString());
+                Debug.Log("Searched Contacts3= " + searchResult.ContactsList[0].DisplayName.ToString());
+                Debug.Log("Searched Contacts4= " + searchResult.ContactsList[0].FirstName.ToString());
+                Debug.Log("Searched Contacts5= " + searchResult.ContactsList[0].LastName.ToString());
+                Debug.Log("Searched Contacts6= " + searchResult.ContactsList[0].NickName.ToString());
+
                 foreach (Contact contact in searchResult.ContactsList)
                 {
-                    Debug.Log($"Contact found: {contact.DisplayName}");
+                    var temp = GetContactById(contact.Id);
+                    Debug.Log($"Contact found: {temp.DisplayName}");
+
+                    if (contact != null)
+                    {
+                        UnityMainThreadDispatcher.Instance().Enqueue(() => {
+                            var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;
+                        });
+                    }
                 }
 
-                foreach (Phonebook phonebook in searchResult.PhonebooksList)
-                {
-                    Debug.Log("Phonebook contact found.");
-                }
+                //foreach (Phonebook phonebook in searchResult.PhonebooksList)
+                //{
+                //    Debug.Log("Phonebook contact found.");
+                //}
 
-                foreach (O365AdContact contact in searchResult.O365AdContactsList)
-                {
-                    Debug.Log("Office 365 contact found.");
-                }
+                //foreach (O365AdContact contact in searchResult.O365AdContactsList)
+                //{
+                //    Debug.Log("Office 365 contact found.");
+                //}
 
-                foreach (DirectoryContact contact in searchResult.DirectoryContactsList)
-                {
-                    Debug.Log("Enterprise directory contact found.");
-                }
+                //foreach (DirectoryContact contact in searchResult.DirectoryContactsList)
+                //{
+                //    Debug.Log("Enterprise directory contact found.");
+                //}
             }
             else
             {
@@ -943,6 +1000,70 @@ public class ConversationsManager : MonoBehaviour
             }
         });
     }
+
+
+
+    // Search for contacts by display name
+    public void SearchContactByEmails(List<string> emailsToSearch, int maxNbResult = 20)
+    {
+        foreach (Transform child in searchedContactsScrollviewContent.transform)
+        {
+            Destroy(child);
+        }
+
+        rbContacts.SearchContactByEmails(emailsToSearch, callback =>
+        {
+            if (callback.Result.Success)
+            {
+                var searchResult = callback.Data;
+
+                Debug.Log("Searched Contacts by emails= " + searchResult.ContactsList.Count);
+                Debug.Log("Searched Contacts2 by emails= " + searchResult.ContactsList[0].Id.ToString());
+                Debug.Log("Searched Contacts3 by emails= " + searchResult.ContactsList[0].DisplayName.ToString());
+                Debug.Log("Searched Contacts4 by emails= " + searchResult.ContactsList[0].FirstName.ToString());
+                Debug.Log("Searched Contacts5 by emails= " + searchResult.ContactsList[0].LastName.ToString());
+                Debug.Log("Searched Contacts6 by emails= " + searchResult.ContactsList[0].NickName.ToString());
+
+                foreach (Contact contact in searchResult.ContactsList)
+                {
+                    var contact2 = GetContactById(contact.Id);
+                    Debug.Log($"Contact found: {contact2.DisplayName}");
+                                        
+                    if (contact != null)
+                    {
+                        UnityMainThreadDispatcher.Instance().Enqueue(() => { 
+                            var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact2;
+                            foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact2.FirstName + " " + contact2.LastName;                           
+                        });
+                    }
+                }
+
+                //foreach (Phonebook phonebook in searchResult.PhonebooksList)
+                //{
+                //    Debug.Log("Phonebook contact found.");
+                //}
+
+                //foreach (O365AdContact contact in searchResult.O365AdContactsList)
+                //{
+                //    Debug.Log("Office 365 contact found.");
+                //}
+
+                //foreach (DirectoryContact contact in searchResult.DirectoryContactsList)
+                //{
+                //    Debug.Log("Enterprise directory contact found.");
+                //}
+            }
+            else
+            {
+                HandleError(callback.Result);
+            }
+        });
+    }
+
+
+
+
 
 
 
@@ -1113,6 +1234,46 @@ public class ConversationsManager : MonoBehaviour
         });
     }
 
+
+    public void OpenSearchPanelAndSetBubblesOrContacts(bool isBubbles)
+    {
+        isSearchPanelOpenedFromBubbles = isBubbles;
+        searchContactsPanel.SetActive(true);
+    }
+
+
+    public void CloseSearchPanelAndClearList()
+    {
+        contactsToInvite.Clear();
+        searchContactsPanel.SetActive(false);
+    }
+
+
+    // Method to send invitations to add to contacts or to add to bubbles based on the bool isSearchPanelOpenedFromBubbles
+    public void SendInvitationsToAddToContactsOrAddInBubbles()
+    {
+        if (contactsToInvite.Count == 0) return;
+                
+        // Invite contacts that i selected and added to the list, from the contact search field 
+        foreach (Contact contact in contactsToInvite)
+        {
+            if (isSearchPanelOpenedFromBubbles)
+            {
+                GetComponent<BubbleManager>().AddMemberToBubble(GetComponent<BubbleManager>().currentSelectedBubble, contact);
+            }
+            else
+            {
+                // Don't send invitation to contacts that are already added in my roster
+                if (!contact.InRoster)
+                    AddContact(contact.Id);
+                else
+                    Debug.Log($"Contact with id= {contact.Id} is already in roster");
+            }                
+        }
+
+        // Clear the list after I hit send invitation button
+        contactsToInvite.Clear();
+    }
 
 
 
