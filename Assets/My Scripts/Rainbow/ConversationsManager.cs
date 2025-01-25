@@ -1257,6 +1257,7 @@ public class ConversationsManager : MonoBehaviour
         // Invite contacts that i selected and added to the list, from the contact search field 
         foreach (Contact contact in contactsToInvite)
         {
+            // If search panel opened from bubbles then add to bubble otherwise add to contacts
             if (isSearchPanelOpenedFromBubbles)
             {
                 GetComponent<BubbleManager>().AddMemberToBubble(GetComponent<BubbleManager>().currentSelectedBubble, contact);

@@ -41,6 +41,10 @@ public class BubbleManager : MonoBehaviour
     public TMP_InputField bubbleSubject;
     public GameObject bubblePanel;
 
+    public ConfirmationDialog confirmationDialog; // Reference to the ConfirmationDialog
+
+
+
     private void Update()
     {
         //if (Input.GetKeyDown(KeyCode.F))
@@ -166,6 +170,15 @@ public class BubbleManager : MonoBehaviour
             }
         });
     }
+
+
+
+    public void LeaveSelectedBubble()
+    {
+        string confirmationMessage = $"Are you sure you want to leave this bubble ( {currentSelectedBubble.Name} )?";
+        confirmationDialog.Show(confirmationMessage, () => LeaveBubble(currentSelectedBubble));
+    }
+
 
     public void LeaveBubble(Bubble bubble)
     {
