@@ -20,7 +20,6 @@ public class NotificationGameobject : MonoBehaviour
 
     private Contacts rbContacts;
     private Invitations rbInvitations;
-    private GameObject rainbowGameobject;
 
 
     // Start is called before the first frame update
@@ -32,15 +31,10 @@ public class NotificationGameobject : MonoBehaviour
         rbContacts = model.Contacts;
         rbInvitations = model.Invitations;
 
-        rainbowGameobject = GameObject.Find("Rainbow");
-
         var fromUser = rbContacts.GetContactFromContactId(currentInvitation.InvitingUserId);
         messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you on {currentInvitation.InvitingDate}";
 
         Debug.Log("NOTIFICATION Status " + currentInvitation.Status + " Type: " + currentInvitation.Type);
-
-
-        var conversationsManager = rainbowGameobject.GetComponent<ConversationsManager>();
 
         acceptButton.onClick.AddListener(() =>
         {
