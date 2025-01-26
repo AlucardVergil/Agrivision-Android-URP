@@ -949,7 +949,7 @@ public class RainbowController : MonoBehaviour
 
     private void RainbowApplication_ConnectionStateChanged(object sender, ConnectionStateEventArgs e)
     {
-        Debug.Log($"Connection State changed {e.ConnectionState.State}");
+        Debug.Log($"Rainbow Controller Connection State changed {e.ConnectionState.State}");
         UnityExecutor.Execute(() =>
         {
             ConnectionChanged?.Invoke(e.ConnectionState.State);

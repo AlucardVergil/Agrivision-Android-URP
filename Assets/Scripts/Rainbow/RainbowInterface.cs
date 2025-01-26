@@ -206,6 +206,10 @@ namespace Cortex
         private string lastState = "";
         private bool doOnce = false;
 
+        [Header("LoginScreen and Loggedin Panels, to redirect you back when it \nsends you to login screen after searching contact by name, but are still logged in")]
+        public GameObject loginScreenPanel;
+        public GameObject loggedInPanel;
+
 
         #region Unity entry points
         private void Awake()
@@ -959,13 +963,12 @@ namespace Cortex
 
         private void RainbowApplication_ConnectionStateChanged(object sender, ConnectionStateEventArgs e)
         {
-            Debug.Log($"Connection State changed {e.ConnectionState.State}");
+            Debug.Log($"Rainbow Interface Connection State changed {e.ConnectionState.State}");
             UnityExecutor.Execute(() =>
             {
-                //if (lastState == e.ConnectionState.State && doOnce) return;
-
-                doOnce = true;
-                Debug.Log("TEST " + lastState);
+                // Vagelis - When i use SearchContactByName(), it works but redirects me to login panel, so i give it a delay to wait for reconnection in ConnectionModel.cs
+                GameObject.Find("Connection").GetComponent<ConnectionModel>().rainbowInterfaceConnectionState = e.ConnectionState.State;
+                
                 ConnectionChanged?.Invoke(e.ConnectionState.State);
 
                 //vagelis
@@ -975,7 +978,7 @@ namespace Cortex
                         Debug.Log("TESTING");
                         GetComponent<ConversationsManager>().InitializeConversationsAndContacts();
                         GetComponent<BubbleManager>().InitializeBubblesManager();
-                        GetComponent<FileManager>().InitializeFileManager();                        
+                        GetComponent<FileManager>().InitializeFileManager();                       
                     });
                 }
             });

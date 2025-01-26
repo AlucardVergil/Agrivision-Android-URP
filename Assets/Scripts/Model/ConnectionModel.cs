@@ -389,9 +389,8 @@ namespace Cortex
         }
 
 
-        [Header("LoginScreen and Loggedin Panels, to redirect you back when it \nsends you to login screen after searching contact by name, but are still logged in")]
-        public GameObject loginScreenPanel;
-        public GameObject loggedInPanel;
+        [HideInInspector] public string rainbowInterfaceConnectionState = "";
+        
 
 
         // Vagelis end
@@ -924,7 +923,7 @@ namespace Cortex
         #endregion // internal methods
 
         #region callbacks
-        private void RainbowConnectionChanged(string connectionState)
+        private async void RainbowConnectionChanged(string connectionState)
         {
             // This is called in the unity thread by the controller, so we don't need to wrap the callbacks
 
@@ -951,6 +950,10 @@ namespace Cortex
                 // we might get disconnected
                 if (isDisconnected)
                 {
+                    // Vagelis - When i use SearchContactByName(), it works but redirects me to login panel, so i give it a delay to wait for reconnection
+                    await Task.Delay(2000);
+                    if (rainbowInterfaceConnectionState == "connecting" || rainbowInterfaceConnectionState == "connected") return;
+
                     Debug.Log("VAGELIS " + State);
                     State = ConnectionState.Initial;
 
@@ -994,20 +997,7 @@ namespace Cortex
             }
             else
             {
-                Debug.Log("STATE= " + State.ToString());
-                Debug.LogError("[ConnectionModel] Invalid state transition");
-
-                
-                // Vagelis - When i use SearchContactByName(), it works but redirects me to login panel, so i check if i am logged in and redirect back to where is was left
-               // if (State == ConnectionState.LoggedIn)
-               // {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                    {
-                        loginScreenPanel.SetActive(false);
-                        loggedInPanel.SetActive(true);
-                    });
-                    
-               // }                    
+                Debug.LogError("[ConnectionModel] Invalid state transition");                              
             }
         }
 
