@@ -420,7 +420,7 @@ public class RainbowController : MonoBehaviour
         rbApplication.GetContacts().ContactAggregatedPresenceChanged += RainbowContacts_ContactAggregatedPresenceChanged;
         rbApplication.InitializationPerformed += RainbowApplication_InitializationPerformed;
 
-        rbApplication.GetBubbles().BubbleInvitationReceived += RainbowController_BubbleInvitationReceived;
+        //rbApplication.GetBubbles().BubbleInvitationReceived += RainbowController_BubbleInvitationReceived;
 
 
         // Initialize the Remote display objects once and for all
