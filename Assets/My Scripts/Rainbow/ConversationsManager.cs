@@ -166,7 +166,7 @@ public class ConversationsManager : MonoBehaviour
                     foreach (Invitation invitation in notificationsList)
                     {
                         var notification = Instantiate(notificationPrefab, notificationsContent.transform);
-                        notification.GetComponent<NotificationGameobject>().currentInvitation = invitation;
+                        notification.GetComponent<NotificationGameobject>().currentContactInvitation = invitation;
                     }
                 });
             }
@@ -1435,7 +1435,7 @@ public class ConversationsManager : MonoBehaviour
                         notificationsCountText.text = notificationsCount.ToString();
 
                         var notification = Instantiate(notificationPrefab, notificationsContent.transform);
-                        notification.GetComponent<NotificationGameobject>().currentInvitation = invitation;
+                        notification.GetComponent<NotificationGameobject>().currentContactInvitation = invitation;
                     }
                     else
                     {
