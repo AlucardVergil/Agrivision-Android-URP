@@ -158,14 +158,17 @@ public class ConversationsManager : MonoBehaviour
         {
             if (callback.Result.Success)
             {
-                List<Invitation> notificationsList = callback.Data;
-                notificationsCountText.text = notificationsList.Count.ToString();
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {                
+                    List<Invitation> notificationsList = callback.Data;
+                    notificationsCountText.text = notificationsList.Count.ToString();
 
-                foreach (Invitation invitation in notificationsList)
-                {
-                    var notification = Instantiate(notificationPrefab, notificationsContent.transform);
-                    notification.GetComponent<NotificationGameobject>().currentInvitation = invitation;
-                }                
+                    foreach (Invitation invitation in notificationsList)
+                    {
+                        var notification = Instantiate(notificationPrefab, notificationsContent.transform);
+                        notification.GetComponent<NotificationGameobject>().currentInvitation = invitation;
+                    }
+                });
             }
             else
             {
@@ -1413,19 +1416,39 @@ public class ConversationsManager : MonoBehaviour
 
     private void MyApp_RosterInvitationReceived(object sender, InvitationEventArgs evt) 
     {
-        string invitaionId = evt.InvitationId; // ID of the invitation received
         Debug.Log("MyApp_RosterInvitationReceived");
 
-        if (int.TryParse(notificationsCountText.text, out int notificationsCount))
+        string invitaionId = evt.InvitationId; // ID of the invitation received        
+
+        rbInvitations.GetInvitationById(invitaionId, callback =>
         {
-            Debug.Log("Converted to int: " + notificationsCount);
-            notificationsCount++;
-            notificationsCountText.text = notificationsCount.ToString();
-        }
-        else
-        {
-            Debug.LogError("Invalid number format: " + notificationsCountText.text);
-        }
+            if (callback.Result.Success)
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    Invitation invitation = callback.Data;
+
+                    if (int.TryParse(notificationsCountText.text, out int notificationsCount))
+                    {
+                        Debug.Log("Converted to int: " + notificationsCount);
+                        notificationsCount++;
+                        notificationsCountText.text = notificationsCount.ToString();
+
+                        var notification = Instantiate(notificationPrefab, notificationsContent.transform);
+                        notification.GetComponent<NotificationGameobject>().currentInvitation = invitation;
+                    }
+                    else
+                    {
+                        Debug.LogError("Invalid number format: " + notificationsCountText.text);
+                    }
+                });
+            }
+            else
+            {
+                HandleError(callback.Result);
+            }
+            
+        });       
     }
 
 
