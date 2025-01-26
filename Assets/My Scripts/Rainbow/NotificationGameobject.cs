@@ -25,6 +25,9 @@ public class NotificationGameobject : MonoBehaviour
     private Invitations rbInvitations;
     private Bubbles rbBubbles;
 
+    private GameObject rainbow;
+    private GameObject bubblePanel;
+
 
     // Start is called before the first frame update
     async void Start()
@@ -35,6 +38,11 @@ public class NotificationGameobject : MonoBehaviour
         rbContacts = model.Contacts;
         rbInvitations = model.Invitations;
         rbBubbles = model.Bubbles;
+
+        // I find the rainbow object and get the BubblePanel from there, instead of searching the panel directly bcz Find() doesn't work on disabled gameobjects
+        rainbow = GameObject.Find("Rainbow");
+        bubblePanel = rainbow.GetComponent<BubbleManager>().bubblePanel;
+
 
         // If currentContactInvitation is not null it means this is an invitation to add as contact, otherwise if bubbleEventArgs is not null it means it's a bubble invitation
         if (currentContactInvitation != null) 
@@ -50,9 +58,7 @@ public class NotificationGameobject : MonoBehaviour
 
                     messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you on {currentContactInvitation.InvitingDate}";
                 });                
-            });
-
-            
+            });                       
             
 
             acceptButton.onClick.AddListener(() =>
@@ -67,8 +73,14 @@ public class NotificationGameobject : MonoBehaviour
         }
         else if (currentBubbleEventArgs != null)
         {
-            var fromUser = rbContacts.GetContactFromContactId(currentBubbleEventArgs.UserId);
-            messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you to join the bubble {currentBubbleEventArgs.BubbleName}";
+            rbContacts.GetContactFromContactIdFromServer(currentBubbleEventArgs.UserId, callback =>
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    Contact fromUser = callback.Data;
+                    messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you to join the bubble {currentBubbleEventArgs.BubbleName}";
+                });
+            });
 
             acceptButton.onClick.AddListener(() =>
             {
@@ -149,6 +161,8 @@ public class NotificationGameobject : MonoBehaviour
 
                     resultButton.gameObject.SetActive(true);
                     resultText.text = "Accepted";
+
+                    bubblePanel.GetComponent<BubbleView>().UpdateUi();
 
                     Destroy(gameObject, 5);
                 });
