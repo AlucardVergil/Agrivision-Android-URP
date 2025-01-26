@@ -1,5 +1,6 @@
 using Cortex;
 using Rainbow;
+using Rainbow.Events;
 using Rainbow.Model;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,10 +17,13 @@ public class NotificationGameobject : MonoBehaviour
     public Button resultButton;
     public TMP_Text resultText;
 
-    public Invitation currentInvitation;
+    public Invitation currentContactInvitation;
+    //public Bubble currentBubbleInvitation;
+    public BubbleInvitationEventArgs bubbleEventArgs;
 
     private Contacts rbContacts;
     private Invitations rbInvitations;
+    private Bubbles rbBubbles;
 
 
     // Start is called before the first frame update
@@ -30,25 +34,46 @@ public class NotificationGameobject : MonoBehaviour
         ConnectionModel model = ConnectionModel.Instance;
         rbContacts = model.Contacts;
         rbInvitations = model.Invitations;
+        rbBubbles = model.Bubbles;
 
-        var fromUser = rbContacts.GetContactFromContactId(currentInvitation.InvitingUserId);
-        messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you on {currentInvitation.InvitingDate}";
-
-        Debug.Log("NOTIFICATION Status " + currentInvitation.Status + " Type: " + currentInvitation.Type);
-
-        acceptButton.onClick.AddListener(() =>
+        // If currentContactInvitation is not null it means this is an invitation to add as contact, otherwise if bubbleEventArgs is not null it means it's a bubble invitation
+        if (currentContactInvitation != null) 
         {
-            AcceptInvitation(currentInvitation.Id);
-        });
+            var fromUser = rbContacts.GetContactFromContactId(currentContactInvitation.InvitingUserId);
+            messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you on {currentContactInvitation.InvitingDate}";
 
-        declineButton.onClick.AddListener(() =>
+            Debug.Log("NOTIFICATION Status " + currentContactInvitation.Status + " Type: " + currentContactInvitation.Type);
+
+            acceptButton.onClick.AddListener(() =>
+            {
+                AcceptContactInvitation(currentContactInvitation.Id);
+            });
+
+            declineButton.onClick.AddListener(() =>
+            {
+                DeclineContactInvitation(currentContactInvitation.Id);
+            });
+        }
+        else if (bubbleEventArgs != null)
         {
-            DeclineInvitation(currentInvitation.Id);
-        });
+            var fromUser = rbContacts.GetContactFromContactId(bubbleEventArgs.UserId);
+            messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you to join the bubble {bubbleEventArgs.BubbleName}";
+
+            acceptButton.onClick.AddListener(() =>
+            {
+                AcceptBubbleInvitation(bubbleEventArgs.BubbleId);
+            });
+
+            declineButton.onClick.AddListener(() =>
+            {
+                DeclineBubbleInvitation(bubbleEventArgs.BubbleId);
+            });
+        }
+        
     }
 
 
-    void AcceptInvitation(string invitationId)
+    void AcceptContactInvitation(string invitationId)
     {
         rbInvitations.AcceptReceivedPendingInvitation(invitationId, callback =>
         {
@@ -73,9 +98,61 @@ public class NotificationGameobject : MonoBehaviour
     }
 
 
-    void DeclineInvitation(string invitationId)
+    void DeclineContactInvitation(string invitationId)
     {
         rbInvitations.DeclineReceivedPendingInvitation(invitationId, callback =>
+        {
+            if (callback.Result.Success)
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    acceptButton.gameObject.SetActive(false);
+                    declineButton.gameObject.SetActive(false);
+
+                    resultButton.gameObject.SetActive(true);
+                    resultText.text = "Declined";
+
+                    Destroy(gameObject, 5);
+                });
+            }
+            else
+            {
+                HandleError(callback.Result);
+            }
+        });
+    }
+
+
+
+
+    void AcceptBubbleInvitation(string bubbleId)
+    {
+        rbBubbles.AcceptInvitation(bubbleId, callback =>
+        {
+            if (callback.Result.Success)
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    acceptButton.gameObject.SetActive(false);
+                    declineButton.gameObject.SetActive(false);
+
+                    resultButton.gameObject.SetActive(true);
+                    resultText.text = "Accepted";
+
+                    Destroy(gameObject, 5);
+                });
+            }
+            else
+            {
+                HandleError(callback.Result);
+            }
+        });
+    }
+
+
+    void DeclineBubbleInvitation(string bubbleId)
+    {
+        rbBubbles.DeclineInvitation(bubbleId, callback =>
         {
             if (callback.Result.Success)
             {
