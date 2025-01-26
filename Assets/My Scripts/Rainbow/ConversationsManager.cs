@@ -69,9 +69,14 @@ public class ConversationsManager : MonoBehaviour
 
     public GameObject selectedContactToAddContent;
 
-    public Button test;
+    private ConnectionModel model;
 
-    ConnectionModel model;
+    [Header("Notifications Center")]    
+    public GameObject notificationsPanel;
+    public GameObject notificationsContent;
+    public Button notificationsButton;
+    public TMP_Text notificationsCountText;
+    public GameObject notificationPrefab;
 
 
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
@@ -141,9 +146,50 @@ public class ConversationsManager : MonoBehaviour
         });
 
         contactsToInvite = new List<Contact>();
+
+
     }
 
- 
+
+    // Display the notifications count on load
+    private void OnEnable()
+    {
+        rbInvitations.GetReceivedInvitations(callback =>
+        {
+            if (callback.Result.Success)
+            {
+                List<Invitation> notificationsList = callback.Data;
+                notificationsCountText.text = notificationsList.Count.ToString();
+
+                foreach (Invitation invitation in notificationsList)
+                {
+                    var notification = Instantiate(notificationPrefab, notificationsContent.transform);
+                    notification.GetComponent<NotificationGameobject>().currentInvitation = invitation;
+                }                
+            }
+            else
+            {
+                HandleError(callback.Result);
+            }
+            
+        });
+    }
+
+
+
+    public void EnableDisableNotificationsPanel()
+    {
+        if (notificationsPanel.activeSelf)
+        {
+            notificationsPanel.SetActive(false);
+        }
+        else
+        {
+            notificationsPanel.SetActive(true);
+            notificationsCountText.text = "0";
+        }
+    }
+
 
 
     private async void Update()
@@ -972,7 +1018,7 @@ public class ConversationsManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-
+        
         await Task.Delay(1000);
 
 
@@ -1369,6 +1415,17 @@ public class ConversationsManager : MonoBehaviour
     {
         string invitaionId = evt.InvitationId; // ID of the invitation received
         Debug.Log("MyApp_RosterInvitationReceived");
+
+        if (int.TryParse(notificationsCountText.text, out int notificationsCount))
+        {
+            Debug.Log("Converted to int: " + notificationsCount);
+            notificationsCount++;
+            notificationsCountText.text = notificationsCount.ToString();
+        }
+        else
+        {
+            Debug.LogError("Invalid number format: " + notificationsCountText.text);
+        }
     }
 
 
