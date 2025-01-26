@@ -203,12 +203,6 @@ namespace Cortex
 
         // vagelis
         public GameObject incomingCallPanel;
-        private string lastState = "";
-        private bool doOnce = false;
-
-        [Header("LoginScreen and Loggedin Panels, to redirect you back when it \nsends you to login screen after searching contact by name, but are still logged in")]
-        public GameObject loginScreenPanel;
-        public GameObject loggedInPanel;
 
 
         #region Unity entry points
@@ -975,15 +969,12 @@ namespace Cortex
                 if (e.ConnectionState.State == ConnectionState.Connected)
                 {                    
                     UnityMainThreadDispatcher.Instance().Enqueue(() => {
-                        Debug.Log("TESTING");
                         GetComponent<ConversationsManager>().InitializeConversationsAndContacts();
                         GetComponent<BubbleManager>().InitializeBubblesManager();
                         GetComponent<FileManager>().InitializeFileManager();                       
                     });
                 }
             });
-
-            lastState = e.ConnectionState.State;
         }
 
         #endregion Core SDK events

@@ -109,15 +109,15 @@ public class ConversationsManager : MonoBehaviour
         FetchAllConversations();
         //FetchAllContactsInRoster();
 
-        List<string> emails = new List<string>();
-        emails.Add("vagelisro2023@gmail.com");
+        //List<string> emails = new List<string>();
+        //emails.Add("vagelisro2023@gmail.com");
 
-        test.onClick.AddListener(() =>
-        {
-            SearchContactByName("vagelis test");
-            //AddContact("6702478b66a930b91f72cfe6");
-            //SearchContactByEmails(emails);
-        });
+        //searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
+        //    emails[0] = nameToSearch;
+
+        //    if (nameToSearch != "" && nameToSearch.Length > 1)
+        //        SearchContactByEmails(emails);
+        //});
 
         searchContactInputField.onEndEdit.AddListener((string nameToSearch) =>
         {
@@ -126,13 +126,6 @@ public class ConversationsManager : MonoBehaviour
         });
 
         contactsToInvite = new List<Contact>();
-
-        //searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
-        //    emails[0] = nameToSearch;
-
-        //    if (nameToSearch != "" && nameToSearch.Length > 1)
-        //        SearchContactByEmails(emails);
-        //});
     }
 
 
@@ -957,14 +950,14 @@ public class ConversationsManager : MonoBehaviour
 
 
     // Search for contacts by display name
-    public void SearchContactByName(string nameToSearch, int maxNbResult = 20)
+    public async void SearchContactByName(string nameToSearch, int maxNbResult = 20)
     {
         foreach (Transform child in searchedContactsScrollviewContent.transform)
         {
-            DestroyImmediate(child);
+            Destroy(child.gameObject);
         }
 
-        Task.Delay(1000);
+        await Task.Delay(1000);
 
 
         rbContacts.SearchContactsByDisplayName(nameToSearch, maxNbResult, callback =>
@@ -985,7 +978,7 @@ public class ConversationsManager : MonoBehaviour
                     //var temp = GetContactById(contact.Id);
                     //Debug.Log($"Contact found: {temp.DisplayName}");
 
-                    if (contact != null)
+                    if (contact != null && contact.Id != model.CurrentUser.Id)
                     {
                         UnityMainThreadDispatcher.Instance().Enqueue(() => {
                             var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
@@ -1020,14 +1013,14 @@ public class ConversationsManager : MonoBehaviour
 
 
     // Search for contacts by display name
-    public void SearchContactByEmails(List<string> emailsToSearch, int maxNbResult = 20)
+    public async void SearchContactByEmails(List<string> emailsToSearch, int maxNbResult = 20)
     {
         foreach (Transform child in searchedContactsScrollviewContent.transform)
         {
-            DestroyImmediate(child);
+            Destroy(child.gameObject);
         }
 
-        Task.Delay(1000);
+        await Task.Delay(1000);
 
         rbContacts.SearchContactByEmails(emailsToSearch, callback =>
         {
@@ -1047,7 +1040,7 @@ public class ConversationsManager : MonoBehaviour
                     //var contact2 = GetContactById(contact.Id);
                     //Debug.Log($"Contact found: {contact2.DisplayName}");
                                         
-                    if (contact != null)
+                    if (contact != null && contact.Id != model.CurrentUser.Id)
                     {
                         UnityMainThreadDispatcher.Instance().Enqueue(() => {                            
                             var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
@@ -1256,6 +1249,11 @@ public class ConversationsManager : MonoBehaviour
     public void OpenSearchPanelAndSetBubblesOrContacts(bool isBubbles)
     {
         isSearchPanelOpenedFromBubbles = isBubbles;
+        foreach (Transform child in searchedContactsScrollviewContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        searchContactInputField.text = "";
         searchContactsPanel.SetActive(true);
     }
 
@@ -1263,7 +1261,13 @@ public class ConversationsManager : MonoBehaviour
     public void CloseSearchPanelAndClearList()
     {
         contactsToInvite.Clear();
+        foreach (Transform child in searchedContactsScrollviewContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        searchContactInputField.text = "";
         searchContactsPanel.SetActive(false);
+        
     }
 
 

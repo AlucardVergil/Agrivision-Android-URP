@@ -954,7 +954,6 @@ namespace Cortex
                     await Task.Delay(2000);
                     if (rainbowInterfaceConnectionState == "connecting" || rainbowInterfaceConnectionState == "connected") return;
 
-                    Debug.Log("VAGELIS " + State);
                     State = ConnectionState.Initial;
 
                     OnLogout?.Invoke(this);
