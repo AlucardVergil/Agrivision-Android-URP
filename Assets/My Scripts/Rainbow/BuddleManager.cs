@@ -238,7 +238,26 @@ public class BubbleManager : MonoBehaviour
     private void Bubbles_BubbleInvitationReceived(object sender, BubbleInvitationEventArgs evt)
     {
         Debug.Log("Invitation received from bubble: " + evt.BubbleName);
-        AcceptBubbleInvitation(evt.BubbleId); // NOTE: for testing. To remove from here
+        //AcceptBubbleInvitation(evt.BubbleId); // NOTE: for testing. To remove from here      
+
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        {
+            ConversationsManager conversationsManager = GetComponent<ConversationsManager>();
+
+            if (int.TryParse(conversationsManager.notificationsCountText.text, out int notificationsCount))
+            {
+                Debug.Log("Converted to int: " + notificationsCount);
+                notificationsCount++;
+                conversationsManager.notificationsCountText.text = notificationsCount.ToString();
+
+                var notification = Instantiate(conversationsManager.notificationPrefab, conversationsManager.notificationsContent.transform);
+                notification.GetComponent<NotificationGameobject>().currentBubbleEventArgs = evt;
+            }
+            else
+            {
+                Debug.LogError("Invalid number format: " + conversationsManager.notificationsCountText.text);
+            }
+        });
     }
 
 

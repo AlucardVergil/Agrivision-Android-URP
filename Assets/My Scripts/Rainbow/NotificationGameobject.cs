@@ -19,7 +19,7 @@ public class NotificationGameobject : MonoBehaviour
 
     public Invitation currentContactInvitation;
     //public Bubble currentBubbleInvitation;
-    public BubbleInvitationEventArgs bubbleEventArgs;
+    public BubbleInvitationEventArgs currentBubbleEventArgs;
 
     private Contacts rbContacts;
     private Invitations rbInvitations;
@@ -39,10 +39,21 @@ public class NotificationGameobject : MonoBehaviour
         // If currentContactInvitation is not null it means this is an invitation to add as contact, otherwise if bubbleEventArgs is not null it means it's a bubble invitation
         if (currentContactInvitation != null) 
         {
-            var fromUser = rbContacts.GetContactFromContactId(currentContactInvitation.InvitingUserId);
-            messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you on {currentContactInvitation.InvitingDate}";
+            rbContacts.GetContactFromContactIdFromServer(currentContactInvitation.InvitingUserId, callback =>
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    Contact fromUser = callback.Data;
 
-            Debug.Log("NOTIFICATION Status " + currentContactInvitation.Status + " Type: " + currentContactInvitation.Type);
+                    Debug.Log($"currentContactInvitation {currentContactInvitation.InvitingUserId} - From User {fromUser}");
+                    Debug.Log("NOTIFICATION Status " + currentContactInvitation.Status + " Type: " + currentContactInvitation.Type);
+
+                    messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you on {currentContactInvitation.InvitingDate}";
+                });                
+            });
+
+            
+            
 
             acceptButton.onClick.AddListener(() =>
             {
@@ -54,19 +65,19 @@ public class NotificationGameobject : MonoBehaviour
                 DeclineContactInvitation(currentContactInvitation.Id);
             });
         }
-        else if (bubbleEventArgs != null)
+        else if (currentBubbleEventArgs != null)
         {
-            var fromUser = rbContacts.GetContactFromContactId(bubbleEventArgs.UserId);
-            messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you to join the bubble {bubbleEventArgs.BubbleName}";
+            var fromUser = rbContacts.GetContactFromContactId(currentBubbleEventArgs.UserId);
+            messageText.text = $"{fromUser.FirstName} {fromUser.LastName} invited you to join the bubble {currentBubbleEventArgs.BubbleName}";
 
             acceptButton.onClick.AddListener(() =>
             {
-                AcceptBubbleInvitation(bubbleEventArgs.BubbleId);
+                AcceptBubbleInvitation(currentBubbleEventArgs.BubbleId);
             });
 
             declineButton.onClick.AddListener(() =>
             {
-                DeclineBubbleInvitation(bubbleEventArgs.BubbleId);
+                DeclineBubbleInvitation(currentBubbleEventArgs.BubbleId);
             });
         }
         

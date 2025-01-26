@@ -148,20 +148,17 @@ public class ConversationsManager : MonoBehaviour
         contactsToInvite = new List<Contact>();
 
 
-    }
 
-
-    // Display the notifications count on load
-    private void OnEnable()
-    {
         rbInvitations.GetReceivedInvitations(callback =>
         {
             if (callback.Result.Success)
             {
                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                {                
+                {
                     List<Invitation> notificationsList = callback.Data;
                     notificationsCountText.text = notificationsList.Count.ToString();
+
+                    Debug.Log($"Notification Count= {notificationsList.Count}");
 
                     foreach (Invitation invitation in notificationsList)
                     {
@@ -174,10 +171,9 @@ public class ConversationsManager : MonoBehaviour
             {
                 HandleError(callback.Result);
             }
-            
+
         });
     }
-
 
 
     public void EnableDisableNotificationsPanel()
