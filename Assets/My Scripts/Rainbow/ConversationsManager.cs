@@ -106,28 +106,44 @@ public class ConversationsManager : MonoBehaviour
         rbContacts.RosterPeerAdded += MyApp_RosterPeerAdded;
         rbContacts.RosterPeerRemoved += MyApp_RosterPeerRemoved;
 
+        rbInvitations.InvitationReceived += MyApp_RosterInvitationReceived;
+        rbInvitations.InvitationSent += MyApp_RosterInvitationSent;
+        rbInvitations.InvitationAccepted += MyApp_RosterInvitationAccepted;
+        rbInvitations.InvitationDeclined += MyApp_RosterInvitationDeclined;
+        rbInvitations.InvitationCancelled += MyApp_RosterInvitationCancelled;
+        rbInvitations.InvitationDeleted += MyApp_RosterInvitationDeleted;
+
+
         FetchAllConversations();
         //FetchAllContactsInRoster();
 
-        //List<string> emails = new List<string>();
-        //emails.Add("vagelisro2023@gmail.com");
 
-        //searchContactInputField.onEndEdit.AddListener((string nameToSearch) => {
-        //    emails[0] = nameToSearch;
 
-        //    if (nameToSearch != "" && nameToSearch.Length > 1)
-        //        SearchContactByEmails(emails);
-        //});
+        List<string> emails = new List<string>();
+        emails.Add("@gmail.com");
 
+        // Display searched contacts results when you stop tryping and click outside the input field
         searchContactInputField.onEndEdit.AddListener((string nameToSearch) =>
         {
             if (nameToSearch != "" && nameToSearch.Length > 1)
-                SearchContactByName(nameToSearch);
+            {
+                if (nameToSearch.Contains("@")) // If input is email
+                {
+                    emails[0] = nameToSearch;
+                    SearchContactByEmails(emails);
+                }
+                else
+                {
+                    SearchContactByName(nameToSearch);
+                }
+                    
+            }                
         });
 
         contactsToInvite = new List<Contact>();
     }
 
+ 
 
 
     private async void Update()
@@ -1346,6 +1362,50 @@ public class ConversationsManager : MonoBehaviour
     {
         string jid = evt.Peer.Jid; // JID of the contact removed
     }
+
+
+
+    private void MyApp_RosterInvitationReceived(object sender, InvitationEventArgs evt) 
+    {
+        string invitaionId = evt.InvitationId; // ID of the invitation received
+        Debug.Log("MyApp_RosterInvitationReceived");
+    }
+
+
+    private void MyApp_RosterInvitationSent(object sender, InvitationEventArgs evt) 
+    {
+        string invitaionId = evt.InvitationId; // ID of the invitation received
+        Debug.Log("MyApp_RosterInvitationSent");
+    }
+
+
+    private void MyApp_RosterInvitationAccepted(object sender, InvitationEventArgs evt) 
+    {
+        string invitaionId = evt.InvitationId; // ID of the invitation received
+        Debug.Log("MyApp_RosterInvitationAccepted");
+    }
+
+
+    private void MyApp_RosterInvitationDeclined(object sender, InvitationEventArgs evt) 
+    {
+        string invitaionId = evt.InvitationId; // ID of the invitation received
+        Debug.Log("MyApp_RosterInvitationDeclined");
+    }
+
+
+    private void MyApp_RosterInvitationCancelled(object sender, InvitationEventArgs evt) 
+    {
+        string invitaionId = evt.InvitationId; // ID of the invitation received
+        Debug.Log("MyApp_RosterInvitationCancelled");
+    }
+
+
+    private void MyApp_RosterInvitationDeleted(object sender, InvitationEventArgs evt) 
+    {
+        string invitaionId = evt.InvitationId; // ID of the invitation received
+        Debug.Log("MyApp_RosterInvitationDeleted");
+    }
+
 
     #endregion
 

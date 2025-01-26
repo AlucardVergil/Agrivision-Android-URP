@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using Cortex;
 using System.Collections;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 
 
 
@@ -152,17 +153,25 @@ public class BubbleManager : MonoBehaviour
 
     public void AddMemberToBubble(Bubble bubble, Contact contact, string privilege = Bubble.MemberPrivilege.User)
     {
-        rbBubbles.AddContactById(bubble.Id, contact.Id, privilege, callback =>
+        if (bubble.UsersById.ContainsKey(contact.Id) && (bubble.UsersById[contact.Id].Status == Bubble.MemberStatus.Invited || bubble.UsersById[contact.Id].Status == Bubble.MemberStatus.Accepted))
         {
-            if (callback.Result.Success)
+            Debug.Log($"User {contact.FirstName} {contact.LastName} is already a member or invited");
+        }
+        else
+        {            
+            rbBubbles.AddContactById(bubble.Id, contact.Id, privilege, callback =>
             {
-                Debug.Log("Invitation sent to: " + contact.DisplayName);
-            }
-            else
-            {
-                HandleError(callback.Result);
-            }
-        });
+                if (callback.Result.Success)
+                {
+                    Debug.Log("Invitation sent to: " + contact.DisplayName);
+                }
+                else
+                {
+                    HandleError(callback.Result);
+                }
+            });
+        }
+        
     }
 
     public void RemoveMemberFromBubble(Bubble bubble, Contact contact)

@@ -21,7 +21,7 @@ public class ContactGameobject : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
         //rbApplication = RainbowManager.Instance.GetRainbowApplication();
 
@@ -35,10 +35,30 @@ public class ContactGameobject : MonoBehaviour
         rbConversations = model.Conversations;
         rbContacts = model.Contacts;
 
-        Task.Delay(500);
+        await Task.Delay(500);
 
+        // Adds this contact to the list of contacts to invite
         GetComponent<Button>().onClick.AddListener(() => {
-            GameObject.Find("Rainbow").GetComponent<ConversationsManager>().contactsToInvite.Add(currentGameobjectContact);
+            var contactsToInvite = GameObject.Find("Rainbow").GetComponent<ConversationsManager>().contactsToInvite;
+
+            if (!contactsToInvite.Contains(currentGameobjectContact))
+            {
+                contactsToInvite.Add(currentGameobjectContact);
+
+                if (ColorUtility.TryParseHtmlString("#41BAE0", out Color newColor))
+                {
+                    GetComponent<Image>().color = newColor;
+                }
+            }                
+            else
+            {
+                contactsToInvite.Remove(currentGameobjectContact);
+
+                if (ColorUtility.TryParseHtmlString("#FFFFFF", out Color newColor))
+                {
+                    GetComponent<Image>().color = newColor;
+                }
+            }
         });
     }
 
