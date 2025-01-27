@@ -148,11 +148,15 @@ namespace Cortex
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            OnClick?.Invoke(this);
-            eventData.Use();
+            // Check if this component exists, bcz if it doesn't that means this is the prefab for search contacts panel. It's for new New Way To Display Contact Entry region in ConversationsManager
+            if (GetComponent<ContactGameobject>() == null) 
+            {
+                OnClick?.Invoke(this);
+                eventData.Use();
 
-            // Vagelis
-            contactGameobject.SetActive(false);
+                // Vagelis
+                contactGameobject.SetActive(false);
+            }
         }
     }
 } // end namespace Cortex

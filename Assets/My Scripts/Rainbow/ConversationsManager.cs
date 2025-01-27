@@ -14,6 +14,8 @@ using Cortex;
 using Unity.VisualScripting;
 using System.Diagnostics.Contracts;
 using Unity.XR.CoreUtils;
+using Rainbow.WebRTC.Unity;
+using System.Threading;
 
 public class ConversationsManager : MonoBehaviour
 {
@@ -77,6 +79,12 @@ public class ConversationsManager : MonoBehaviour
     public Button notificationsButton;
     public TMP_Text notificationsCountText;
     public GameObject notificationPrefab;
+
+
+    #region New Way To Display Contact Entry
+    private readonly ResetCancellationToken cancelLoad = new();
+    public RainbowAvatarLoader AvatarLoader;
+    #endregion
 
 
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
@@ -1042,9 +1050,32 @@ public class ConversationsManager : MonoBehaviour
                     if (contact != null && contact.Id != model.CurrentUser.Id)
                     {
                         UnityMainThreadDispatcher.Instance().Enqueue(() => {
-                            var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
-                            foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
-                            foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;
+                            //var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            //foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
+                            //foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;
+
+                            #region New Way To Display Contact Entry
+                            cancelLoad.Reset();
+                            var token = cancelLoad.Token;
+
+                            Presence p = rbContacts.GetAggregatedPresenceFromContact(contact);
+                            GameObject item = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            item.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
+                            ContactEntry entry = item.GetComponent<ContactEntry>();
+                            entry.Contact = contact;
+                            if (p == null)
+                            {
+                                entry.SetPresenceLevel(PresenceLevel.Offline);
+                            }
+                            else
+                            {
+                                entry.SetPresenceLevel(p.PresenceLevel);
+
+                            }
+
+                            LoadAvatar(entry, contact, token);
+                            #endregion
+
                         });
                     }
                 }
@@ -1071,6 +1102,45 @@ public class ConversationsManager : MonoBehaviour
         });
     }
 
+
+    #region New Way To Display Contact Entry
+    private async void LoadAvatar(ContactEntry entry, Contact contact, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Texture2D tex = await AvatarLoader.RequestAvatar(contact, 64, cancellationToken: cancellationToken);
+
+            if (tex != null)
+            {
+                UnityExecutor.Execute(() =>
+                {
+                    if (entry != null)
+                    {
+                        entry.ContactInitialsAvatar.AvatarImage = tex;
+                    }
+                });
+            }
+
+        }
+        catch (OperationCanceledException ex) when (ex.CancellationToken == cancellationToken)
+        {
+            // canceled -> nothing to do
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+
+
+    void Awake()
+    {
+        if (AvatarLoader == null)
+        {
+            AvatarLoader = FindFirstObjectByType<RainbowAvatarLoader>();
+        }
+    }
+    #endregion
 
 
     // Search for contacts by display name

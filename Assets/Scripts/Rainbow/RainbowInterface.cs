@@ -943,17 +943,17 @@ namespace Cortex
                 Debug.Log($"Exception {ex.Message}\n{ex.StackTrace}\n{ex.InnerException}");
             }
         }
-        private void RainbowController_BubbleInvitationReceived(object sender, BubbleInvitationEventArgs e)
-        {
-            // Auto accept invitations to new bubbles:
-            rbApplication.GetBubbles().AcceptInvitation(e.BubbleId, result =>
-            {
-                if (!result.Result.Success)
-                {
-                    Debug.LogError($"failed to accept invitation to bubble {e.BubbleName}: {result.Result.ExceptionError}");
-                }
-            });
-        }
+        //private void RainbowController_BubbleInvitationReceived(object sender, BubbleInvitationEventArgs e)
+        //{
+        //    // Auto accept invitations to new bubbles:
+        //    rbApplication.GetBubbles().AcceptInvitation(e.BubbleId, result =>
+        //    {
+        //        if (!result.Result.Success)
+        //        {
+        //            Debug.LogError($"failed to accept invitation to bubble {e.BubbleName}: {result.Result.ExceptionError}");
+        //        }
+        //    });
+        //}
 
         private void RainbowApplication_ConnectionStateChanged(object sender, ConnectionStateEventArgs e)
         {
