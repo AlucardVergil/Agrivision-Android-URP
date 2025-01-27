@@ -3,6 +3,7 @@ using Cortex.ColorExtensionMethods;
 using Rainbow;
 using Rainbow.Model;
 using TMPro;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -87,6 +88,8 @@ namespace Cortex
 
         // Vagelis
         GameObject contactGameobject;
+        GameObject rainbowGameobject;
+        private ConfirmationDialog confirmationDialog; // Reference to the ConfirmationDialog
 
 
 
@@ -142,6 +145,19 @@ namespace Cortex
         private void Start()
         {
             contactGameobject = GameObject.FindGameObjectWithTag("Contacts");
+
+            rainbowGameobject = GameObject.Find("Rainbow");
+            confirmationDialog = rainbowGameobject.GetComponent<ConfirmationDialog>();
+
+            // Check if this component exists, which means it is a contact entry in the contacts list and so it has a button to remove contact
+            if (GetComponent<ContactGameobject>() == null)
+            {
+                gameObject.GetNamedChild("RemoveContactButton").GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    string confirmationMessage = $"Are you sure you want to remove {Util.GetContactDisplayName(contact)} from your contacts?";
+                    confirmationDialog.Show(confirmationMessage, () => rainbowGameobject.GetComponent<ConversationsManager>().RemoveContact(contact.Id));                    
+                });
+            }
         }
 
 

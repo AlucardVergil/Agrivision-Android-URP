@@ -83,7 +83,7 @@ public class ConversationsManager : MonoBehaviour
 
     #region New Way To Display Contact Entry
     private readonly ResetCancellationToken cancelLoad = new();
-    public RainbowAvatarLoader AvatarLoader;
+    [HideInInspector] public RainbowAvatarLoader AvatarLoader;
     #endregion
 
 
