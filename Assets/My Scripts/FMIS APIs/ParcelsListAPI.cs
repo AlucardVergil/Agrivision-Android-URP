@@ -39,7 +39,7 @@ public class ParcelsListAPI : FMIS_API
 
         // Set the API key header
         request.SetRequestHeader("apiKey", apiKey);
-        request.SetRequestHeader("X-USER-EMAIL", email);
+        //request.SetRequestHeader("X-USER-EMAIL", email);
 
         // Send the request and wait for the response
         yield return request.SendWebRequest();

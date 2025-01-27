@@ -115,9 +115,9 @@ public class MenuManager : MonoBehaviour
                         Texture2D texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(jsonResponseFertilization);
 
 
-                        var croppedTexture = ARFieldVisualizer.CropWhiteSpaces(texture);
+                        //var croppedTexture = ARFieldVisualizer.CropWhiteSpaces(texture);
 
-                        GPSReceiverGameObject.GetComponent<ARFieldVisualizer>().CreateFieldMesh(croppedTexture);
+                        GPSReceiverGameObject.GetComponent<ARFieldVisualizer>().CreateFieldMesh(texture);
                     });
                     break;
 

@@ -97,7 +97,32 @@ public class FertilizationAPI : FMIS_API
         byte[] imageBytes = System.Convert.FromBase64String(base64);
         Texture2D texture = new Texture2D(9, 16);
         texture.LoadImage(imageBytes); // Automatically resizes the texture based on image size
+
+        // Check if the image is tilted
+        //Texture2D correctedTexture = CorrectImageOrientation(texture);
+
         return texture;
     }
 
+
+    private Texture2D CorrectImageOrientation(Texture2D originalTexture)
+    {
+        // If the image appears tilted, rotate it by 90, 180, or 270 degrees
+        // This example assumes a 90-degree clockwise rotation
+        int width = originalTexture.height;
+        int height = originalTexture.width;
+
+        Texture2D rotatedTexture = new Texture2D(width, height);
+        for (int x = 0; x < originalTexture.width; x++)
+        {
+            for (int y = 0; y < originalTexture.height; y++)
+            {
+                // Rotate pixels
+                rotatedTexture.SetPixel(y, originalTexture.width - 1 - x, originalTexture.GetPixel(x, y));
+            }
+        }
+
+        rotatedTexture.Apply();
+        return rotatedTexture;
+    }
 }

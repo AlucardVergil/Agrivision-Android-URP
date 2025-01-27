@@ -437,83 +437,112 @@ public class ConversationsManager : MonoBehaviour
 
     void CreateChatMessage(string messageText, bool isOwnMessage, string contactID)
     {
-
-
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        rbContacts.GetAllContactsInRoster(callback =>
         {
-            GameObject newMessage;
-
-            Transform currentlySelectedConversationScrollViewContent = conversationScrollViewContent;
-
-            if (currentSelectedConversation.Type == Conversation.ConversationType.User)
+            if (callback.Result.Success)
             {
-                Debug.Log("Peer-to-peer conversation.");
-                currentlySelectedConversationScrollViewContent = conversationScrollViewContent;
-            }
-            else if (currentSelectedConversation.Type == Conversation.ConversationType.Room)
-            {
-                Debug.Log("Room conversation.");
-                currentlySelectedConversationScrollViewContent = GetComponent<BubbleManager>().bubbleConversationScrollViewContent;
-            }
+                List<Contact> contactList = callback.Data;  // List of contacts
+
+                foreach (Contact contact in contactList)
+                {
+                    if (contact.Id == contactID)
+                    {
+                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        {
+                            GameObject newMessage;
+
+                            Transform currentlySelectedConversationScrollViewContent = conversationScrollViewContent;
+
+                            if (currentSelectedConversation.Type == Conversation.ConversationType.User)
+                            {
+                                Debug.Log("Peer-to-peer conversation.");
+                                currentlySelectedConversationScrollViewContent = conversationScrollViewContent;
+                            }
+                            else if (currentSelectedConversation.Type == Conversation.ConversationType.Room)
+                            {
+                                Debug.Log("Room conversation.");
+                                currentlySelectedConversationScrollViewContent = GetComponent<BubbleManager>().bubbleConversationScrollViewContent;
+                            }
 
 
-            // Instantiate the chat message prefab
-            if (!isOwnMessage)
-            {                
-                //newMessage = Instantiate(chatMessagePrefab, conversationScrollViewContent.Find(contactID));
-                newMessage = Instantiate(chatMessagePrefab, currentlySelectedConversationScrollViewContent);
+                            // Instantiate the chat message prefab
+                            if (!isOwnMessage)
+                            {
+                                //newMessage = Instantiate(chatMessagePrefab, conversationScrollViewContent.Find(contactID));
+                                //newMessage = Instantiate(chatMessagePrefab, currentlySelectedConversationScrollViewContent);
 
-                // Get references to the Image and TextMeshProUGUI components in the prefab and Assign the profile photo (avatar) and the message text
-                Image profileImage = newMessage.GetComponentInChildren<Image>();
-                //profileImage.sprite = currentChatMessageAvatar.sprite;
+                                #region New Way To Display Contact Entry
+                                cancelLoad.Reset();
+                                var token = cancelLoad.Token;
+
+                                newMessage = Instantiate(chatMessagePrefab, currentlySelectedConversationScrollViewContent);
+                                ChatPrefabAvatar entry = newMessage.GetComponent<ChatPrefabAvatar>();
+                                entry.Contact = contact;
+
+                                LoadChatAvatar(entry, contact, token);
+                                #endregion
+
+                                // Get references to the Image and TextMeshProUGUI components in the prefab and Assign the profile photo (avatar) and the message text
+                                //Image profileImage = newMessage.GetComponentInChildren<Image>();
+                                //profileImage.sprite = currentChatMessageAvatar.sprite;
+                            }
+                            else
+                            {
+                                //newMessage = Instantiate(chatMessagePrefabMyself, conversationScrollViewContent.Find(contactID));
+                                newMessage = Instantiate(chatMessagePrefabMyself, currentlySelectedConversationScrollViewContent);
+                            }
+
+                            RectTransform rectTransform = newMessage.GetComponent<RectTransform>();
+
+                            // Change only the width while keeping the height the same
+                            Vector2 newSize = rectTransform.sizeDelta;
+                            newSize.x = 780; // Set the desired width
+                            rectTransform.sizeDelta = newSize;
+
+                            TMP_Text messageTextComponent = newMessage.GetNamedChild("Message").GetComponent<TMP_Text>();
+                            messageTextComponent.text = messageText;
+
+                            // Get the Horizontal Layout Group component from the chat message prefab
+                            HorizontalLayoutGroup layoutGroup = newMessage.GetComponent<HorizontalLayoutGroup>();
+
+                            layoutGroup.childForceExpandWidth = false;
+                            layoutGroup.childControlWidth = false;
+
+                            // Check if the message is sent by the user
+                            if (isOwnMessage)
+                            {
+                                // Align the message to the right (for messages sent by the user)
+                                layoutGroup.childAlignment = TextAnchor.MiddleRight;
+
+                                // Optionally, you can add padding on the right to control the spacing
+                                layoutGroup.padding.right = 0;  // Adjust this value as needed                
+                            }
+                            else
+                            {
+                                // Align the message to the left (for messages received from others)
+                                layoutGroup.childAlignment = TextAnchor.MiddleLeft;
+
+                                // Optionally, add padding on the left
+                                layoutGroup.padding.left = 20;  // Adjust this value as needed
+                            }
+
+
+                            // Force the Canvas to update before scrolling
+                            Canvas.ForceUpdateCanvases();
+
+                            // Set verticalNormalizedPosition to 0 to scroll to the bottom when new message is added
+                            currentlySelectedConversationScrollViewContent.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0f;
+
+                        });
+
+                        break;
+                    }
+                }
             }
             else
             {
-                //newMessage = Instantiate(chatMessagePrefabMyself, conversationScrollViewContent.Find(contactID));
-                newMessage = Instantiate(chatMessagePrefabMyself, currentlySelectedConversationScrollViewContent);
+                HandleError(callback.Result);
             }
-
-            RectTransform rectTransform = newMessage.GetComponent<RectTransform>();
-
-            // Change only the width while keeping the height the same
-            Vector2 newSize = rectTransform.sizeDelta;
-            newSize.x = 780; // Set the desired width
-            rectTransform.sizeDelta = newSize;
-
-            TMP_Text messageTextComponent = newMessage.GetComponentInChildren<TMP_Text>();
-            messageTextComponent.text = messageText;
-
-            // Get the Horizontal Layout Group component from the chat message prefab
-            HorizontalLayoutGroup layoutGroup = newMessage.GetComponent<HorizontalLayoutGroup>();
-
-            layoutGroup.childForceExpandWidth = false;
-            layoutGroup.childControlWidth = false;
-
-            // Check if the message is sent by the user
-            if (isOwnMessage)
-            {
-                // Align the message to the right (for messages sent by the user)
-                layoutGroup.childAlignment = TextAnchor.MiddleRight;
-
-                // Optionally, you can add padding on the right to control the spacing
-                layoutGroup.padding.right = 0;  // Adjust this value as needed                
-            }
-            else
-            {
-                // Align the message to the left (for messages received from others)
-                layoutGroup.childAlignment = TextAnchor.MiddleLeft;
-
-                // Optionally, add padding on the left
-                layoutGroup.padding.left = 20;  // Adjust this value as needed
-            }
-
-
-            // Force the Canvas to update before scrolling
-            Canvas.ForceUpdateCanvases();
-
-            // Set verticalNormalizedPosition to 0 to scroll to the bottom when new message is added
-            currentlySelectedConversationScrollViewContent.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0f;
-
         });
     }
 
@@ -1136,6 +1165,36 @@ public class ConversationsManager : MonoBehaviour
     }
 
 
+
+    private async void LoadChatAvatar(ChatPrefabAvatar entry, Contact contact, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Texture2D tex = await AvatarLoader.RequestAvatar(contact, 64, cancellationToken: cancellationToken);
+
+            if (tex != null)
+            {
+                UnityExecutor.Execute(() =>
+                {
+                    if (entry != null)
+                    {
+                        entry.ContactInitialsAvatar.AvatarImage = tex;
+                    }
+                });
+            }
+
+        }
+        catch (OperationCanceledException ex) when (ex.CancellationToken == cancellationToken)
+        {
+            // canceled -> nothing to do
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+
+
     void Awake()
     {
         if (AvatarLoader == null)
@@ -1177,9 +1236,31 @@ public class ConversationsManager : MonoBehaviour
                     if (contact != null && contact.Id != model.CurrentUser.Id)
                     {
                         UnityMainThreadDispatcher.Instance().Enqueue(() => {                            
-                            var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
-                            foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
-                            foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;                           
+                            //var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            //foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
+                            //foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;
+
+                            #region New Way To Display Contact Entry
+                            cancelLoad.Reset();
+                            var token = cancelLoad.Token;
+
+                            Presence p = rbContacts.GetAggregatedPresenceFromContact(contact);
+                            GameObject item = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            item.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
+                            ContactEntry entry = item.GetComponent<ContactEntry>();
+                            entry.Contact = contact;
+                            if (p == null)
+                            {
+                                entry.SetPresenceLevel(PresenceLevel.Offline);
+                            }
+                            else
+                            {
+                                entry.SetPresenceLevel(p.PresenceLevel);
+
+                            }
+
+                            LoadAvatar(entry, contact, token);
+                            #endregion
                         });
                     }
                 }
