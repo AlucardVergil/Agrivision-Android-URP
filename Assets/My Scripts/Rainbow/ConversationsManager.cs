@@ -448,7 +448,7 @@ public class ConversationsManager : MonoBehaviour
         {
             rbContacts.GetContactFromContactIdFromServer(contactID, callback =>
             {
-                CreateChatEntry(messageText, isOwnMessage, callback.Data);
+                CreateChatEntry(messageText, isOwnMessage, callback.Data); // If contact is null it skips the avatar image creation in CreateChatEntry
             });
         }
     }
