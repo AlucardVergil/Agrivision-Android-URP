@@ -86,6 +86,9 @@ public class ConversationsManager : MonoBehaviour
     [HideInInspector] public RainbowAvatarLoader AvatarLoader;
     #endregion
 
+    [Header("Contact List Panel")]
+    public GameObject contactListPanel;
+
 
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
     {
@@ -1529,6 +1532,8 @@ public class ConversationsManager : MonoBehaviour
     {
         string invitaionId = evt.InvitationId; // ID of the invitation received
         Debug.Log("MyApp_RosterInvitationAccepted");
+
+        contactListPanel.GetComponent<ContactList>().UpdateList();
     }
 
 

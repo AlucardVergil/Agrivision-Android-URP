@@ -105,7 +105,7 @@ namespace Cortex
             }
         }
 
-        private void UpdateList()
+        public void UpdateList()
         {
             if (ListItemPrefab == null)
             {
