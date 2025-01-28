@@ -90,6 +90,10 @@ public class ConversationsManager : MonoBehaviour
     public GameObject contactListPanel;
 
 
+    [HideInInspector] public bool wasDisconnectedFromSearchContactByName = false;
+
+
+
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
     {
         if (model != null) return;
@@ -1053,15 +1057,16 @@ public class ConversationsManager : MonoBehaviour
 
 
     // Search for contacts by display name
-    public async void SearchContactByName(string nameToSearch, int maxNbResult = 20)
+    public void SearchContactByName(string nameToSearch, int maxNbResult = 20)
     {
         foreach (Transform child in searchedContactsScrollviewContent.transform)
         {
             Destroy(child.gameObject);
         }
-        
-        await Task.Delay(1000);
 
+        //await Task.Delay(1000);
+
+        wasDisconnectedFromSearchContactByName = true;
 
         rbContacts.SearchContactsByDisplayName(nameToSearch, maxNbResult, callback =>
         {
@@ -1075,6 +1080,7 @@ public class ConversationsManager : MonoBehaviour
                 Debug.Log("Searched Contacts4= " + searchResult.ContactsList[0].FirstName.ToString());
                 Debug.Log("Searched Contacts5= " + searchResult.ContactsList[0].LastName.ToString());
                 Debug.Log("Searched Contacts6= " + searchResult.ContactsList[0].NickName.ToString());
+                
 
                 foreach (Contact contact in searchResult.ContactsList)
                 {
@@ -1087,13 +1093,14 @@ public class ConversationsManager : MonoBehaviour
                             //var foundContact = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
                             //foundContact.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
                             //foundContact.GetNamedChild("DisplayNameText").GetComponent<TMP_Text>().text = contact.FirstName + " " + contact.LastName;
-
+                            Debug.Log("TESTING1");
                             #region New Way To Display Contact Entry
                             cancelLoad.Reset();
                             var token = cancelLoad.Token;
-
+                            Debug.Log("TESTING2");
                             Presence p = rbContacts.GetAggregatedPresenceFromContact(contact);
                             GameObject item = Instantiate(contactPrefab, searchedContactsScrollviewContent.transform);
+                            Debug.Log("TESTING3 " + item);
                             item.GetComponent<ContactGameobject>().currentGameobjectContact = contact;
                             ContactEntry entry = item.GetComponent<ContactEntry>();
                             entry.Contact = contact;

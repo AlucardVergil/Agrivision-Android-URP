@@ -482,6 +482,7 @@ namespace Cortex
 
             if (!RainbowInterface.Connect(login, password, hostname, appId, secret))
             {
+                Debug.Log("INITIAL TEST 3");
                 State = ConnectionState.Initial;
                 OnLoginFailed?.Invoke(this);
             }
@@ -515,6 +516,7 @@ namespace Cortex
         {
             RainbowInterface.Disconnect(v =>
             {
+                Debug.Log("INITIAL TEST 4");
                 State = ConnectionState.Initial;
                 // TODO this should be called during disconnect automatically
                 // onLogout?.Invoke();
@@ -941,6 +943,7 @@ namespace Cortex
                 // this seems like a useful workaround?
                 if (isDisconnected && !RainbowInterface.RainbowApplication.IsInitialized())
                 {
+                    Debug.Log("INITIAL TEST 5");
                     State = ConnectionState.Initial;
                     OnLoginFailed?.Invoke(this);
                 }
@@ -950,10 +953,30 @@ namespace Cortex
                 // we might get disconnected
                 if (isDisconnected)
                 {
-                    // Vagelis - When i use SearchContactByName(), it works but redirects me to login panel, so i give it a delay to wait for reconnection
-                    await Task.Delay(2000);
-                    if (rainbowInterfaceConnectionState == "connecting" || rainbowInterfaceConnectionState == "connected") return;
+                    //// Vagelis - When i use SearchContactByName(), it works but redirects me to login panel, so i give it a delay to wait for reconnection
+                    //if (RainbowInterface.GetComponent<ConversationsManager>().wasDisconnectedFromSearchContactByName)
+                    //{
+                    //    await Task.Delay(2000);
 
+                    //    Debug.Log("111 " + RainbowInterface.GetComponent<ConversationsManager>().wasDisconnectedFromSearchContactByName);
+                    //    Debug.Log("222 " + rainbowInterfaceConnectionState);
+
+                    //    RainbowInterface.GetComponent<ConversationsManager>().wasDisconnectedFromSearchContactByName = false;
+
+                    //    // Check if it's reconnecting in case I was disconnected when i searched contact by name. In that case also check the bool and then set it back to false and stop the rest of the code. 
+                    //    // otherwise it means it wasn't disconnected and probably tried to logout using the button
+                    //    if (rainbowInterfaceConnectionState == "connecting" || rainbowInterfaceConnectionState == "connected") return;
+                    //}    
+
+                    Debug.Log("INITIAL TEST 7 " + RainbowInterface.GetComponent<ConversationsManager>().wasDisconnectedFromSearchContactByName);
+                    // Vagelis - When i use SearchContactByName(), it works but redirects me to login panel, so I set this bool when i use the SearchContactByName method
+                    if (RainbowInterface.GetComponent<ConversationsManager>().wasDisconnectedFromSearchContactByName)
+                    {
+                        RainbowInterface.GetComponent<ConversationsManager>().wasDisconnectedFromSearchContactByName = false; 
+                        return;
+                    }
+
+                    Debug.Log("INITIAL TEST 6");
                     State = ConnectionState.Initial;
 
                     OnLogout?.Invoke(this);
@@ -990,13 +1013,14 @@ namespace Cortex
                 }
                 else
                 {
+                    Debug.Log("INITIAL TEST 1");
                     State = ConnectionState.Initial;
                     OnLoginFailed?.Invoke(this);
                 }
             }
             else
             {
-                Debug.LogError("[ConnectionModel] Invalid state transition");                              
+                Debug.LogError("[ConnectionModel] Invalid state transition " + State);                              
             }
         }
 
@@ -1202,6 +1226,7 @@ namespace Cortex
                     Debug.LogError($"[ConnectionModel] Authentication failed (Exception): {e.SdkError.ExceptionError},");
                 }
 
+                Debug.Log("INITIAL TEST 2");
                 State = ConnectionState.Initial;
                 OnLoginFailed?.Invoke(this);
             });

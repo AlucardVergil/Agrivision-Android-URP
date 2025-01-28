@@ -9,6 +9,7 @@ using Rainbow.Events;
 using Rainbow.Model;
 using Rainbow.WebRTC.Unity;
 using TMPro;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -372,6 +373,12 @@ namespace Cortex
                     GameObject item = Instantiate(MemberItemPrefab, BubbleMemberListContent.transform);
                     ContactEntry entry = item.GetComponent<ContactEntry>();
                     item.SetActive(true);
+
+                    // Vagelis start
+
+                    item.GetNamedChild("RemoveContactButton").SetActive(false);
+
+                    // Vagelis end
 
                     curMemberEntries.Add(contact.Id, entry);
                     entry.Contact = contact;

@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using Cortex.ColorExtensionMethods;
 using Rainbow;
 using Rainbow.Model;
 using TMPro;
 using Unity.XR.CoreUtils;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Cortex
 {
@@ -149,15 +153,28 @@ namespace Cortex
             rainbowGameobject = GameObject.Find("Rainbow");
             confirmationDialog = rainbowGameobject.GetComponent<ConfirmationDialog>();
 
-            // Check if this component exists, which means it is a contact entry in the contacts list and so it has a button to remove contact
-            if (GetComponent<ContactGameobject>() == null)
+            //// Check if this component exists, which means it is a contact entry in the contacts list and so it has a button to remove contact
+            //if (GetComponent<ContactGameobject>() == null)
+            //{
+            //    gameObject.GetNamedChild("RemoveContactButton").GetComponent<Button>().onClick.AddListener(() =>
+            //    {
+            //        string confirmationMessage = $"Are you sure you want to remove {Util.GetContactDisplayName(contact)} from your contacts?";
+            //        confirmationDialog.Show(confirmationMessage, () => rainbowGameobject.GetComponent<ConversationsManager>().RemoveContact(contact.Id));
+            //    });
+            //}
+
+
+            //Check if this button exists, which means it is a contact entry in the contacts list and so it has a button to remove contact
+            var removeContactButton = gameObject.GetNamedChild("RemoveContactButton");
+            if (removeContactButton != null)
             {
-                gameObject.GetNamedChild("RemoveContactButton").GetComponent<Button>().onClick.AddListener(() =>
+                removeContactButton.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     string confirmationMessage = $"Are you sure you want to remove {Util.GetContactDisplayName(contact)} from your contacts?";
-                    confirmationDialog.Show(confirmationMessage, () => rainbowGameobject.GetComponent<ConversationsManager>().RemoveContact(contact.Id));                    
+                    confirmationDialog.Show(confirmationMessage, () => rainbowGameobject.GetComponent<ConversationsManager>().RemoveContact(contact.Id));
                 });
             }
+
         }
 
 

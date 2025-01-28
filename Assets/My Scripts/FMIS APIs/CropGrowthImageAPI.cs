@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class CropGrowthImageAPI : FMIS_API
 {
@@ -12,6 +13,7 @@ public class CropGrowthImageAPI : FMIS_API
     private string bbox = "39.62955272340573,21.68499768346035,39.64197943254144,21.702216607555318"; // Replace with the bounding box coordinates
 
     public SpriteRenderer spriteRenderer; // Renderer to display the texture
+    public Image test;
 
     public void GetCropGrowthImage(string parcelID, Action<Texture2D> onCropGrowthImageDataReceived)
     {
@@ -53,14 +55,20 @@ public class CropGrowthImageAPI : FMIS_API
             string jsonResponse = request.downloadHandler.text;
             Debug.Log("CropGrowthImage Data: " + jsonResponse);
 
-            if (cropGrowthImage != null) 
-                Debug.Log("Crop Growth Image fetched successfully.");
+            if (cropGrowthImage != null)
+            {
+                Debug.Log("Crop Growth Image fetched successfully. " + cropGrowthImage);
+            }                
             else
             {
                 Debug.Log("Crop Growth Image fetch failed.");
                 Debug.Log(cropGrowthImage);
             }
-                
+            
+            Texture2D texture = cropGrowthImage; // Assuming cropGrowthImage is Texture2D
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            test.sprite = sprite;
+
 
             onCropGrowthImageDataReceived?.Invoke(cropGrowthImage);
 
