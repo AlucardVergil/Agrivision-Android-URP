@@ -101,7 +101,9 @@ public class FertilizationAPI : FMIS_API
         // Check if the image is tilted
         //Texture2D correctedTexture = CorrectImageOrientation(texture);
 
-        return texture;
+        Texture2D correctedTexture = TextureProcessor.StraightenAndCropTexture(texture, 0.5f, 0.3f);
+
+        return correctedTexture;
     }
 
 
