@@ -10,6 +10,7 @@ using static UnityEngine.Rendering.DebugUI;
 using System.Linq;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using Unity.Mathematics;
 
 public class ARFieldVisualizer : MonoBehaviour
 {
@@ -113,9 +114,11 @@ public class ARFieldVisualizer : MonoBehaviour
             {
                 Vector2[] tempFieldCorners = new Vector2[4];
 
-                for (int i = 0; i < parcel.shape.coordinates[0].Length; i++)
+                for (int i = 0; i < parcel.shape.coordinates[0].Length - 1; i++)
                 {
+                    Debug.Log($"GetSelectedParcelCoordinates: {i} {parcel.shape.coordinates[0][i][0]}");
                     tempFieldCorners[i].x = parcel.shape.coordinates[0][i][0];
+                    Debug.Log($"GetSelectedParcelCoordinates2: {i} {parcel.shape.coordinates[0][i][1]}");
                     tempFieldCorners[i].y = parcel.shape.coordinates[0][i][1];
                 }
 
@@ -466,6 +469,15 @@ public class ARFieldVisualizer : MonoBehaviour
         if (texture != null)
         {
             material.SetTexture("_BaseMap", texture); // Assign texture to the Base Map
+
+            // Enables alpha clipping to hide white pixels by disabling pixels below the threshold of transparency I set
+            //material.SetFloat("_Cutoff", 0.5f); // Set alpha clip threshold (default is usually 0.5)
+            //material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            //material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
+            //material.SetFloat("_ZWrite", 1);
+            //material.EnableKeyword("_ALPHATEST_ON");
+            //material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+
             meshRenderer.material = material;
         }
         else
@@ -647,66 +659,6 @@ public class ARFieldVisualizer : MonoBehaviour
 
         if (field != null)
             DestroyImmediate(field);
-
-
-
-        //apisManager.GetComponent<FertilizationAPI>().GetFertilizationData("5836", (jsonResponseFertilization) =>
-        //{
-        //    Debug.Log("fertilizationData => " + jsonResponseFertilization);
-
-        //    Texture2D texture = apisManager.GetComponent<FertilizationAPI>().ParseFertilizationData(jsonResponseFertilization);
-
-
-        //    var croppedTexture = CropWhiteSpaces(texture);
-
-        //    CreateFieldMesh(croppedTexture);
-        //});
-
-
-        //apisManager.GetComponent<CropGrowthImageAPI>().GetCropGrowthImage("157212", (jsonResponseCropGrowthImage) =>
-        //{
-        //    if (jsonResponseCropGrowthImage != null)
-        //    {
-        //        Debug.Log("CROP IMAGE EXISTS");
-
-        //        //CreateFieldMesh(jsonResponseCropGrowthImage);
-        //    }                
-        //    else
-        //        Debug.Log("CROP IMAGE DOES NOT EXIST");
-
-            
-        //});
-
-
-        //apisManager.GetComponent<TillageAPI>().GetTillageData("10478", (jsonResponseTillage) =>
-        //{
-        //    Debug.Log(jsonResponseTillage);
-
-
-        //});
-
-
-        //apisManager.GetComponent<IrrigationAPI>().GetIrrigationData("11256", (jsonResponseIrrigation) =>
-        //{
-        //    Debug.Log(jsonResponseIrrigation);
-
-
-        //});
-
-
-        //apisManager.GetComponent<CropGrowthDatesAPI>().GetCropGrowthDatesData("157212", (jsonResponseCropGrowthDates) =>
-        //{
-        //    Debug.Log("CropGrowthDatesAPI => " + jsonResponseCropGrowthDates);
-
-
-        //});
-
-
-        //apisManager.GetComponent<ParcelsListAPI>().GetParcelsListData((jsonResponseParcelsList) =>
-        //{
-        //    Debug.Log("Parcels List API => " + jsonResponseParcelsList);
-        //});
-
 
 
         // Recalibrate the position of the hologram as well to be in the center of the recalibrated field mesh

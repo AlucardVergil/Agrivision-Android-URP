@@ -129,6 +129,8 @@ public class ParcelsListItem : MonoBehaviour
         {
             apisManager.GetComponent<ParcelsListAPI>().selectedParcelId = parcelId;
 
+            GPSReceiverGameObject.GetComponent<ARFieldVisualizer>().GetSelectedParcelCoordinates();
+
             GPSReceiverGameObject.GetComponent<MenuManager>().OpenCloseSlateMenu(2);
         });
 

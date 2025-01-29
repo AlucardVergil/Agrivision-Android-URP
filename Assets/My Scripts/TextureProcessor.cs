@@ -4,7 +4,7 @@ public static class TextureProcessor
 {
     private static float currentAngle;
 
-
+    #region To Straighten Image And Crop It (Didn't use this after all)
     public static Texture2D StraightenAndCropTexture(Texture2D originalTexture, float tolerance = 0.9f, float blackTolerance = 0.1f)
     {
         // Step 1: Detect the tilt angle using empty spaces
@@ -138,9 +138,7 @@ public static class TextureProcessor
 
         return croppedTexture;
     }
-    
-
-
+    #endregion
 
 
 
