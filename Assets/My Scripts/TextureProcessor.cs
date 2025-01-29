@@ -176,4 +176,35 @@ public static class TextureProcessor
     }
 
 
+
+    // Change the white pixels alpha value so that i can then use the material alpha clipping to delete them and leave just the colored texture
+    public static Texture2D DeleteWhitePixels(Texture2D texture, float tolerance = 0.9f)
+    {
+        // Get the pixel colors from the texture
+        Color[] pixels = texture.GetPixels();
+        int width = texture.width;
+        int height = texture.height;
+
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            Color pixel = pixels[i];
+
+            // Check if the pixel is white (within tolerance)
+            if (pixel.r >= tolerance && pixel.g >= tolerance && pixel.b >= tolerance)
+            {
+                // Set alpha to 0 to make it fully transparent
+                pixels[i] = new Color(pixel.r, pixel.g, pixel.b, 0f);
+            }
+        }
+
+        // Create a new texture and apply the modified pixels
+        Texture2D newTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        newTexture.SetPixels(pixels);
+        newTexture.Apply();
+
+        return newTexture;
+    }
+
+
+
 }

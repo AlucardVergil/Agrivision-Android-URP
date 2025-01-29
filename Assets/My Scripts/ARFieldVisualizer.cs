@@ -336,6 +336,7 @@ public class ARFieldVisualizer : MonoBehaviour
         Mesh mesh = new Mesh();
         mesh.name = "Mesh";
 
+        //fieldCorners = GPSBoundingBox.GetBoundingSquare(fieldCorners);
 
         Vector3[] vertices = new Vector3[fieldCorners.Length];
         for (int i = 0; i < fieldCorners.Length; i++)
@@ -346,10 +347,10 @@ public class ARFieldVisualizer : MonoBehaviour
 
         // Define UVs for texturing
         Vector2[] uv = new Vector2[vertices.Length];
-        //uv[0] = new Vector2(0, 0); // Bottom-left
-        //uv[1] = new Vector2(1, 0); // Bottom-right
-        //uv[2] = new Vector2(1, 1); // Top-right
-        //uv[3] = new Vector2(0, 1); // Top-left
+        uv[3] = new Vector2(0, 0); // Bottom-left
+        uv[2] = new Vector2(1, 0); // Bottom-right
+        uv[1] = new Vector2(1, 1); // Top-right
+        uv[0] = new Vector2(0, 1); // Top-left
         //uv[0] = new Vector2(0.5f, 0); // Midpoint on the bottom edge
         //uv[1] = new Vector2(1f, 0.5f); // Midpoint on the right edge
         //uv[2] = new Vector2(0.5f, 1); // Midpoint on the top edge
@@ -363,10 +364,150 @@ public class ARFieldVisualizer : MonoBehaviour
         //uv[2] = new Vector2(0.8f, 0.9f); // Adjusted Top-right
         //uv[3] = new Vector2(0.2f, 1);    // Adjusted Top-left
 
-        uv[0] = new Vector2(0, 1); // Top-left
-        uv[1] = new Vector2(0, 0); // Bottom-left
+        //uv[0] = new Vector2(0, 1); // Top-left
+        //uv[1] = new Vector2(0, 0); // Bottom-left
+        //uv[2] = new Vector2(1, 0); // Bottom-right
+        //uv[3] = new Vector2(1, 1); // Top-right
+
+        //uv = TextureProcessor.AdjustUVsBasedOnRotation(uv);
+
+
+        // Set up how the mesh's triangles connect (counter-clockwise)
+        int[] triangles = new int[]
+        {
+            0, 1, 2, // First triangle
+            0, 2, 3  // Second triangle
+        };
+
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uv; // Assign UVs for texture mapping
+        mesh.RecalculateNormals();
+
+        meshFilter.mesh = mesh;
+
+        var meshCollider = field.AddComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
+
+        var rigidbody = field.AddComponent<Rigidbody>();
+        rigidbody.isKinematic = true;
+
+
+
+
+
+
+        //var manipulator = field.AddComponent<XRGrabInteractable>();
+        //// Can grab with both hands to rotate and scale field mesh
+        //manipulator.selectMode = UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Multiple;
+
+        //RotationAxisConstraint rotationConstraint = field.AddComponent<RotationAxisConstraint>();
+
+        //// Disable manipulation on all axes, except y
+        //rotationConstraint.ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
+
+        //MoveAxisConstraint moveConstraint = field.AddComponent<MoveAxisConstraint>();
+
+        //// Disable manipulation on y axis
+        //moveConstraint.ConstraintOnMovement = AxisFlags.YAxis;
+
+        //// Make movement, rotation and scaling of field mesh smoother / slower
+        //manipulator.MoveLerpTime = 0.3f;
+        //manipulator.RotateLerpTime = 0.3f;
+        //manipulator.ScaleLerpTime = 0.3f;
+
+        //// Allow manipulation for movement and rotation only
+        //manipulator.AllowedManipulations = TransformFlags.Move | TransformFlags.Rotate;
+
+        //manipulator.enabled = false;
+
+        var grabInteractable = field.AddComponent<XRGrabInteractable>();
+
+        // Set the grab interactable to allow rotation and scaling
+        grabInteractable.trackRotation = true; // Allows rotation
+        grabInteractable.trackPosition = true; // Allows position changes
+        grabInteractable.throwOnDetach = false; // Prevent throwing on release
+
+        // Implement rotation constraints (Custom Script)
+        var rotationConstraint = field.AddComponent<CustomRotationConstraint>();
+        rotationConstraint.RestrictedAxes = CustomRotationConstraint.AxisFlags.XAxis | CustomRotationConstraint.AxisFlags.ZAxis;
+
+        // Implement movement constraints (Custom Script)
+        var movementConstraint = field.AddComponent<CustomMovementConstraint>();
+        movementConstraint.RestrictedAxes = CustomMovementConstraint.AxisFlags.YAxis;
+
+        // Configure grab interaction settings
+        grabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
+
+        // To simulate "smoother/slower" movement/rotation
+        grabInteractable.attachEaseInTime = 0.3f; // Smooth interaction attachment
+
+        // If you want to disable interactions initially
+        grabInteractable.enabled = false;
+
+        CreateFieldMesh2(texture);
+    }
+
+
+
+    public void CreateFieldMesh2(Texture texture)
+    {
+        //if (field != null)
+        //    DestroyImmediate(field);
+
+        field = new GameObject("FieldMesh2", typeof(MeshFilter), typeof(MeshRenderer)); //Note: box collider needs to be added before ObjectManipulator
+        meshFilter = field.GetComponent<MeshFilter>();
+        meshRenderer = field.GetComponent<MeshRenderer>();
+
+        // Create a material with texture
+        Material material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        //Texture texture = Resources.Load<Texture>("Sprites/test");
+
+        if (texture != null)
+        {
+            material.SetTexture("_BaseMap", texture); // Assign texture to the Base Map
+            meshRenderer.material = material;
+        }
+        else
+        {
+            Debug.LogError("Texture not found. Check the Resources folder and texture path.");
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.name = "Mesh";
+
+        fieldCorners = GPSBoundingBox.GetBoundingSquare(fieldCorners);
+
+        Vector3[] vertices = new Vector3[fieldCorners.Length];
+        for (int i = 0; i < fieldCorners.Length; i++)
+        {
+            vertices[i] = GPSPositionToWorldPosition(fieldCorners[i]);
+            PlaceFieldMarkers(vertices[i]);
+        }
+
+        // Define UVs for texturing
+        Vector2[] uv = new Vector2[vertices.Length];
+        uv[3] = new Vector2(0, 0); // Bottom-left
         uv[2] = new Vector2(1, 0); // Bottom-right
-        uv[3] = new Vector2(1, 1); // Top-right
+        uv[1] = new Vector2(1, 1); // Top-right
+        uv[0] = new Vector2(0, 1); // Top-left
+        //uv[0] = new Vector2(0.5f, 0); // Midpoint on the bottom edge
+        //uv[1] = new Vector2(1f, 0.5f); // Midpoint on the right edge
+        //uv[2] = new Vector2(0.5f, 1); // Midpoint on the top edge
+        //uv[3] = new Vector2(0, 0.5f); // Midpoint on the left edge
+        //uv[0] = new Vector2(0.1f, 0); // Left edge of the field
+        //uv[1] = new Vector2(0.9f, 0); // Right edge of the field
+        //uv[2] = new Vector2(0.9f, 1); // Top-right
+        //uv[3] = new Vector2(0.1f, 1); // Top-left
+        //uv[0] = new Vector2(0.1f, 0.1f); // Adjusted Bottom-left
+        //uv[1] = new Vector2(0.9f, 0);    // Adjusted Bottom-right
+        //uv[2] = new Vector2(0.8f, 0.9f); // Adjusted Top-right
+        //uv[3] = new Vector2(0.2f, 1);    // Adjusted Top-left
+
+        //uv[0] = new Vector2(0, 1); // Top-left
+        //uv[1] = new Vector2(0, 0); // Bottom-left
+        //uv[2] = new Vector2(1, 0); // Bottom-right
+        //uv[3] = new Vector2(1, 1); // Top-right
 
         //uv = TextureProcessor.AdjustUVsBasedOnRotation(uv);
 

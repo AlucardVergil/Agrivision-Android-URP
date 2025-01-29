@@ -8,7 +8,7 @@ public class CropGrowthImageAPI : FMIS_API
 {
 
     private string sensingDate = "2024-09-04";//"2025-01-04"; // Replace with the sensing date (YYYY-MM-DD)
-    private int width = 400; // Replace with desired image width
+    private int width = 800; // Replace with desired image width
     private int height = 400; // Replace with desired image height
     private string bbox = "39.62955272340573,21.68499768346035,39.64197943254144,21.702216607555318"; // Replace with the bounding box coordinates
 
