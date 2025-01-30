@@ -625,6 +625,23 @@ public class ConversationsManager : MonoBehaviour
 
 
 
+
+    public void SendMessageOrSendFileWithMessageToConversation()
+    {
+        if (string.IsNullOrEmpty(GetComponent<FileManager>().selectedFilePath))
+        {
+            SendMessageToConversation();
+        }
+        else
+        {
+            Debug.Log("ShareFileWithConversation");
+            GetComponent<FileManager>().ShareFileWithConversation(currentSelectedConversation, messageInputField.text);
+        }
+
+        messageInputField.text = "";
+    }
+
+
     public void SendMessageToConversation()
     {
         //InstantMessaging instantMessaging = RainbowManager.Instance.GetRainbowApplication().GetInstantMessaging();
@@ -652,6 +669,21 @@ public class ConversationsManager : MonoBehaviour
         });
     }
 
+
+    public void SendMessageOrSendFileWithMessageToBubble()
+    {
+        if (string.IsNullOrEmpty(GetComponent<FileManager>().selectedFilePath))
+        {
+            SendMessageToBubbleConversation();
+        }
+        else
+        {
+            Debug.Log("ShareFileWithConversation");
+            GetComponent<FileManager>().ShareFileWithConversation(currentSelectedConversation, GetComponent<BubbleManager>().messageInputField.text);
+        }
+
+        GetComponent<BubbleManager>().messageInputField.text = "";
+    }
 
     public void SendMessageToBubbleConversation()
     {

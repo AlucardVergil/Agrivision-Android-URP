@@ -15,8 +15,16 @@ public class FileManager : MonoBehaviour
     private InstantMessaging instantMessaging;
     private string fileDescriptorId; // To track file upload progress
 
+    [Header("Displayed Paths For Contacts")]
     public TMP_Text uploadFilePath;
     public TMP_Text downloadFilePath;
+
+    [Header("Displayed Paths For Bubbles")]
+    public TMP_Text uploadFilePathBubble;
+    public TMP_Text downloadFilePathBubble;
+
+    [HideInInspector] public string selectedFilePath;
+
 
     ConnectionModel model;
 
@@ -47,19 +55,22 @@ public class FileManager : MonoBehaviour
 
 
 
-    //public void OpenUploadFileDialog()
-    //{
-    //    // Open file panel
-    //    string path = EditorUtility.OpenFilePanel("Choose a File", "", "*");
+    public void OpenUploadFileDialog()
+    {
+        // Open file panel
+        selectedFilePath = EditorUtility.OpenFilePanel("Choose a File", "", "*");
 
-    //    // Check if a file was selected
-    //    if (!string.IsNullOrEmpty(path))
-    //    {
-    //        Debug.Log($"File selected: {path}");
-            
-    //        uploadFilePath.text = "File Selected: " + path;
-    //    }
-    //}
+        // Check if a file was selected
+        if (!string.IsNullOrEmpty(selectedFilePath))
+        {
+            Debug.Log($"File selected: {selectedFilePath}");
+
+            if (uploadFilePath.isActiveAndEnabled)
+                uploadFilePath.text = "File Selected: " + selectedFilePath;
+            else
+                uploadFilePathBubble.text = "File Selected: " + selectedFilePath;            
+        }
+    }
 
 
 
@@ -84,9 +95,10 @@ public class FileManager : MonoBehaviour
     }
 
     // Share a file with a conversation
-    public void ShareFileWithConversation(Conversation conversation, string filePath, string message = "")
+    public void ShareFileWithConversation(Conversation conversation, string message = "")
     {
-        instantMessaging.SendMessageWithFileToConversation(conversation, message, filePath, null, UrgencyType.Std, null,
+        Debug.Log($"FILE UPLOAD: {selectedFilePath} -> {conversation}");
+        instantMessaging.SendMessageWithFileToConversation(conversation, message, selectedFilePath, null, UrgencyType.Std, null,
         callbackFileDescriptor =>
         {
             if (callbackFileDescriptor.Result.Success)
@@ -111,9 +123,13 @@ public class FileManager : MonoBehaviour
                 HandleError(callbackMessage.Result);
             }
         });
+
+        selectedFilePath = "";
+        uploadFilePath.text = "";
+        uploadFilePathBubble.text = "";
     }
 
-    
+
 
 
     #region List of files (received, sent or both) by conversation
