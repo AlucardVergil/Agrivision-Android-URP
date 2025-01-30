@@ -33,7 +33,29 @@ public class WeatherWeeklyForecastAPI : FMIS_API
 
     private string[] weatherConditions =
     {
-        "sun_clouds"
+        "sun",
+        "sun_clouds",
+        "sun_clouds_rain_light",
+        "sun_clouds_rain_moderate",
+        "sun_clouds_rain_heavy",
+        "sun_clouds_snow_light",
+        "sun_clouds_snow_moderate",
+        "sun_clouds_snow_heavy",
+        "clouds_rain_light",
+        "clouds_rain_moderate",
+        "clouds_rain_heavy",
+        "clouds_snow_light",
+        "clouds_snow_moderate",
+        "clouds_snow_heavy",
+        "clouds",
+        "moon",
+        "moon_clouds",
+        "moon_clouds_rain_light",
+        "moon_clouds_rain_moderate",
+        "moon_clouds_rain_heavy",
+        "moon_clouds_snow_light",
+        "moon_clouds_snow_moderate",
+        "moon_clouds_snow_heavy"
     };
 
 
