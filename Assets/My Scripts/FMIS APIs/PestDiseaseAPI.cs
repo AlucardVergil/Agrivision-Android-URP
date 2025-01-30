@@ -48,7 +48,7 @@ public class PestDiseaseAPI : FMIS_API
         {
             // Get the JSON response
             string jsonResponse = request.downloadHandler.text;
-            Debug.Log("Pest and Disease Data: " + jsonResponse);
+            Debug.Log("Pest and Disease Data: " + jsonResponse + " For Parcel ID: " + parcelID);
 
             onPestsDataReceived?.Invoke(jsonResponse);
 

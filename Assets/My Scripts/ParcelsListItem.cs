@@ -40,62 +40,65 @@ public class ParcelsListItem : MonoBehaviour
         {
             apisManager.GetComponent<PestDiseaseAPI>().GetPestDiseaseData(parcelId, (jsonResponsePests) => //"11256"
             {
-                pestsData = JsonUtility.FromJson<PestDiseaseData>(jsonResponsePests);
-
-                if (pestsData != null)
+                if (jsonResponsePests != "[]") // There are no pest data for this parcel at these dates
                 {
-                    int numOfDiseasesToday = 0;
+                    pestsData = JsonUtility.FromJson<PestDiseaseData>(jsonResponsePests);
 
-                    if (pestsData.diseases?.Altenaria != null && pestsData.diseases.Altenaria[0])
+                    if (pestsData != null)
                     {
-                        numOfDiseasesToday++;
-                        Debug.Log("Altenaria");
-                    }
+                        int numOfDiseasesToday = 0;
 
-                    //Debug.Log("Anthracnose " + pestsData.diseases.Anthracnose[0]);
-                    if (pestsData.diseases?.Anthracnose != null && pestsData.diseases.Anthracnose[0])
-                    {
-                        numOfDiseasesToday++;
-                        Debug.Log("Anthracnose");
-                    }
+                        if (pestsData.diseases?.Altenaria != null && pestsData.diseases.Altenaria[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("Altenaria");
+                        }
 
-                    if (pestsData.diseases?.BlackAphid != null && pestsData.diseases.BlackAphid[0])
-                    {
-                        numOfDiseasesToday++;
-                        Debug.Log("BlackAphid");
-                    }
+                        //Debug.Log("Anthracnose " + pestsData.diseases.Anthracnose[0]);
+                        if (pestsData.diseases?.Anthracnose != null && pestsData.diseases.Anthracnose[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("Anthracnose");
+                        }
 
-                    if (pestsData.diseases?.BlackParlatoriaScale != null && pestsData.diseases.BlackParlatoriaScale[0])
-                    {
-                        numOfDiseasesToday++;
-                        Debug.Log("BlackParlatoriaScale");
-                    }
+                        if (pestsData.diseases?.BlackAphid != null && pestsData.diseases.BlackAphid[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("BlackAphid");
+                        }
 
-                    if (pestsData.diseases?.CitrusLeafminer != null && pestsData.diseases.CitrusLeafminer[0])
-                    {
-                        numOfDiseasesToday++;
-                        Debug.Log("CitrusLeafminer");
-                    }
+                        if (pestsData.diseases?.BlackParlatoriaScale != null && pestsData.diseases.BlackParlatoriaScale[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("BlackParlatoriaScale");
+                        }
 
-                    if (pestsData.diseases?.CitrusMealybug != null && pestsData.diseases.CitrusMealybug[0])
-                    {
-                        numOfDiseasesToday++;
-                        Debug.Log("CitrusMealybug");
-                    }
+                        if (pestsData.diseases?.CitrusLeafminer != null && pestsData.diseases.CitrusLeafminer[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("CitrusLeafminer");
+                        }
 
-                    if (pestsData.diseases?.CitrusSpinyWhitefly != null && pestsData.diseases.CitrusSpinyWhitefly[0])
-                    {
-                        numOfDiseasesToday++;
-                        Debug.Log("CitrusSpinyWhitefly");
-                    }
+                        if (pestsData.diseases?.CitrusMealybug != null && pestsData.diseases.CitrusMealybug[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("CitrusMealybug");
+                        }
 
-                    if (pestsData.diseases?.CottonyCushionScale != null && pestsData.diseases.CottonyCushionScale[0])
-                    {
-                        numOfDiseasesToday++;
-                        Debug.Log("CottonyCushionScale");
-                    }
+                        if (pestsData.diseases?.CitrusSpinyWhitefly != null && pestsData.diseases.CitrusSpinyWhitefly[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("CitrusSpinyWhitefly");
+                        }
 
-                    pests.text = numOfDiseasesToday.ToString();
+                        if (pestsData.diseases?.CottonyCushionScale != null && pestsData.diseases.CottonyCushionScale[0])
+                        {
+                            numOfDiseasesToday++;
+                            Debug.Log("CottonyCushionScale");
+                        }
+
+                        pests.text = numOfDiseasesToday.ToString();
+                    }
                 }
             });
         }

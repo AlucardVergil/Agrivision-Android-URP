@@ -49,31 +49,31 @@ public class Diseases
     public bool[] Leafhopper;
 
     // MAIZE
-    public bool[] CornAphids;
-    public bool[] CornEarworm;
-    public bool[] CornMediterraneanStalkborer;
-    public bool[] CornWesternRootWormBeetle;
+    //public bool[] Aphids;
+    public bool[] Earworm;
+    public bool[] MediterraneanStalkborer;
+    public bool[] WesternRootWormBeetle;
 
     // WHEAT
     public bool[] Helminthosporium;
     public bool[] SpeckledLeafBlotch;
-    public bool[] WheatPowderyMildew;
-    public bool[] WheatLeafBeetle;
+    //public bool[] PowderyMildew;
+    public bool[] LeafBeetle;
 
     // SOFT WHEAT
-    public bool[] SoftWheatHelminthosporium;
-    public bool[] SoftWheatSpeckledLeafBlotch;
-    public bool[] SoftWheatPowderyMildew;
-    public bool[] SoftWheatLeafBeetle;
+    //public bool[] Helminthosporium;
+    //public bool[] SpeckledLeafBlotch;
+    //public bool[] PowderyMildew;
+    //public bool[] LeafBeetle;
 
     // BARLEY
     public bool[] Rynchosporium;
-    public bool[] BarleyHelminthosporium;
-    public bool[] BarleyPowderyMildew;
-    public bool[] BarleyLeafBeetle;
+    //public bool[] Helminthosporium;
+    //public bool[] PowderyMildew;
+    //public bool[] LeafBeetle;
 
     // POTATO
-    public bool[] PotatoAphids;
+    //public bool[] Aphids;
     public bool[] Beetle;
     public bool[] EarlyBlight;
     public bool[] LateBlight;
@@ -86,92 +86,92 @@ public class Diseases
     public bool[] Moth;
     public bool[] Psyllid;
     public bool[] Scale;
-    public bool[] OliveCalocorisBug;
-    public bool[] OliveCercosporaLeafSpot;
+    public bool[] CalocorisBug;
+    public bool[] CercosporaLeafSpot;
 
     // TOMATO
-    public bool[] TomatoBollworm;
-    public bool[] TomatoEarlyBlight;
+    //public bool[] Bollworm;
+    //public bool[] EarlyBlight;
     public bool[] LeafMiner;
-    public bool[] TomatoLateBlight;
-    public bool[] TomatoTetranychusUrticae;
+    //public bool[] LateBlight;
+    public bool[] TetranychusUrticae;
     public bool[] GrayMold;
-    public bool[] TomatoWhitefly;
-    public bool[] TomatoPowderyMildew;
+    //public bool[] Whitefly;
+    //public bool[] PowderyMildew;
 
     // SOYA
-    public bool[] SoyaTetranychusUrticae;
-    public bool[] SoyaAphids;
-    public bool[] SoyaDownyMildew;
-    public bool[] SoyaCercosporaLeafSpot;
+    //public bool[] TetranychusUrticae;
+    //public bool[] Aphids;
+    //public bool[] DownyMildew;
+    //public bool[] CercosporaLeafSpot;
 
     // SUNFLOWER
-    public bool[] SunflowerAlternaria;
-    public bool[] SunflowerPhomopsis;
-    public bool[] SunflowerDownyMildew;
+    public bool[] SuflowerAlternaria;
+    public bool[] Phomopsis;
+    //public bool[] DownyMildew;
 
     // APPLE
-    public bool[] AppleCodlingMoth;
-    public bool[] AppleSpiderMites;
-    public bool[] AppleSanJoseScale;
-    public bool[] AppleAphids;
-    public bool[] AppleScab;
-    public bool[] AppleFireBlight;
-    public bool[] ApplePowderyMildew;
+    public bool[] CodlingMoth;
+    public bool[] SpiderMites;
+    public bool[] SanJoseScale;
+    //public bool[] Aphids;
+    public bool[] Scab;
+    public bool[] FireBlight;
+    //public bool[] PowderyMildew;
 
     // PEAR
-    public bool[] PearCodlingMoth;
-    public bool[] PearPsylla;
-    public bool[] PearSpiderMites;
-    public bool[] PearSanJoseScale;
-    public bool[] PearAphids;
-    public bool[] PearScab;
-    public bool[] PearFireBlight;
+    //public bool[] CodlingMoth;
+    //public bool[] Psylla;
+    //public bool[] SpiderMites;
+    //public bool[] SanJoseScale;
+    //public bool[] Aphids;
+    //public bool[] Scab;
+    //public bool[] FireBlight;
 
     // PEACH
-    public bool[] PeachTwigBorer;
-    public bool[] PeachOrientalFruitMoth;
-    public bool[] PeachSummerFruitTortrix;
-    public bool[] PeachAphids;
-    public bool[] PeachBrownRot;
-    public bool[] PeachLeafCurl;
-    public bool[] PeachScab;
-    public bool[] PeachPowderyMildew;
-    public bool[] PeachWeevil;
+    public bool[] TwigBorer;
+    public bool[] OrientalFruitMoth;
+    public bool[] SummerFruitTortrix;
+    //public bool[] Aphids;
+    public bool[] BrownRot;
+    public bool[] LeafCurl;
+    //public bool[] Scab;
+    //public bool[] PowderyMildew;
+    public bool[] Weevil;
 
     // NECTARINE
-    public bool[] NectarineTwigBorer;
-    public bool[] NectarineOrientalFruitMoth;
-    public bool[] NectarineSummerFruitTortrix;
-    public bool[] NectarineAphids;
-    public bool[] NectarineBrownRot;
-    public bool[] NectarineLeafCurl;
-    public bool[] NectarineScab;
-    public bool[] NectarinePowderyMildew;
-    public bool[] NectarineWeevil;
+    //public bool[] TwigBorer;
+    //public bool[] OrientalFruitMoth;
+    //public bool[] SummerFruitTortrix;
+    //public bool[] Aphids;
+    //public bool[] BrownRot;
+    //public bool[] LeafCurl;
+    //public bool[] Scab;
+    //public bool[] PowderyMildew;
+    //public bool[] Weevil;
 
     // CHERRY
-    public bool[] CherryFruitFly;
-    public bool[] CherrySpottedWingDrosophila;
-    public bool[] CherryAphids;
-    public bool[] CherryBrownRot;
-    public bool[] CherryShotHole;
-    public bool[] CherryLeafScorch;
-    public bool[] CherryLeafSpot;
+    //public bool[] FruitFly;
+    public bool[] SpottedWingDrosophila;
+    //public bool[] Aphids;
+    //public bool[] BrownRot;
+    public bool[] ShotHole;
+    public bool[] LeafScorch;
+    //public bool[] LeafSpot;
 
     // KIWI
-    public bool[] KiwiGrayMold;
-    public bool[] KiwiWhitePeachScale;
-    public bool[] KiwiAlternariaLeafSpot;
-    public bool[] KiwiBrownMarmoratedStinkBug;
+    //public bool[] GrayMold;
+    public bool[] WhitePeachScale;
+    public bool[] AlternariaLeafSpot;
+    public bool[] BrownMarmoratedStinkBug;
 
     // CANOLA
-    public bool[] CanolaPowderyMildew;
-    public bool[] CanolaCabbageStemWeevil;
-    public bool[] CanolaCabbageStemFleaBeetle;
-    public bool[] CanolaAphids;
-    public bool[] CanolaPollenBeetle;
-    public bool[] CanolaAlternariaLeafBlight;
+    //public bool[] PowderyMildew;
+    public bool[] CabbageStemWeevil;
+    public bool[] CabbageStemFleaBeetle;
+    //public bool[] Aphids;
+    public bool[] PollenBeetle;
+    public bool[] AlternariaLeafBlight;
 
 
 
