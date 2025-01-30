@@ -106,7 +106,7 @@ public class Diseases
     //public bool[] CercosporaLeafSpot;
 
     // SUNFLOWER
-    public bool[] SuflowerAlternaria;
+    public bool[] Alternaria;
     public bool[] Phomopsis;
     //public bool[] DownyMildew;
 
