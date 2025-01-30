@@ -7,6 +7,7 @@ using Rainbow.Events;
 using Cortex;
 using UnityEditor;
 using TMPro;
+using System.IO;
 
 
 public class FileManager : MonoBehaviour
@@ -41,6 +42,7 @@ public class FileManager : MonoBehaviour
         // Subscribe to file upload progress updates
         fileStorage.FileUploadUpdated += FileUploadUpdatedHandler;
         fileStorage.FileDownloadUpdated += FileDownloadUpdatedHandler;
+        fileStorage.FileStorageUpdated += FileStorageUpdatedHandler;
     }
 
     private void OnDestroy()
@@ -50,6 +52,7 @@ public class FileManager : MonoBehaviour
         {
             fileStorage.FileUploadUpdated -= FileUploadUpdatedHandler;
             fileStorage.FileDownloadUpdated -= FileDownloadUpdatedHandler;
+            fileStorage.FileStorageUpdated -= FileStorageUpdatedHandler;
         }
     }
 
@@ -247,6 +250,47 @@ public class FileManager : MonoBehaviour
     }
 
 
+
+    public void StreamSharedFile(string fileDescriptorId, Action<Sprite> onSpriteReceived)
+    {
+        // Create a memory stream instead of saving to disk, in order to display it in chat
+        MemoryStream memoryStream = new MemoryStream();
+
+        fileStorage.DownloadFile(fileDescriptorId, memoryStream, callback =>
+        {
+            if (callback.Result.Success)
+            {
+                Debug.Log("File download started successfully.");
+
+                Sprite sprite = LoadImageToChat(memoryStream);
+                onSpriteReceived?.Invoke(sprite);
+            }
+            else
+            {
+                Debug.LogError("Error starting file download: " + callback.Result);
+            }
+        });
+    }
+
+
+    private Sprite LoadImageToChat(MemoryStream memoryStream)
+    {
+        byte[] imageData = memoryStream.ToArray();
+        Texture2D texture = new Texture2D(2, 2);
+
+        if (texture.LoadImage(imageData))
+        {
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            return sprite; 
+        }
+        else
+        {
+            Debug.LogError("Failed to load image from stream.");
+            return null;
+        }
+    }
+
+
     #endregion
 
 
@@ -304,5 +348,14 @@ public class FileManager : MonoBehaviour
                 Debug.Log("File download completed successfully.");
             }
         }
+    }
+
+
+
+    // Event for whenever a file is added, deleted or updated in file storage
+    private void FileStorageUpdatedHandler(object sender, FileStorageEventArgs evt)
+    {
+        Debug.Log($"ACTION: {evt.Action} -> ID: {evt.FileId} => {sender}");
+        
     }
 }

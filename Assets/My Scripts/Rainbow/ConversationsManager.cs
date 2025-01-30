@@ -815,6 +815,7 @@ public class ConversationsManager : MonoBehaviour
         // Process the message
         string senderName = message.FromJid;       // Get sender's name
         string messageContent = message.Content;     // Get message content
+        FileAttachment fileAttachment = message.FileAttachment;
 
 
         if (isCarbonCopy)
@@ -829,7 +830,20 @@ public class ConversationsManager : MonoBehaviour
 
             //conversationContentArea.text += $"<align=left>{messageContent}</align>\n\n";
 
-            CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName));
+            if (fileAttachment == null)
+                CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName));
+            else
+            {
+                Debug.Log($"FILE ATTACHMENT {fileAttachment.Id}");
+
+                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onSpriteReceived =>
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+
+                    });
+                });
+            }               
 
         }
     }
