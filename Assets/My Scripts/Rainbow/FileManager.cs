@@ -270,8 +270,6 @@ public class FileManager : MonoBehaviour
                         {                        
                             Texture texture = LoadImageToChat(memoryStream);
 
-                            Debug.Log("TEXTURE TEST= " + texture);
-
                             onTextureReceived?.Invoke(texture);
                         });
                     }
@@ -299,6 +297,7 @@ public class FileManager : MonoBehaviour
 
         if (texture.LoadImage(imageData))
         {
+            Debug.Log($"TEXTURE DIMENSIONS= {texture.dimension} Height: {texture.height} Width: {texture.width}");
             //Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             return texture; 
         }

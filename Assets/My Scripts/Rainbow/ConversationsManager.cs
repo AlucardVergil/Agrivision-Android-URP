@@ -521,12 +521,30 @@ public class ConversationsManager : MonoBehaviour
             Debug.Log("TEXTURE= " + texture);
             if (texture != null)
             {
-                newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject.gameObject.SetActive(true);
-                newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject.texture = texture;
+                RawImage imageGameobject = newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject;
+
+                if (imageGameobject == null)
+                {
+                    imageGameobject = newMessage.GetNamedChild("RawImage").GetComponent<RawImage>();
+                }
+
+                imageGameobject.gameObject.SetActive(true);
+                imageGameobject.texture = texture;
+
+                float aspectRatio = (float)texture.width / (float)texture.height;
+
+                // RectTransform to maintain aspect ratio
+                RectTransform imageRectTransform = newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject.GetComponent<RectTransform>();
+                if (imageRectTransform != null)
+                {
+                    float parentWidth = imageRectTransform.parent.GetComponent<RectTransform>().rect.width;
+                    imageRectTransform.sizeDelta = new Vector2(parentWidth, parentWidth / aspectRatio);
+                }
+
             }
 
             // Get the Horizontal Layout Group component from the chat message prefab
-            HorizontalLayoutGroup layoutGroup = newMessage.GetComponent<HorizontalLayoutGroup>();
+            HorizontalLayoutGroup layoutGroup = newMessage.GetComponentInChildren<HorizontalLayoutGroup>();
 
             layoutGroup.childForceExpandWidth = false;
             layoutGroup.childControlWidth = false;
@@ -583,8 +601,12 @@ public class ConversationsManager : MonoBehaviour
                 string texts = "";
                 Contact myContact = rbContacts.GetCurrentContact();
 
+                Debug.Log("messagesList.Count " + messagesList.Count);
+
                 for (int i = messagesList.Count - 1; i >= 0; i--)
                 {
+                    Debug.Log($"messagesList Count= {i}");
+                    Debug.Log($"messagesList Count2= {messagesList[i].Content}");
                     //Debug.Log("content " + i + " = " + messagesList[i].Content);
 
                     // Align my own messages to the right and all the other to the left
@@ -603,7 +625,7 @@ public class ConversationsManager : MonoBehaviour
 
 
                         FileAttachment fileAttachment = messagesList[i].FileAttachment;
-
+                        Debug.Log("fileAttachment new " + fileAttachment);
 
                         if (myContact.Jid_im == messagesList[i].FromJid)
                         {
@@ -611,9 +633,13 @@ public class ConversationsManager : MonoBehaviour
                                 CreateChatMessage(messagesList[i].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid)); // NOTE: PeerId or FromJid?
                             else
                             {
-                                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
                                 {
-                                    CreateChatMessage(messagesList[i].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                    Debug.Log($"senderName 2 {messagesList[i].FromJid}");
+                                    GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                                    {
+                                        CreateChatMessage(messagesList[i].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                    });
                                 });
                             }
                         }
@@ -623,9 +649,13 @@ public class ConversationsManager : MonoBehaviour
                                 CreateChatMessage(messagesList[i].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid)); // NOTE: PeerId or FromJid?
                             else
                             {
-                                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
                                 {
-                                    CreateChatMessage(messagesList[i].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                    Debug.Log($"senderName 2 {messagesList[i].FromJid}");
+                                    GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                                    {
+                                        CreateChatMessage(messagesList[i].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                    });
                                 });
                             }
                         }
@@ -867,18 +897,16 @@ public class ConversationsManager : MonoBehaviour
 
             //conversationContentArea.text += $"<align=left>{messageContent}</align>\n\n";
 
-            Debug.Log("fileAttachment= " + fileAttachment);
             if (fileAttachment == null)
                 CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName));
             else
             {
                 Debug.Log($"FILE ATTACHMENT {fileAttachment.Id}");
-
+                Debug.Log($"senderName {senderName}");
                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
                 {
                     GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
                     {
-                        Debug.Log("CALLBACK TEXTURE= " + onTextureReceived);
                         CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
                     });
                 });
