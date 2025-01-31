@@ -19,6 +19,8 @@ namespace Cortex
     {
         private Contact contact;
 
+        public RawImage imageGameobject;
+
         /// <summary>
         /// Gets/Sets the contact associated with this entry
         /// </summary>

@@ -439,25 +439,25 @@ public class ConversationsManager : MonoBehaviour
 
 
 
-    void CreateChatMessage(string messageText, bool isOwnMessage, string contactID)
+    void CreateChatMessage(string messageText, bool isOwnMessage, string contactID, Texture texture = null)
     {
         Contact contact = rbContacts.GetContactFromContactId(contactID);
 
         // First check if contact can be found in roster for optimization, else look in server. No need to look for contact if it's my own message bcz there is no avatar image shown
         if (contact != null || isOwnMessage)
         {
-            CreateChatEntry(messageText, isOwnMessage, contact);
+            CreateChatEntry(messageText, isOwnMessage, contact, texture);
         }  
         else
         {
             rbContacts.GetContactFromContactIdFromServer(contactID, callback =>
             {
-                CreateChatEntry(messageText, isOwnMessage, callback.Data); // If contact is null it skips the avatar image creation in CreateChatEntry
+                CreateChatEntry(messageText, isOwnMessage, callback.Data, texture); // If contact is null it skips the avatar image creation in CreateChatEntry
             });
         }
     }
 
-    private void CreateChatEntry(string messageText, bool isOwnMessage, Contact contact)
+    private void CreateChatEntry(string messageText, bool isOwnMessage, Contact contact, Texture texture)
     {
         UnityMainThreadDispatcher.Instance().Enqueue(() =>
         {
@@ -517,6 +517,12 @@ public class ConversationsManager : MonoBehaviour
 
             TMP_Text messageTextComponent = newMessage.GetNamedChild("Message").GetComponent<TMP_Text>();
             messageTextComponent.text = messageText;
+
+            if (texture != null)
+            {
+                newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject.gameObject.SetActive(true);
+                newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject.texture = texture;
+            }
 
             // Get the Horizontal Layout Group component from the chat message prefab
             HorizontalLayoutGroup layoutGroup = newMessage.GetComponent<HorizontalLayoutGroup>();
@@ -589,10 +595,40 @@ public class ConversationsManager : MonoBehaviour
                     if (messagesList[i].Content != null) // check if content is null. These entries are bcz it includes call notifications
                     {
                         Debug.Log("Test4");
+                        //if (myContact.Jid_im == messagesList[i].FromJid)
+                        //    CreateChatMessage(messagesList[i].Content, true, conversation.PeerId);
+                        //else
+                        //    CreateChatMessage(messagesList[i].Content, false, conversation.PeerId);
+
+
+                        FileAttachment fileAttachment = messagesList[i].FileAttachment;
+
+
                         if (myContact.Jid_im == messagesList[i].FromJid)
-                            CreateChatMessage(messagesList[i].Content, true, conversation.PeerId);
+                        {
+                            if (fileAttachment == null)
+                                CreateChatMessage(messagesList[i].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid)); // NOTE: PeerId or FromJid?
+                            else
+                            {
+                                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                                {
+                                    CreateChatMessage(messagesList[i].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                });
+                            }
+                        }
                         else
-                            CreateChatMessage(messagesList[i].Content, false, conversation.PeerId);
+                        {
+                            if (fileAttachment == null)
+                                CreateChatMessage(messagesList[i].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid)); // NOTE: PeerId or FromJid?
+                            else
+                            {
+                                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                                {
+                                    CreateChatMessage(messagesList[i].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                });
+                            }
+                        }
+                            
                     }
                     
                 }
@@ -836,12 +872,9 @@ public class ConversationsManager : MonoBehaviour
             {
                 Debug.Log($"FILE ATTACHMENT {fileAttachment.Id}");
 
-                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onSpriteReceived =>
+                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                    {
-
-                    });
+                    CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
                 });
             }               
 

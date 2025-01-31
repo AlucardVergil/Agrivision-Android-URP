@@ -251,7 +251,7 @@ public class FileManager : MonoBehaviour
 
 
 
-    public void StreamSharedFile(string fileDescriptorId, Action<Sprite> onSpriteReceived)
+    public void StreamSharedFile(string fileDescriptorId, Action<Texture> onTextureReceived)
     {
         // Create a memory stream instead of saving to disk, in order to display it in chat
         MemoryStream memoryStream = new MemoryStream();
@@ -262,8 +262,8 @@ public class FileManager : MonoBehaviour
             {
                 Debug.Log("File download started successfully.");
 
-                Sprite sprite = LoadImageToChat(memoryStream);
-                onSpriteReceived?.Invoke(sprite);
+                Texture texture = LoadImageToChat(memoryStream);
+                onTextureReceived?.Invoke(texture);
             }
             else
             {
@@ -273,15 +273,15 @@ public class FileManager : MonoBehaviour
     }
 
 
-    private Sprite LoadImageToChat(MemoryStream memoryStream)
+    private Texture LoadImageToChat(MemoryStream memoryStream)
     {
         byte[] imageData = memoryStream.ToArray();
         Texture2D texture = new Texture2D(2, 2);
 
         if (texture.LoadImage(imageData))
         {
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            return sprite; 
+            //Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            return texture; 
         }
         else
         {
