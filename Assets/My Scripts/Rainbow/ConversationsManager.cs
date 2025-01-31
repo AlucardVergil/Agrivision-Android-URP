@@ -518,6 +518,7 @@ public class ConversationsManager : MonoBehaviour
             TMP_Text messageTextComponent = newMessage.GetNamedChild("Message").GetComponent<TMP_Text>();
             messageTextComponent.text = messageText;
 
+            Debug.Log("TEXTURE= " + texture);
             if (texture != null)
             {
                 newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject.gameObject.SetActive(true);
@@ -866,15 +867,20 @@ public class ConversationsManager : MonoBehaviour
 
             //conversationContentArea.text += $"<align=left>{messageContent}</align>\n\n";
 
+            Debug.Log("fileAttachment= " + fileAttachment);
             if (fileAttachment == null)
                 CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName));
             else
             {
                 Debug.Log($"FILE ATTACHMENT {fileAttachment.Id}");
 
-                GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
                 {
-                    CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
+                    GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
+                    {
+                        Debug.Log("CALLBACK TEXTURE= " + onTextureReceived);
+                        CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
+                    });
                 });
             }               
 

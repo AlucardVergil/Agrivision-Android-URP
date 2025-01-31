@@ -26,7 +26,6 @@ public class FileManager : MonoBehaviour
 
     [HideInInspector] public string selectedFilePath;
 
-
     ConnectionModel model;
 
 
@@ -253,23 +252,43 @@ public class FileManager : MonoBehaviour
 
     public void StreamSharedFile(string fileDescriptorId, Action<Texture> onTextureReceived)
     {
-        // Create a memory stream instead of saving to disk, in order to display it in chat
-        MemoryStream memoryStream = new MemoryStream();
-
-        fileStorage.DownloadFile(fileDescriptorId, memoryStream, callback =>
+        fileStorage.GetFileDescriptor(fileDescriptorId, fileDescriptorResult =>
         {
-            if (callback.Result.Success)
+            if (fileDescriptorResult.Result.Success && fileDescriptorResult.Data != null)
             {
-                Debug.Log("File download started successfully.");
+                Debug.Log("File descriptor retrieved successfully!");
 
-                Texture texture = LoadImageToChat(memoryStream);
-                onTextureReceived?.Invoke(texture);
+                // Create a memory stream instead of saving to disk, in order to display it in chat
+                MemoryStream memoryStream = new MemoryStream();
+
+                fileStorage.DownloadFile(fileDescriptorId, memoryStream, callback =>
+                {
+                    if (callback.Result.Success)
+                    {
+                        Debug.Log("File download started successfully.");
+                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        {                        
+                            Texture texture = LoadImageToChat(memoryStream);
+
+                            Debug.Log("TEXTURE TEST= " + texture);
+
+                            onTextureReceived?.Invoke(texture);
+                        });
+                    }
+                    else
+                    {
+                        Debug.LogError("Error starting file download: " + callback.Result);
+                    }
+                });
             }
             else
             {
-                Debug.LogError("Error starting file download: " + callback.Result);
+                Debug.LogError("Failed to retrieve file descriptor!");
             }
         });
+
+
+        
     }
 
 
@@ -357,5 +376,6 @@ public class FileManager : MonoBehaviour
     {
         Debug.Log($"ACTION: {evt.Action} -> ID: {evt.FileId} => {sender}");
         
+
     }
 }
