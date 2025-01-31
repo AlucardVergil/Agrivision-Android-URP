@@ -14,6 +14,7 @@ public class FileManager : MonoBehaviour
 {
     private FileStorage fileStorage;
     private InstantMessaging instantMessaging;
+    private Contact myContact;
     private string fileDescriptorId; // To track file upload progress
 
     [Header("Displayed Paths For Contacts")]
@@ -37,6 +38,7 @@ public class FileManager : MonoBehaviour
         
         instantMessaging = model.InstantMessaging;
         fileStorage = model.FileStorage;
+        myContact = model.CurrentUser;
 
         // Subscribe to file upload progress updates
         fileStorage.FileUploadUpdated += FileUploadUpdatedHandler;
@@ -108,6 +110,14 @@ public class FileManager : MonoBehaviour
                 var fileDescriptor = callbackFileDescriptor.Data;
                 fileDescriptorId = fileDescriptor.Id;
                 Debug.Log($"FileDescriptor created. Upload started. ID: {fileDescriptorId}");
+                                
+                GetComponent<FileManager>().StreamSharedFile(fileDescriptorId, onTextureReceived =>
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        GetComponent<ConversationsManager>().CreateChatMessage(message, true, myContact.Id, onTextureReceived);
+                    });
+                });
             }
             else
             {

@@ -86,10 +86,10 @@ namespace Cortex
 
         void Awake()
         {
-            if (ContactInitialsAvatar == null)
-            {
-                ContactInitialsAvatar = GameObjectUtils.FindGameObjectByName(transform, "ContactInitialsAvatar", true).GetComponent<ContactInitialsAvatar>();
-            }
+            //if (ContactInitialsAvatar == null)
+            //{
+            //    ContactInitialsAvatar = GameObjectUtils.FindGameObjectByName(transform, "ContactInitialsAvatar", true).GetComponent<ContactInitialsAvatar>();
+            //}
 
             //Background = GetComponent<Image>();
             //normalBgColor = Background.color;

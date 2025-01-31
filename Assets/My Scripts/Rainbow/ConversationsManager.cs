@@ -439,7 +439,7 @@ public class ConversationsManager : MonoBehaviour
 
 
 
-    void CreateChatMessage(string messageText, bool isOwnMessage, string contactID, Texture texture = null)
+    public void CreateChatMessage(string messageText, bool isOwnMessage, string contactID, Texture texture = null)
     {
         Contact contact = rbContacts.GetContactFromContactId(contactID);
 
@@ -523,11 +523,6 @@ public class ConversationsManager : MonoBehaviour
             {
                 RawImage imageGameobject = newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject;
 
-                if (imageGameobject == null)
-                {
-                    imageGameobject = newMessage.GetNamedChild("RawImage").GetComponent<RawImage>();
-                }
-
                 imageGameobject.gameObject.SetActive(true);
                 imageGameobject.texture = texture;
 
@@ -601,44 +596,40 @@ public class ConversationsManager : MonoBehaviour
                 string texts = "";
                 Contact myContact = rbContacts.GetCurrentContact();
 
-                Debug.Log("messagesList.Count " + messagesList.Count);
 
                 for (int i = messagesList.Count - 1; i >= 0; i--)
                 {
-                    Debug.Log($"messagesList Count= {i}");
-                    Debug.Log($"messagesList Count2= {messagesList[i].Content}");
-                    //Debug.Log("content " + i + " = " + messagesList[i].Content);
+                    int index = i; // Create a local copy of i
+
+                    //Debug.Log("content " + index + " = " + messagesList[index].Content);
 
                     // Align my own messages to the right and all the other to the left
-                    //if (myContact.Jid_im == messagesList[i].FromJid)
-                    //    texts += $"<align=right>{messagesList[i].Content}</align>\n\n";
+                    //if (myContact.Jid_im == messagesList[index].FromJid)
+                    //    texts += $"<align=right>{messagesList[index].Content}</align>\n\n";
                     //else
-                    //    texts += $"<align=left>{messagesList[i].Content}</align>\n\n";
+                    //    texts += $"<align=left>{messagesList[index].Content}</align>\n\n";
 
-                    if (messagesList[i].Content != null) // check if content is null. These entries are bcz it includes call notifications
+                    if (messagesList[index].Content != null) // check if content is null. These entries are bcz it includes call notifications
                     {
-                        Debug.Log("Test4");
-                        //if (myContact.Jid_im == messagesList[i].FromJid)
-                        //    CreateChatMessage(messagesList[i].Content, true, conversation.PeerId);
+                        //if (myContact.Jid_im == messagesList[index].FromJid)
+                        //    CreateChatMessage(messagesList[index].Content, true, conversation.PeerId);
                         //else
-                        //    CreateChatMessage(messagesList[i].Content, false, conversation.PeerId);
+                        //    CreateChatMessage(messagesList[index].Content, false, conversation.PeerId);
 
 
-                        FileAttachment fileAttachment = messagesList[i].FileAttachment;
-                        Debug.Log("fileAttachment new " + fileAttachment);
+                        FileAttachment fileAttachment = messagesList[index].FileAttachment;
 
-                        if (myContact.Jid_im == messagesList[i].FromJid)
+                        if (myContact.Jid_im == messagesList[index].FromJid)
                         {
                             if (fileAttachment == null)
-                                CreateChatMessage(messagesList[i].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid)); // NOTE: PeerId or FromJid?
+                                CreateChatMessage(messagesList[index].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
                             else
                             {
                                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                                {
-                                    Debug.Log($"senderName 2 {messagesList[i].FromJid}");
+                                {                                    
                                     GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
                                     {
-                                        CreateChatMessage(messagesList[i].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                        CreateChatMessage(messagesList[index].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid), onTextureReceived);
                                     });
                                 });
                             }
@@ -646,15 +637,14 @@ public class ConversationsManager : MonoBehaviour
                         else
                         {
                             if (fileAttachment == null)
-                                CreateChatMessage(messagesList[i].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid)); // NOTE: PeerId or FromJid?
+                                CreateChatMessage(messagesList[index].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
                             else
                             {
                                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                                {
-                                    Debug.Log($"senderName 2 {messagesList[i].FromJid}");
+                                {                                 
                                     GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
                                     {
-                                        CreateChatMessage(messagesList[i].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[i].FromJid), onTextureReceived);
+                                        CreateChatMessage(messagesList[index].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid), onTextureReceived);
                                     });
                                 });
                             }
