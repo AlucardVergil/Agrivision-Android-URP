@@ -270,10 +270,10 @@ public class FileManager : MonoBehaviour
     }
 
 
-
-    public Task<Texture> StreamSharedFile(string fileDescriptorId)
+    // Can return different types based on the file type of the file descriptor (image, pdf etc)
+    public Task<T> StreamSharedFile<T>(string fileDescriptorId)
     {
-        var tcs = new TaskCompletionSource<Texture>();
+        var tcs = new TaskCompletionSource<T>();
 
         fileStorage.GetFileDescriptor(fileDescriptorId, fileDescriptorResult =>
         {
@@ -295,19 +295,26 @@ public class FileManager : MonoBehaviour
                     {
                         Debug.Log("File download started successfully.");
 
+                        object file = null;
+
                         if (fileType.Contains("image")) // image/png or image/jpeg
                         {
                             await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
                             {
-                                Texture texture = LoadImageToChat(memoryStream);
+                                file = LoadImageToChat(memoryStream);
 
                                 //onTextureReceived?.Invoke(texture);
-                                tcs.SetResult(texture);  // Return the texture once ready
+                                tcs.SetResult((T)file);  // Return the texture once ready
                             });
                         }
-                        else
+                        else if (fileType.Contains("application")) // application/pdf etc
                         {
+                            await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                            {
+                                file = memoryStream.ToArray(); // Convert to byte[]
 
+                                tcs.SetResult((T)file);  // Return the file (pdf etc) once ready
+                            });
                         }
                         
                     }
