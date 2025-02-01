@@ -16,6 +16,7 @@ using System.Diagnostics.Contracts;
 using Unity.XR.CoreUtils;
 using Rainbow.WebRTC.Unity;
 using System.Threading;
+using System.Linq;
 
 public class ConversationsManager : MonoBehaviour
 {
@@ -590,81 +591,106 @@ public class ConversationsManager : MonoBehaviour
                     Debug.Log("listCount from cache = " + messagesList.Count);
                 }
 
-                // Process retreived messages
-                string texts = "";
                 Contact myContact = rbContacts.GetCurrentContact();
 
+                /*
+                foreach (Message message in messagesList.AsEnumerable().Reverse()) // Ensure correct order
+                {
+                    //Debug.Log("content " + index + " = " + messagesList[index].Content);
+
+                    Debug.Log("DELETED => " + message.Deleted);
+                    if (message.Content != null && !message.Deleted) // check if content is null. These entries are bcz it includes call notifications
+                    {
+                        FileAttachment fileAttachment = message.FileAttachment;
+                        string senderId = rbContacts.GetContactIdFromContactJid(message.FromJid);
+                        bool isOwnMessage = myContact.Jid_im == message.FromJid;
+
+                        Debug.Log($"AFTER 1 => {messagesList.Count}");
+
+                        if (fileAttachment == null) // && message.FileAttachment != null
+                            await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                            {
+                                CreateChatMessage(message.Content, isOwnMessage, senderId); // NOTE: PeerId or FromJid?
+                            });
+                        else
+                        {
+                            await UnityMainThreadDispatcher.Instance().EnqueueAsync(async () =>
+                            {
+                                Texture onTextureReceived = await GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id);
+
+                                CreateChatMessage(message.Content, isOwnMessage, senderId, onTextureReceived);
+                                Debug.Log($"AFTER 2 => {messagesList.Count}");
+                                //i++;
+
+                            });
+                        }
+                    }
+
+                    // Ensure the next message waits for the current one
+                    await Task.Delay(50); // Add slight delay to avoid potential frame rate issues
+
+                } */
 
                 for (int i = messagesList.Count - 1; i >= 0; i--)
                 {
                     int index = i; // Create a local copy of i
 
+                    Debug.Log($"DATES TEST => {index} -> {messagesList[index].Date}");
+
                     //Debug.Log("content " + index + " = " + messagesList[index].Content);
-
-                    // Align my own messages to the right and all the other to the left
-                    //if (myContact.Jid_im == messagesList[index].FromJid)
-                    //    texts += $"<align=right>{messagesList[index].Content}</align>\n\n";
-                    //else
-                    //    texts += $"<align=left>{messagesList[index].Content}</align>\n\n";
-                    Debug.Log("DELETED => " + messagesList[index].Deleted);
-                    if (messagesList[index].Content != null && !messagesList[index].Deleted) // check if content is null. These entries are bcz it includes call notifications
+                    await UnityMainThreadDispatcher.Instance().EnqueueAsync(async () =>
                     {
-                        //if (myContact.Jid_im == messagesList[index].FromJid)
-                        //    CreateChatMessage(messagesList[index].Content, true, conversation.PeerId);
-                        //else
-                        //    CreateChatMessage(messagesList[index].Content, false, conversation.PeerId);
-
-
-                        FileAttachment fileAttachment = messagesList[index].FileAttachment;
-
-                        Debug.Log($"AFTER 1 => {messagesList.Count}");
-
-                        if (myContact.Jid_im == messagesList[index].FromJid)
+                        Debug.Log("DELETED => " + messagesList[index].Deleted);
+                        if (messagesList[index].Content != null && !messagesList[index].Deleted) // check if content is null. These entries are bcz it includes call notifications
                         {
-                            if (fileAttachment == null) // && messagesList[index].FileAttachment != null
-                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
-                                {
-                                    CreateChatMessage(messagesList[index].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
-                                });
-                            else
-                            {
-                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
-                                {                                    
-                                    GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
-                                    {
-                                        CreateChatMessage(messagesList[index].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid), onTextureReceived);
-                                        Debug.Log($"AFTER 2 => {messagesList.Count}");
-                                        //i++;
-                                    });
-                                });
-                            }
-                        }
-                        else
-                        {
+                            FileAttachment fileAttachment = messagesList[index].FileAttachment;
+                            FileAttachment nextItemHasFileAttachment = messagesList[index - 1].FileAttachment; // To check if next message has file attachment
+                            string senderId = rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid);
+                            bool isOwnMessage = myContact.Jid_im == messagesList[index].FromJid;
+
+                            Debug.Log($"AFTER 1 => {messagesList.Count}");
+
                             if (fileAttachment == null)
-                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                            {
+                                // This it to check if next entry in the message list has file attachment and also checks if they are less than 3 secs apart. That's bcz contrary to the messages sent, 
+                                // the received messages are split into 2 entries, one for the message and one for the file and it was messing up the chat display order.
+                                // So I do this check and then I combine the 2 entries and then do this i--; so that it doesn't iterate through the next loop item again since it was combined.
+                                if (nextItemHasFileAttachment == null || (messagesList[index - 1].Date - messagesList[index].Date).TotalSeconds > 3) 
                                 {
-                                    CreateChatMessage(messagesList[index].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
-                                });
+                                    CreateChatMessage(messagesList[index].Content, isOwnMessage, senderId); // NOTE: PeerId or FromJid?
+                                    Debug.Log($"JUST MESSAGE => {index} -> {messagesList[index].Content}");
+                                }
+                                else
+                                {
+                                    i--;
+
+                                    Texture onTextureReceived = await GetComponent<FileManager>().StreamSharedFile(messagesList[index - 1].FileAttachment.Id);
+
+                                    CreateChatMessage(messagesList[index].Content, isOwnMessage, senderId, onTextureReceived);
+                                    Debug.Log($"FILE MESSAGE 2 => {index} -> {messagesList[index].Content}");
+                                    
+                                }
+                                
+                            }
                             else
                             {
-                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
-                                {
-                                    GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
-                                    {
-                                        CreateChatMessage(messagesList[index].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid), onTextureReceived);
-                                    });
-                                });
+                                Texture onTextureReceived = await GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id);
+
+                                CreateChatMessage(messagesList[index].Content, isOwnMessage, senderId, onTextureReceived);
+                                Debug.Log($"AFTER 2 => {messagesList.Count}");
+                                Debug.Log($"FILE MESSAGE => {index} -> {messagesList[index].Content}");                       
                             }
                         }
-                            
-                    }
-                    
+                    });
+
+                    // Ensure the next message waits for the current one
+                    await Task.Delay(50); // Add slight delay to avoid potential frame rate issues
+
                 }
+
 
                 doOnceRefreshTextArea = true; // Placed the bool above the conversationContentArea.text bcz when i placed it below the bool assignment wouldn't execute
 
-                //conversationContentArea.text = texts;
             }
             else
             {
@@ -904,12 +930,12 @@ public class ConversationsManager : MonoBehaviour
             {
                 Debug.Log($"FILE ATTACHMENT {fileAttachment.Id}");
                 Debug.Log($"senderName {senderName}");
-                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                await UnityMainThreadDispatcher.Instance().EnqueueAsync(async () =>
                 {
-                    GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
-                    {
-                        CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
-                    });
+                    Texture onTextureReceived = await GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id);
+
+                    CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
+                   
                 });
             }               
 

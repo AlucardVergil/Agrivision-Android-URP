@@ -9,6 +9,7 @@ using UnityEditor;
 using TMPro;
 using System.IO;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 
 public class FileManager : MonoBehaviour
@@ -270,8 +271,10 @@ public class FileManager : MonoBehaviour
 
 
 
-    public void StreamSharedFile(string fileDescriptorId, Action<Texture> onTextureReceived)
+    public Task<Texture> StreamSharedFile(string fileDescriptorId)
     {
+        var tcs = new TaskCompletionSource<Texture>();
+
         fileStorage.GetFileDescriptor(fileDescriptorId, fileDescriptorResult =>
         {
             if (fileDescriptorResult.Result.Success && fileDescriptorResult.Data != null)
@@ -298,7 +301,8 @@ public class FileManager : MonoBehaviour
                             {
                                 Texture texture = LoadImageToChat(memoryStream);
 
-                                onTextureReceived?.Invoke(texture);
+                                //onTextureReceived?.Invoke(texture);
+                                tcs.SetResult(texture);  // Return the texture once ready
                             });
                         }
                         else
@@ -310,15 +314,19 @@ public class FileManager : MonoBehaviour
                     else
                     {
                         Debug.LogError("Error starting file download: " + callback.Result);
+                        tcs.SetException(new Exception("Error downloading file"));
                     }
                 });
             }
             else
             {
                 Debug.LogError("Failed to retrieve file descriptor!");
+                tcs.SetException(new Exception("Failed to retrieve file descriptor"));
             }
         });
-                
+
+        return tcs.Task;
+
     }
 
 
