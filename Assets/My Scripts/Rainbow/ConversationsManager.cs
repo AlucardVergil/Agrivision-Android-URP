@@ -457,9 +457,9 @@ public class ConversationsManager : MonoBehaviour
         }
     }
 
-    private void CreateChatEntry(string messageText, bool isOwnMessage, Contact contact, Texture texture)
+    private async void CreateChatEntry(string messageText, bool isOwnMessage, Contact contact, Texture texture)
     {
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
         {
             GameObject newMessage;
 
@@ -532,7 +532,7 @@ public class ConversationsManager : MonoBehaviour
                 RectTransform imageRectTransform = newMessage.GetComponent<ChatPrefabAvatar>().imageGameobject.GetComponent<RectTransform>();
                 if (imageRectTransform != null)
                 {
-                    float parentWidth = imageRectTransform.parent.GetComponent<RectTransform>().rect.width;
+                    float parentWidth = imageRectTransform.parent.GetComponent<RectTransform>().rect.width * 0.7f; // Display the image file attachments at 70% of the width of the chat area
                     imageRectTransform.sizeDelta = new Vector2(parentWidth, parentWidth / aspectRatio);
                 }
 
@@ -550,16 +550,14 @@ public class ConversationsManager : MonoBehaviour
                 // Align the message to the right (for messages sent by the user)
                 layoutGroup.childAlignment = TextAnchor.MiddleRight;
 
-                // Optionally, you can add padding on the right to control the spacing
-                layoutGroup.padding.right = 0;  // Adjust this value as needed                
+                layoutGroup.padding.right = 0;              
             }
             else
             {
                 // Align the message to the left (for messages received from others)
                 layoutGroup.childAlignment = TextAnchor.MiddleLeft;
 
-                // Optionally, add padding on the left
-                layoutGroup.padding.left = 20;  // Adjust this value as needed
+                layoutGroup.padding.left = 20; 
             }
 
 
@@ -577,7 +575,7 @@ public class ConversationsManager : MonoBehaviour
 
     public void FetchLastMessagesReceivedInConversation(Conversation conversation, int numOfMessages = 200)
     {
-        instantMessaging.GetMessagesFromConversation(conversation, numOfMessages, callback =>
+        instantMessaging.GetMessagesFromConversation(conversation, numOfMessages, async callback =>
         {
             if (callback.Result.Success)
             {
@@ -608,8 +606,8 @@ public class ConversationsManager : MonoBehaviour
                     //    texts += $"<align=right>{messagesList[index].Content}</align>\n\n";
                     //else
                     //    texts += $"<align=left>{messagesList[index].Content}</align>\n\n";
-
-                    if (messagesList[index].Content != null) // check if content is null. These entries are bcz it includes call notifications
+                    Debug.Log("DELETED => " + messagesList[index].Deleted);
+                    if (messagesList[index].Content != null && !messagesList[index].Deleted) // check if content is null. These entries are bcz it includes call notifications
                     {
                         //if (myContact.Jid_im == messagesList[index].FromJid)
                         //    CreateChatMessage(messagesList[index].Content, true, conversation.PeerId);
@@ -619,17 +617,24 @@ public class ConversationsManager : MonoBehaviour
 
                         FileAttachment fileAttachment = messagesList[index].FileAttachment;
 
+                        Debug.Log($"AFTER 1 => {messagesList.Count}");
+
                         if (myContact.Jid_im == messagesList[index].FromJid)
                         {
-                            if (fileAttachment == null)
-                                CreateChatMessage(messagesList[index].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
+                            if (fileAttachment == null) // && messagesList[index].FileAttachment != null
+                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                                {
+                                    CreateChatMessage(messagesList[index].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
+                                });
                             else
                             {
-                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
                                 {                                    
                                     GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
                                     {
                                         CreateChatMessage(messagesList[index].Content, true, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid), onTextureReceived);
+                                        Debug.Log($"AFTER 2 => {messagesList.Count}");
+                                        //i++;
                                     });
                                 });
                             }
@@ -637,11 +642,14 @@ public class ConversationsManager : MonoBehaviour
                         else
                         {
                             if (fileAttachment == null)
-                                CreateChatMessage(messagesList[index].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
+                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                                {
+                                    CreateChatMessage(messagesList[index].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid)); // NOTE: PeerId or FromJid?
+                                });
                             else
                             {
-                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                                {                                 
+                                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                                {
                                     GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
                                     {
                                         CreateChatMessage(messagesList[index].Content, false, rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid), onTextureReceived);
@@ -862,7 +870,7 @@ public class ConversationsManager : MonoBehaviour
 
 
 
-    private void MyApp_MessageReceived(object sender, MessageEventArgs evt)
+    private async void MyApp_MessageReceived(object sender, MessageEventArgs evt)
     {
         // Extract relevant data from the event
         string conversationId = evt.ConversationId;  // ID of the conversation
@@ -888,12 +896,15 @@ public class ConversationsManager : MonoBehaviour
             //conversationContentArea.text += $"<align=left>{messageContent}</align>\n\n";
 
             if (fileAttachment == null)
-                CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName));
+                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                {
+                    CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName));
+                });
             else
             {
                 Debug.Log($"FILE ATTACHMENT {fileAttachment.Id}");
                 Debug.Log($"senderName {senderName}");
-                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
                 {
                     GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id, onTextureReceived =>
                     {

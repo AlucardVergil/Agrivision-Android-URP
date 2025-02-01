@@ -8,6 +8,7 @@ using Cortex;
 using UnityEditor;
 using TMPro;
 using System.IO;
+using UnityEngine.UI;
 
 
 public class FileManager : MonoBehaviour
@@ -101,7 +102,10 @@ public class FileManager : MonoBehaviour
     // Share a file with a conversation
     public void ShareFileWithConversation(Conversation conversation, string message = "")
     {
+        string tempSelectedFilePath = selectedFilePath;
+
         Debug.Log($"FILE UPLOAD: {selectedFilePath} -> {conversation}");
+
         instantMessaging.SendMessageWithFileToConversation(conversation, message, selectedFilePath, null, UrgencyType.Std, null,
         callbackFileDescriptor =>
         {
@@ -110,14 +114,20 @@ public class FileManager : MonoBehaviour
                 var fileDescriptor = callbackFileDescriptor.Data;
                 fileDescriptorId = fileDescriptor.Id;
                 Debug.Log($"FileDescriptor created. Upload started. ID: {fileDescriptorId}");
-                                
-                GetComponent<FileManager>().StreamSharedFile(fileDescriptorId, onTextureReceived =>
+                Debug.Log($"isUploaded= {callbackFileDescriptor.Data.IsUploaded}");
+
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                    {
-                        GetComponent<ConversationsManager>().CreateChatMessage(message, true, myContact.Id, onTextureReceived);
-                    });
+                    byte[] imageData = File.ReadAllBytes(tempSelectedFilePath); // Read file as bytes
+                    Texture2D texture = new Texture2D(2, 2); // Create an empty texture
+                    if (texture.LoadImage(imageData)) // Load image data into texture
+                    {                   
+                        GetComponent<ConversationsManager>().CreateChatMessage(message, true, myContact.Id, texture);                    
+                    }
+                    else
+                        Debug.Log($"Couldn't load image => {tempSelectedFilePath}");
                 });
+
             }
             else
             {
@@ -128,7 +138,7 @@ public class FileManager : MonoBehaviour
         {
             if (callbackMessage.Result.Success)
             {
-                Debug.Log("File and message successfully sent to the conversation.");
+                Debug.Log("File and message successfully sent to the conversation. => " + callbackMessage.Data);
             }
             else
             {
@@ -268,20 +278,34 @@ public class FileManager : MonoBehaviour
             {
                 Debug.Log("File descriptor retrieved successfully!");
 
+                Debug.Log($"FILE TYPE => {fileDescriptorResult.Data.Extension} -> {fileDescriptorResult.Data.Type} -> {fileDescriptorResult.Data.TypeMIME}");
+                Debug.Log($"FILE TYPE 2 => {fileDescriptorResult.Data.UploadedDate} -> {fileDescriptorResult.Data.Thumbnail} -> {fileDescriptorResult.Data.Viewers}");
+
+                string fileType = fileDescriptorResult.Data.TypeMIME;
+
                 // Create a memory stream instead of saving to disk, in order to display it in chat
                 MemoryStream memoryStream = new MemoryStream();
 
-                fileStorage.DownloadFile(fileDescriptorId, memoryStream, callback =>
+                fileStorage.DownloadFile(fileDescriptorId, memoryStream, async callback =>
                 {
                     if (callback.Result.Success)
                     {
                         Debug.Log("File download started successfully.");
-                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                        {                        
-                            Texture texture = LoadImageToChat(memoryStream);
 
-                            onTextureReceived?.Invoke(texture);
-                        });
+                        if (fileType.Contains("image")) // image/png or image/jpeg
+                        {
+                            await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                            {
+                                Texture texture = LoadImageToChat(memoryStream);
+
+                                onTextureReceived?.Invoke(texture);
+                            });
+                        }
+                        else
+                        {
+
+                        }
+                        
                     }
                     else
                     {
@@ -294,9 +318,7 @@ public class FileManager : MonoBehaviour
                 Debug.LogError("Failed to retrieve file descriptor!");
             }
         });
-
-
-        
+                
     }
 
 

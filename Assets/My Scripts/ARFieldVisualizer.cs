@@ -471,12 +471,12 @@ public class ARFieldVisualizer : MonoBehaviour
             material.SetTexture("_BaseMap", texture); // Assign texture to the Base Map
 
             // Enables alpha clipping to hide white pixels by disabling pixels below the threshold of transparency I set
-            //material.SetFloat("_Cutoff", 0.5f); // Set alpha clip threshold (default is usually 0.5)
-            //material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
-            //material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
-            //material.SetFloat("_ZWrite", 1);
-            //material.EnableKeyword("_ALPHATEST_ON");
-            //material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+            material.SetFloat("_Cutoff", 0.5f); // Set alpha clip threshold (default is usually 0.5)
+            material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
+            material.SetFloat("_ZWrite", 1);
+            material.EnableKeyword("_ALPHATEST_ON");
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
 
             meshRenderer.material = material;
         }
