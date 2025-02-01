@@ -17,6 +17,7 @@ using Unity.XR.CoreUtils;
 using Rainbow.WebRTC.Unity;
 using System.Threading;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 public class ConversationsManager : MonoBehaviour
 {
@@ -40,7 +41,7 @@ public class ConversationsManager : MonoBehaviour
 
     private bool initializationPerformedFlag = false;
     private byte[] avatarData;
-    private Image[] avatarImage;
+    private UnityEngine.UI.Image[] avatarImage;
     private Contact[] tempContacts;
     private byte[][] tempAvatarData;
     private int tempCount = 0;
@@ -53,7 +54,7 @@ public class ConversationsManager : MonoBehaviour
 
     public GameObject chatMessagePrefab;
     public GameObject chatMessagePrefabMyself;
-    private Image currentChatMessageAvatar;
+    private UnityEngine.UI.Image currentChatMessageAvatar;
 
     private bool[] alreadyFetchedMessagesForThisContactOnce;
     private GameObject[] parentForAllMessagesOfEachContact;
@@ -439,29 +440,50 @@ public class ConversationsManager : MonoBehaviour
 
 
 
-
-    public void CreateChatMessage(string messageText, bool isOwnMessage, string contactID, Texture texture = null)
+    // Create a chat message on chat area. This can take either a message type or just string. That's bcz when i send a message it takes the text from input field, instead of a message type variable.
+    // This was done to pass the whole message object when i can so that i can use things like dates sent etc
+    public void CreateChatMessage(object messageObject, bool isOwnMessage, string contactID, Texture texture = null)
     {
         Contact contact = rbContacts.GetContactFromContactId(contactID);
 
         // First check if contact can be found in roster for optimization, else look in server. No need to look for contact if it's my own message bcz there is no avatar image shown
         if (contact != null || isOwnMessage)
         {
-            CreateChatEntry(messageText, isOwnMessage, contact, texture);
+            CreateChatEntry(messageObject, isOwnMessage, contact, texture);
         }  
         else
         {
             rbContacts.GetContactFromContactIdFromServer(contactID, callback =>
             {
-                CreateChatEntry(messageText, isOwnMessage, callback.Data, texture); // If contact is null it skips the avatar image creation in CreateChatEntry
+                CreateChatEntry(messageObject, isOwnMessage, callback.Data, texture); // If contact is null it skips the avatar image creation in CreateChatEntry
             });
         }
     }
 
-    private async void CreateChatEntry(string messageText, bool isOwnMessage, Contact contact, Texture texture)
+    private async void CreateChatEntry(object messageData, bool isOwnMessage, Contact contact, Texture texture)
     {
         await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
         {
+            Message messageObject = null;
+            string messageText = "";
+
+            // The method can either take Message or string type and here it check which one was given
+            if (messageData is Message msg)
+            {
+                messageObject = msg;
+                messageText = messageObject.Content;
+            }
+            else if (messageData is string text)
+            {
+                messageText = text;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid message data type.");
+            }
+
+
+
             GameObject newMessage;
 
             Transform currentlySelectedConversationScrollViewContent = conversationScrollViewContent;
@@ -518,6 +540,7 @@ public class ConversationsManager : MonoBehaviour
 
             TMP_Text messageTextComponent = newMessage.GetNamedChild("Message").GetComponent<TMP_Text>();
             messageTextComponent.text = messageText;
+            newMessage.GetNamedChild("DateText").GetComponent<TMP_Text>().text = messageObject.Date.ToString();
 
             Debug.Log("TEXTURE= " + texture);
             if (texture != null)
@@ -657,7 +680,7 @@ public class ConversationsManager : MonoBehaviour
                                 // So I do this check and then I combine the 2 entries and then do this i--; so that it doesn't iterate through the next loop item again since it was combined.
                                 if (nextItemHasFileAttachment == null || (messagesList[index - 1].Date - messagesList[index].Date).TotalSeconds > 3) 
                                 {
-                                    CreateChatMessage(messagesList[index].Content, isOwnMessage, senderId); // NOTE: PeerId or FromJid?
+                                    CreateChatMessage(messagesList[index], isOwnMessage, senderId); // NOTE: PeerId or FromJid?
                                     Debug.Log($"JUST MESSAGE => {index} -> {messagesList[index].Content}");
                                 }
                                 else
@@ -666,7 +689,7 @@ public class ConversationsManager : MonoBehaviour
 
                                     Texture onTextureReceived = await GetComponent<FileManager>().StreamSharedFile(messagesList[index - 1].FileAttachment.Id);
 
-                                    CreateChatMessage(messagesList[index].Content, isOwnMessage, senderId, onTextureReceived);
+                                    CreateChatMessage(messagesList[index], isOwnMessage, senderId, onTextureReceived);
                                     Debug.Log($"FILE MESSAGE 2 => {index} -> {messagesList[index].Content}");
                                     
                                 }
@@ -676,7 +699,7 @@ public class ConversationsManager : MonoBehaviour
                             {
                                 Texture onTextureReceived = await GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id);
 
-                                CreateChatMessage(messagesList[index].Content, isOwnMessage, senderId, onTextureReceived);
+                                CreateChatMessage(messagesList[index], isOwnMessage, senderId, onTextureReceived);
                                 Debug.Log($"AFTER 2 => {messagesList.Count}");
                                 Debug.Log($"FILE MESSAGE => {index} -> {messagesList[index].Content}");                       
                             }
@@ -924,7 +947,7 @@ public class ConversationsManager : MonoBehaviour
             if (fileAttachment == null)
                 await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
                 {
-                    CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName));
+                    CreateChatMessage(message, false, rbContacts.GetContactIdFromContactJid(senderName));
                 });
             else
             {
@@ -934,7 +957,7 @@ public class ConversationsManager : MonoBehaviour
                 {
                     Texture onTextureReceived = await GetComponent<FileManager>().StreamSharedFile(fileAttachment.Id);
 
-                    CreateChatMessage(messageContent, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
+                    CreateChatMessage(message, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
                    
                 });
             }               
@@ -981,7 +1004,7 @@ public class ConversationsManager : MonoBehaviour
 
 
     // Coroutine to process avatar data and apply it to a SpriteRenderer
-    private void HandleAvatarData(byte[] avatarData, Image avatarImageSlot)
+    private void HandleAvatarData(byte[] avatarData, UnityEngine.UI.Image avatarImageSlot)
     {
         Debug.Log("avatarData = " + avatarData);
 
@@ -1478,7 +1501,7 @@ public class ConversationsManager : MonoBehaviour
                 List<Contact> contactList = callback.Data;  // List of contacts
 
 
-                avatarImage = new Image[contactList.Count];
+                avatarImage = new UnityEngine.UI.Image[contactList.Count];
                 tempContacts = new Contact[contactList.Count];
 
                 tempAvatarData = new byte[contactList.Count][];
@@ -1589,7 +1612,7 @@ public class ConversationsManager : MonoBehaviour
 
 
                     // Display the contact's avatar image
-                    avatarImage[i] = contactGameobject.GetComponent<Image>();
+                    avatarImage[i] = contactGameobject.GetComponent<UnityEngine.UI.Image>();
 
                     tempContacts[i] = contactList[i];
 
