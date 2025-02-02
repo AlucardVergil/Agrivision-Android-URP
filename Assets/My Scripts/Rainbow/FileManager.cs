@@ -61,6 +61,45 @@ public class FileManager : MonoBehaviour
 
 
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+    public void OpenFolderDialog()
+    {
+        if (UnityEngine.Application.platform == RuntimePlatform.Android)
+        {
+            using (AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            using (AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+            using (AndroidJavaObject plugin = new AndroidJavaObject("com.yourcompany.filepicker.FilePickerPlugin"))
+            {
+                plugin.CallStatic("OpenFolderPicker");
+            }
+        }
+    }
+
+    public void OpenFileDialog()
+    {
+        if (UnityEngine.Application.platform == RuntimePlatform.Android)
+        {
+            using (AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            using (AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+            using (AndroidJavaObject plugin = new AndroidJavaObject("com.yourcompany.filepicker.FilePickerPlugin"))
+            {
+                plugin.CallStatic("OpenFilePicker");
+            }
+        }
+    }
+
+    public void OnFolderSelected(string folderPath)
+    {
+        Debug.Log("Selected folder: " + folderPath);
+    }
+
+    public void OnFileSelected(string filePath)
+    {
+        Debug.Log("Selected file: " + filePath);
+    }
+
+#else
+
     public void OpenUploadFileDialog()
     {
         // Open file panel
@@ -77,6 +116,28 @@ public class FileManager : MonoBehaviour
                 uploadFilePathBubble.text = "File Selected: " + selectedFilePath;            
         }
     }
+
+
+    public void OpenDownloadFolderDialog()
+    {
+        // Open a folder panel
+        string selectedFolderPath = EditorUtility.OpenFolderPanel("Choose a Download Folder", "", "");
+
+        // Check if a folder was selected
+        if (!string.IsNullOrEmpty(selectedFolderPath))
+        {
+            Debug.Log($"Download folder selected: {selectedFolderPath}");
+
+            // Example: Display the selected path in a UI Text field
+            if (uploadFilePath.isActiveAndEnabled)
+                uploadFilePath.text = "Download Folder: " + selectedFolderPath;
+            else
+                uploadFilePathBubble.text = "Download Folder: " + selectedFolderPath;
+        }
+    }
+
+#endif
+
 
 
 

@@ -540,8 +540,11 @@ public class ConversationsManager : MonoBehaviour
 
             TMP_Text messageTextComponent = newMessage.GetNamedChild("Message").GetComponent<TMP_Text>();
             messageTextComponent.text = messageText;
-            newMessage.GetNamedChild("DateText").GetComponent<TMP_Text>().text = messageObject.Date.ToString();
 
+            if (!isOwnMessage)
+            {
+                newMessage.GetNamedChild("DateText").GetComponent<TMP_Text>().text = messageObject.Date.ToString();
+            }
 
             if (texture != null)
             {

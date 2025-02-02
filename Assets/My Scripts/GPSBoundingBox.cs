@@ -18,7 +18,7 @@ public class GPSBoundingBox
             if (coord.y < minLon) minLon = coord.y;
             if (coord.y > maxLon) maxLon = coord.y;
         }
-
+        
         // Compute the center
         float centerLat = (minLat + maxLat) / 2;
         float centerLon = (minLon + maxLon) / 2;
