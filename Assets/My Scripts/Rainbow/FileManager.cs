@@ -28,6 +28,7 @@ public class FileManager : MonoBehaviour
     public TMP_Text downloadFilePathBubble;
 
     [HideInInspector] public string selectedFilePath;
+    [HideInInspector] public string selectedFolderPath;
 
     ConnectionModel model;
 
@@ -91,17 +92,41 @@ public class FileManager : MonoBehaviour
     public void OnFolderSelected(string folderPath)
     {
         Debug.Log("Selected folder: " + folderPath);
+
+        selectedFolderPath = folderPath;
+
+        // Check if a file was selected
+        if (!string.IsNullOrEmpty(selectedFolderPath))
+        {
+            Debug.Log($"Folder selected: {selectedFolderPath}");
+        }
     }
 
     public void OnFileSelected(string filePath)
     {
-        Debug.Log("Selected file: " + filePath);
+        selectedFilePath = filePath;
+
+        // Check if a file was selected
+        if (!string.IsNullOrEmpty(selectedFilePath))
+        {
+            Debug.Log($"File selected: {selectedFilePath}");
+
+            if (uploadFilePath.isActiveAndEnabled)
+                uploadFilePath.text = "File Selected: " + selectedFilePath;
+            else
+                uploadFilePathBubble.text = "File Selected: " + selectedFilePath;
+        }
     }
 
-#else
+#endif
+
+
 
     public void OpenUploadFileDialog()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        OpenFileDialog();
+#else
         // Open file panel
         selectedFilePath = EditorUtility.OpenFilePanel("Choose a File", "", "*");
 
@@ -115,28 +140,26 @@ public class FileManager : MonoBehaviour
             else
                 uploadFilePathBubble.text = "File Selected: " + selectedFilePath;            
         }
+#endif
     }
 
 
     public void OpenDownloadFolderDialog()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        OpenFolderDialog();
+#else
         // Open a folder panel
-        string selectedFolderPath = EditorUtility.OpenFolderPanel("Choose a Download Folder", "", "");
+        selectedFolderPath = EditorUtility.OpenFolderPanel("Choose a Download Folder", "", "");
 
         // Check if a folder was selected
         if (!string.IsNullOrEmpty(selectedFolderPath))
         {
             Debug.Log($"Download folder selected: {selectedFolderPath}");
-
-            // Example: Display the selected path in a UI Text field
-            if (uploadFilePath.isActiveAndEnabled)
-                uploadFilePath.text = "Download Folder: " + selectedFolderPath;
-            else
-                uploadFilePathBubble.text = "Download Folder: " + selectedFolderPath;
         }
+#endif
     }
 
-#endif
 
 
 
