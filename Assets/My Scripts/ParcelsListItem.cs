@@ -157,7 +157,7 @@ public class ParcelsListItem : MonoBehaviour
                             Debug.Log("BotrytisGreyMould");
                         }
 
-                        Debug.Log("PowderyMildew " + pestsData.diseases.PowderyMildew[0]);
+                        //Debug.Log("PowderyMildew " + pestsData.diseases.PowderyMildew[0]);
                         if (pestsData.diseases?.PowderyMildew != null && pestsData.diseases.PowderyMildew[0])
                         {
                             numOfDiseasesToday++;
@@ -350,7 +350,7 @@ public class ParcelsListItem : MonoBehaviour
                             Debug.Log("SpiderMites");
                         }
 
-                        Debug.Log("SanJoseScale " + pestsData.diseases.SanJoseScale[0]);
+                        //Debug.Log("SanJoseScale " + pestsData.diseases.SanJoseScale[0]);
                         if (pestsData.diseases?.SanJoseScale != null && pestsData.diseases.SanJoseScale[0])
                         {
                             numOfDiseasesToday++;

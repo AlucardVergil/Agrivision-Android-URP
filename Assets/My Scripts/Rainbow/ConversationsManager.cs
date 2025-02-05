@@ -172,16 +172,24 @@ public class ConversationsManager : MonoBehaviour
             {
                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
                 {
-                    List<Invitation> notificationsList = callback.Data;
-                    notificationsCountText.text = notificationsList.Count.ToString();
+                    List<Invitation> notificationsList = callback.Data;                    
 
                     Debug.Log($"Notification Count= {notificationsList.Count}");
 
+                    int notificationCount = 0;
+
                     foreach (Invitation invitation in notificationsList)
                     {
-                        var notification = Instantiate(notificationPrefab, notificationsContent.transform);
-                        notification.GetComponent<NotificationGameobject>().currentContactInvitation = invitation;
+                        if (invitation.Status == Invitation.InvitationStatus.Pending)
+                        {
+                            var notification = Instantiate(notificationPrefab, notificationsContent.transform);
+                            notification.GetComponent<NotificationGameobject>().currentContactInvitation = invitation;
+
+                            notificationCount++;
+                        }
                     }
+
+                    notificationsCountText.text = notificationCount.ToString();
                 });
             }
             else
@@ -670,7 +678,7 @@ public class ConversationsManager : MonoBehaviour
                         if (messagesList[index].Content != null && !messagesList[index].Deleted) // check if content is null. These entries are bcz it includes call notifications
                         {
                             FileAttachment fileAttachment = messagesList[index].FileAttachment;
-                            FileAttachment nextItemHasFileAttachment = messagesList[index - 1].FileAttachment; // To check if next message has file attachment
+                            FileAttachment nextItemHasFileAttachment = (index > 0) ? messagesList[index - 1].FileAttachment : null; // To check if next message has file attachment
                             string senderId = rbContacts.GetContactIdFromContactJid(messagesList[index].FromJid);
                             bool isOwnMessage = myContact.Jid_im == messagesList[index].FromJid;
 
