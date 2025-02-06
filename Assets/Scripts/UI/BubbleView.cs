@@ -162,7 +162,7 @@ namespace Cortex
                 {
                     // Vagelis
                     //Change the button text if i am owner 
-                    if (bubbles.GetBubbleByIdFromCache(cur.Id).Creator == model.Contacts.GetCurrentContactId())                    
+                    if (bubbles.GetBubbleByIdFromCache(cur.Id).Creator == model.Contacts.GetCurrentContactId())
                         DeleteOrLeaveBubbleButtonText.text = "Delete Bubble";                    
                     else
                         DeleteOrLeaveBubbleButtonText.text = "Leave Bubble";

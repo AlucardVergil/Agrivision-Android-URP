@@ -116,10 +116,10 @@ public class ARFieldVisualizer : MonoBehaviour
 
                 for (int i = 0; i < parcel.shape.coordinates[0].Length - 1; i++)
                 {
-                    Debug.Log($"GetSelectedParcelCoordinates: {i} {parcel.shape.coordinates[0][i][0]}");
-                    tempFieldCorners[i].x = parcel.shape.coordinates[0][i][0];
-                    Debug.Log($"GetSelectedParcelCoordinates2: {i} {parcel.shape.coordinates[0][i][1]}");
-                    tempFieldCorners[i].y = parcel.shape.coordinates[0][i][1];
+                    Debug.Log($"GetSelectedParcelCoordinates: {i} {parcel.shape.coordinates[0][i][1]}");
+                    tempFieldCorners[i].x = parcel.shape.coordinates[0][i][1];
+                    Debug.Log($"GetSelectedParcelCoordinates2: {i} {parcel.shape.coordinates[0][i][0]}");
+                    tempFieldCorners[i].y = parcel.shape.coordinates[0][i][0];
                 }
 
                 fieldCorners = OrderFieldCornersClockwise(tempFieldCorners);
@@ -187,13 +187,13 @@ public class ARFieldVisualizer : MonoBehaviour
 #if UNITY_EDITOR
         //Vector2 currentPosition = new Vector2(40.62573397234498f, 22.959545477275366f);
         //Vector2 currentPosition = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 userReferenceGPS in this script
-        Vector2 currentPosition = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 userReferenceGPS in this script
+        Vector2 currentPosition = new Vector2(39.63610f, 21.69290f); // NOTE: also see Vector2 userReferenceGPS in this script
         foreach (var parcel in parcels)
         {
             if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
             {
-                currentPosition.x = parcel.shape.coordinates[0][0][0]; // NOTE: also see Vector2 userReferenceGPS in this script
-                currentPosition.y = parcel.shape.coordinates[0][0][1];
+                currentPosition.x = parcel.shape.coordinates[0][0][1]; // NOTE: also see Vector2 userReferenceGPS in this script
+                currentPosition.y = parcel.shape.coordinates[0][0][0];
             }
         }
 #else
@@ -609,13 +609,13 @@ public class ARFieldVisualizer : MonoBehaviour
 #if UNITY_EDITOR
         //Vector2 userReferenceGPS = new Vector2(40.62573397234498f, 22.959545477275366f);
         //Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 currentPosition in this script
-        Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f);
+        Vector2 userReferenceGPS = new Vector2(39.63610f, 21.69290f);
         foreach (var parcel in parcels)
         {
             if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
             {
-                userReferenceGPS.x = parcel.shape.coordinates[0][0][0]; // NOTE: also see Vector2 currentPosition in this script
-                userReferenceGPS.y = parcel.shape.coordinates[0][0][1];
+                userReferenceGPS.x = parcel.shape.coordinates[0][0][1]; // NOTE: also see Vector2 currentPosition in this script
+                userReferenceGPS.y = parcel.shape.coordinates[0][0][0];
             }
         }
 #else

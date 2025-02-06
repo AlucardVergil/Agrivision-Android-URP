@@ -421,6 +421,45 @@ public class FileManager : MonoBehaviour
     }
 
 
+
+    public void DownloadFileLocally(string fileDescriptorId)
+    {
+        Debug.Log("DownloadFileLocally " + fileDescriptorId);
+        fileStorage.GetFileDescriptor(fileDescriptorId, fileDescriptorResult =>
+        {
+            if (fileDescriptorResult.Result.Success && fileDescriptorResult.Data != null)
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() => {
+                    string fileName = fileDescriptorResult.Data.FileName;
+                    Debug.Log("DownloadFileLocally 2");
+                    string destinationFolder = UnityEngine.Application.persistentDataPath;
+                    Debug.Log("DownloadFileLocally 3 " + fileName + " destination " + destinationFolder);
+
+                
+                    fileStorage.DownloadFile(fileDescriptorId, destinationFolder, fileName, callback =>
+                    {
+                        Debug.Log("DownloadFileLocally 4");
+                        if (callback.Result.Success)
+                        {
+                            Debug.Log("File download started successfully.");
+                        }
+                        else
+                        {
+                            Debug.LogError("Error starting file download: " + callback.Result);
+                        }
+                    });
+                });
+            }
+            else
+            {
+                Debug.LogError("Failed to retrieve file descriptor!");
+            }
+        });
+
+    }
+
+
+
     private Texture LoadImageToChat(MemoryStream memoryStream)
     {
         byte[] imageData = memoryStream.ToArray();

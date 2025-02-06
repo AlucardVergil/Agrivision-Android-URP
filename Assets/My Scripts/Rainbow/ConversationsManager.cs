@@ -94,6 +94,8 @@ public class ConversationsManager : MonoBehaviour
 
     [HideInInspector] public bool wasDisconnectedFromSearchContactByName = false;
 
+    public Texture defaultFileTexture;
+
 
 
     public void InitializeConversationsAndContacts() // Probably will need to assign the variables in the other function bcz they are called too early and not assigned (TO CHECK)
@@ -450,25 +452,25 @@ public class ConversationsManager : MonoBehaviour
 
     // Create a chat message on chat area. This can take either a message type or just string. That's bcz when i send a message it takes the text from input field, instead of a message type variable.
     // This was done to pass the whole message object when i can so that i can use things like dates sent etc
-    public void CreateChatMessage(object messageObject, bool isOwnMessage, string contactID, Texture texture = null)
+    public void CreateChatMessage(object messageObject, bool isOwnMessage, string contactID, Texture texture = null, string fileDescriptorId = null)
     {
         Contact contact = rbContacts.GetContactFromContactId(contactID);
 
         // First check if contact can be found in roster for optimization, else look in server. No need to look for contact if it's my own message bcz there is no avatar image shown
         if (contact != null || isOwnMessage)
         {
-            CreateChatEntry(messageObject, isOwnMessage, contact, texture);
+            CreateChatEntry(messageObject, isOwnMessage, contact, texture, fileDescriptorId);
         }  
         else
         {
             rbContacts.GetContactFromContactIdFromServer(contactID, callback =>
             {
-                CreateChatEntry(messageObject, isOwnMessage, callback.Data, texture); // If contact is null it skips the avatar image creation in CreateChatEntry
+                CreateChatEntry(messageObject, isOwnMessage, callback.Data, texture, fileDescriptorId); // If contact is null it skips the avatar image creation in CreateChatEntry
             });
         }
     }
 
-    private async void CreateChatEntry(object messageData, bool isOwnMessage, Contact contact, Texture texture)
+    private async void CreateChatEntry(object messageData, bool isOwnMessage, Contact contact, Texture texture, string fileDescriptorId = null)
     {
         await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
         {
@@ -524,6 +526,7 @@ public class ConversationsManager : MonoBehaviour
                 {
                     ChatPrefabAvatar entry = newMessage.GetComponent<ChatPrefabAvatar>();
                     entry.Contact = contact;
+                    entry.fileDescriptorId = fileDescriptorId;
 
                     LoadChatAvatar(entry, contact, token);
                 }
@@ -704,12 +707,13 @@ public class ConversationsManager : MonoBehaviour
                                     if (messagesList[index - 1].FileAttachment.MimeType.Contains("image"))
                                     {
                                         onTextureReceived = await GetComponent<FileManager>().StreamSharedFile<Texture>(messagesList[index - 1].FileAttachment.Id);
-                                        CreateChatMessage(messagesList[index], isOwnMessage, senderId, onTextureReceived);
+                                        CreateChatMessage(messagesList[index], isOwnMessage, senderId, onTextureReceived, messagesList[index - 1].FileAttachment.Id);
                                     }
                                     else
                                     {
-                                        file = await GetComponent<FileManager>().StreamSharedFile<byte[]>(messagesList[index - 1].FileAttachment.Id);
+                                        //file = await GetComponent<FileManager>().StreamSharedFile<byte[]>(messagesList[index - 1].FileAttachment.Id);
                                         //NOTE to add CreateChatMessage after processing file (pdf etc)
+                                        CreateChatMessage(messagesList[index], isOwnMessage, senderId, defaultFileTexture, messagesList[index - 1].FileAttachment.Id);
                                     }
 
                                     
@@ -726,12 +730,13 @@ public class ConversationsManager : MonoBehaviour
                                 if (messagesList[index].FileAttachment.MimeType.Contains("image"))
                                 {
                                     onTextureReceived = await GetComponent<FileManager>().StreamSharedFile<Texture>(fileAttachment.Id);
-                                    CreateChatMessage(messagesList[index], isOwnMessage, senderId, onTextureReceived);
+                                    CreateChatMessage(messagesList[index], isOwnMessage, senderId, onTextureReceived, fileAttachment.Id);
                                 }
                                 else
                                 {
-                                    file = await GetComponent<FileManager>().StreamSharedFile<byte[]>(fileAttachment.Id);
+                                    //file = await GetComponent<FileManager>().StreamSharedFile<byte[]>(fileAttachment.Id);
                                     //NOTE to add CreateChatMessage after processing file (pdf etc)
+                                    CreateChatMessage(messagesList[index], isOwnMessage, senderId, defaultFileTexture, fileAttachment.Id);
                                 }
                                 
                                 Debug.Log($"AFTER 2 => {messagesList.Count}");
@@ -995,12 +1000,13 @@ public class ConversationsManager : MonoBehaviour
                     if (fileAttachment.MimeType.Contains("image"))
                     {
                         onTextureReceived = await GetComponent<FileManager>().StreamSharedFile<Texture>(fileAttachment.Id);
-                        CreateChatMessage(message, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived);
+                        CreateChatMessage(message, false, rbContacts.GetContactIdFromContactJid(senderName), onTextureReceived, fileAttachment.Id);
                     }                        
                     else
                     {
-                        file = await GetComponent<FileManager>().StreamSharedFile<byte[]>(fileAttachment.Id);
+                        //file = await GetComponent<FileManager>().StreamSharedFile<byte[]>(fileAttachment.Id);
                         //NOTE to add CreateChatMessage after processing file (pdf etc)
+                        CreateChatMessage(message, false, rbContacts.GetContactIdFromContactJid(senderName), defaultFileTexture, fileAttachment.Id);
                     }                   
                    
                 });

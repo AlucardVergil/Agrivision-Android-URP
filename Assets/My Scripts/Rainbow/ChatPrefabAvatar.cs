@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Cortex.ColorExtensionMethods;
 using Rainbow;
 using Rainbow.Model;
@@ -18,6 +19,7 @@ namespace Cortex
     public class ChatPrefabAvatar : MonoBehaviour
     {
         private Contact contact;
+        public string fileDescriptorId;
 
         public RawImage imageGameobject;
 
@@ -98,11 +100,22 @@ namespace Cortex
 
 
         // Vagelis
-        private void Start()
+        private async void Start()
         {
             contactGameobject = GameObject.FindGameObjectWithTag("Contacts");
 
             rainbowGameobject = GameObject.Find("Rainbow");
+
+            await Task.Delay(500);
+
+            Debug.Log("DOWNLOAD TEST " + fileDescriptorId);
+
+            GetComponentInChildren<Button>().onClick.AddListener(() =>
+            {
+                Debug.Log("DOWNLOAD TEST2 " + fileDescriptorId);
+                rainbowGameobject.GetComponent<FileManager>().DownloadFileLocally(fileDescriptorId);
+                Debug.Log("DOWNLOAD TEST3 " + fileDescriptorId);
+            });
         }
         
     }
