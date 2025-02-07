@@ -106,15 +106,11 @@ namespace Cortex
 
             rainbowGameobject = GameObject.Find("Rainbow");
 
-            await Task.Delay(500);
-
-            Debug.Log("DOWNLOAD TEST " + fileDescriptorId);
+            await Task.Delay(500); // To make sure the fileDescriptorId is assigned
 
             GetComponentInChildren<Button>().onClick.AddListener(() =>
-            {
-                Debug.Log("DOWNLOAD TEST2 " + fileDescriptorId);
+            {                
                 rainbowGameobject.GetComponent<FileManager>().DownloadFileLocally(fileDescriptorId);
-                Debug.Log("DOWNLOAD TEST3 " + fileDescriptorId);
             });
         }
         

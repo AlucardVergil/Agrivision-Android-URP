@@ -540,6 +540,8 @@ public class ConversationsManager : MonoBehaviour
             {
                 //newMessage = Instantiate(chatMessagePrefabMyself, conversationScrollViewContent.Find(contactID));
                 newMessage = Instantiate(chatMessagePrefabMyself, currentlySelectedConversationScrollViewContent);
+                ChatPrefabAvatar entry = newMessage.GetComponent<ChatPrefabAvatar>();
+                entry.fileDescriptorId = fileDescriptorId;
             }
 
             RectTransform rectTransform = newMessage.GetComponent<RectTransform>();
