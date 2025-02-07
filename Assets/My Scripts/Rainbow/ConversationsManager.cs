@@ -554,6 +554,7 @@ public class ConversationsManager : MonoBehaviour
             TMP_Text messageTextComponent = newMessage.GetNamedChild("Message").GetComponent<TMP_Text>();
             messageTextComponent.text = messageText;
 
+
             if (!isOwnMessage)
             {
                 newMessage.GetNamedChild("DateText").GetComponent<TMP_Text>().text = messageObject.Date.ToString();
@@ -813,7 +814,7 @@ public class ConversationsManager : MonoBehaviour
                 //conversationContentArea.text += $"<align=right>{messageInputField.text}</align>\n\n"; ;
                 //doOnceRefreshTextArea = true; // Here it works even if it's below. The problem is the retrieval of texts not the sending
 
-                CreateChatMessage(messageInputField.text, true, currentSelectedConversation.PeerId);
+                CreateChatMessage(callback.Data, true, currentSelectedConversation.PeerId);  //CreateChatMessage(messageInputField.text, true, currentSelectedConversation.PeerId);
 
                 messageInputField.text = "";
             }
@@ -856,7 +857,7 @@ public class ConversationsManager : MonoBehaviour
                 //conversationContentArea.text += $"<align=right>{messageInputField.text}</align>\n\n"; ;
                 //doOnceRefreshTextArea = true; // Here it works even if it's below. The problem is the retrieval of texts not the sending
 
-                CreateChatMessage(GetComponent<BubbleManager>().messageInputField.text, true, currentSelectedConversation.PeerId);
+                CreateChatMessage(callback.Data, true, currentSelectedConversation.PeerId);
 
                 GetComponent<BubbleManager>().messageInputField.text = "";
             }

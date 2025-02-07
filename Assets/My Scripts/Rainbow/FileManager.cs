@@ -198,20 +198,34 @@ public class FileManager : MonoBehaviour
             {
                 var fileDescriptor = callbackFileDescriptor.Data;
                 fileDescriptorId = fileDescriptor.Id;
+                string fileType = callbackFileDescriptor.Data.TypeMIME;
+
                 Debug.Log($"FileDescriptor created. Upload started. ID: {fileDescriptorId}");
                 Debug.Log($"isUploaded= {callbackFileDescriptor.Data.IsUploaded}");
 
-                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                if (fileType.Contains("image"))
                 {
-                    byte[] imageData = File.ReadAllBytes(tempSelectedFilePath); // Read file as bytes
-                    Texture2D texture = new Texture2D(2, 2); // Create an empty texture
-                    if (texture.LoadImage(imageData)) // Load image data into texture
-                    {                   
-                        GetComponent<ConversationsManager>().CreateChatMessage(message, true, myContact.Id, texture);                    
-                    }
-                    else
-                        Debug.Log($"Couldn't load image => {tempSelectedFilePath}");
-                });
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        byte[] imageData = File.ReadAllBytes(tempSelectedFilePath); // Read file as bytes
+                        Texture2D texture = new Texture2D(2, 2); // Create an empty texture
+                        if (texture.LoadImage(imageData)) // Load image data into texture
+                        {
+                            GetComponent<ConversationsManager>().CreateChatMessage(message, true, myContact.Id, texture, fileDescriptorId);
+                        }
+                        else
+                            Debug.Log($"Couldn't load image => {tempSelectedFilePath}");
+                    });
+                }
+                else
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {                        
+                        GetComponent<ConversationsManager>().CreateChatMessage(message, true, myContact.Id, GetComponent<ConversationsManager>().defaultFileTexture, fileDescriptorId);
+                    });
+                }
+
+                
 
             }
             else
