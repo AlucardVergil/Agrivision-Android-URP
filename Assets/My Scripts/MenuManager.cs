@@ -15,6 +15,7 @@ public class MenuManager : MonoBehaviour
     private GameObject pestPanel;
 
     private GameObject activePanel;
+    public GameObject maximizePanelsButton;
 
     private GameObject apisManager;
     private GameObject GPSReceiverGameObject;
@@ -28,6 +29,16 @@ public class MenuManager : MonoBehaviour
         for (int j = 0; j < slate.Length; j++)
         {
             slate[j].SetActive(false);
+        }
+    }
+
+
+    public void ShowOrHideActivePanel()
+    {
+        if (activePanel != null)
+        {
+            maximizePanelsButton.SetActive(activePanel.activeSelf);
+            activePanel.SetActive(!activePanel.activeSelf);
         }
     }
 
