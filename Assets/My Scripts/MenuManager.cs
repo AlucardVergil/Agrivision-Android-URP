@@ -15,6 +15,8 @@ public class MenuManager : MonoBehaviour
     private GameObject pestPanel;
 
     private GameObject activePanel;
+    
+    [Header("Button that maximizes minimized panels")]
     public GameObject maximizePanelsButton;
 
     private GameObject apisManager;

@@ -71,12 +71,15 @@ public class ARFieldVisualizer : MonoBehaviour
     void Awake()
     {
         panelsThatDisplayFieldMesh = GameObject.FindGameObjectsWithTag("panelsThatDisplayFieldMesh");
+        Debug.Log("panelsThatDisplayFieldMesh => " + panelsThatDisplayFieldMesh.Length);
     }
 
 
 
     void Start()
     {
+        Input.compass.enabled = true;
+
         fieldCorners = OrderFieldCornersClockwise(fieldCorners2);
 
         apisManager = GameObject.FindGameObjectWithTag("APIsManager");
@@ -86,11 +89,11 @@ public class ARFieldVisualizer : MonoBehaviour
             debugText.text = "You must assign exactly 4 corners.";
             return;
         }
-
+        debugText.text = Input.compass.trueHeading.ToString();
         // Calculate and log the area of the field
-        float area = CalculateArea(fieldCorners);
-        lastReceivedMessage = $"Field Area: {area} square meters";
-               
+        //float area = CalculateArea(fieldCorners);
+        //lastReceivedMessage = $"Field Area: {area} square meters";
+
 
         //Place semi-transparent mesh in field area
         //RecalibrateFieldMesh();
@@ -187,7 +190,7 @@ public class ARFieldVisualizer : MonoBehaviour
 #if UNITY_EDITOR
         //Vector2 currentPosition = new Vector2(40.62573397234498f, 22.959545477275366f);
         //Vector2 currentPosition = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 userReferenceGPS in this script
-        Vector2 currentPosition = new Vector2(39.63610f, 21.69290f); // NOTE: also see Vector2 userReferenceGPS in this script
+        Vector2 currentPosition = new Vector2(40.831169f, 22.8861256f); // NOTE: also see Vector2 userReferenceGPS in this script
         foreach (var parcel in parcels)
         {
             if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
@@ -197,14 +200,15 @@ public class ARFieldVisualizer : MonoBehaviour
             }
         }
 #else
-        Vector2 currentPosition = new Vector2(latitude, longitude);
+        //Vector2 currentPosition = new Vector2(latitude, longitude);
+        Vector2 currentPosition = new Vector2(40.83121833672052f, 22.886030551804623f);
 #endif
 
 
         // Check if the current position is inside the field
         if (IsPointInside(currentPosition))
         {
-            debugText.text = lastReceivedMessage + "\nYou are inside the field.";
+            //debugText.text = lastReceivedMessage + "\nYou are inside the field.";
 
             allFieldMeshPanelsDisabled = true;
 
@@ -234,7 +238,7 @@ public class ARFieldVisualizer : MonoBehaviour
         }
         else
         {
-            debugText.text = lastReceivedMessage + "\nYou are outside the field.";
+            //debugText.text = lastReceivedMessage + "\nYou are outside the field.";
             ColorFieldArea(false);
 
             doOnceBool = true;
@@ -245,211 +249,7 @@ public class ARFieldVisualizer : MonoBehaviour
     }
 
 
-    // Create the mesh for the field area
-    //public void CreateFieldMeshBackup()
-    //{
-    //    if (field != null)
-    //        DestroyImmediate(field);
-
-    //    field = new GameObject("FieldMesh", typeof(MeshFilter), typeof(MeshRenderer)); //Note: box collider needs to be added before ObjectManipulator
-    //    meshFilter = field.GetComponent<MeshFilter>();
-    //    meshRenderer = field.GetComponent<MeshRenderer>();
-        
-    //    meshRenderer.material = fieldMaterial;
-
-    //    Mesh mesh = new Mesh();
-    //    mesh.name = "Mesh";
-
-    //    Vector3[] vertices = new Vector3[fieldCorners.Length];
-    //    for (int i = 0; i < fieldCorners.Length; i++)
-    //    {
-    //        vertices[i] = GPSPositionToWorldPosition(fieldCorners[i]);
-    //        PlaceFieldMarkers(vertices[i]);
-    //    }
-
-    //    // Set up how the mesh's triangles connect (counter-clockwise)
-    //    int[] triangles = new int[]
-    //    {
-    //        0, 1, 2, // First triangle
-    //        0, 2, 3  // Second triangle
-    //    };
-
-    //    mesh.vertices = vertices;
-    //    mesh.triangles = triangles;
-    //    mesh.RecalculateNormals();
-
-    //    meshFilter.mesh = mesh;
-
-    //    var meshCollider = field.AddComponent<MeshCollider>();
-    //    meshCollider.sharedMesh = mesh;
-
-
-    //    var manipulator = field.AddComponent<ObjectManipulator>();
-    //    // Can grab with both hands to rotate and scale field mesh
-    //    manipulator.selectMode = UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Multiple; 
-
-    //    RotationAxisConstraint rotationConstraint = field.AddComponent<RotationAxisConstraint>();
-
-    //    // Disable manipulation on all axes, except y
-    //    rotationConstraint.ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
-
-    //    MoveAxisConstraint moveConstraint = field.AddComponent<MoveAxisConstraint>();
-
-    //    // Disable manipulation on y axis
-    //    moveConstraint.ConstraintOnMovement = AxisFlags.YAxis;
-
-    //    // Make movement, rotation and scaling of field mesh smoother / slower
-    //    manipulator.MoveLerpTime = 0.3f;
-    //    manipulator.RotateLerpTime = 0.3f;
-    //    manipulator.ScaleLerpTime = 0.3f;
-
-    //    // Allow manipulation for movement and rotation only
-    //    manipulator.AllowedManipulations = TransformFlags.Move | TransformFlags.Rotate;
-
-    //    manipulator.enabled = false;
-    //}
-
-
-    // Create the mesh for the field area
-
-
-    //public void CreateFieldMesh(Texture texture)
-    //{
-    //    if (field != null)
-    //        DestroyImmediate(field);
-
-    //    field = new GameObject("FieldMesh", typeof(MeshFilter), typeof(MeshRenderer)); //Note: box collider needs to be added before ObjectManipulator
-    //    meshFilter = field.GetComponent<MeshFilter>();
-    //    meshRenderer = field.GetComponent<MeshRenderer>();
-
-    //    // Create a material with texture
-    //    Material material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-    //    //Texture texture = Resources.Load<Texture>("Sprites/test");
-
-    //    if (texture != null)
-    //    {
-    //        material.SetTexture("_BaseMap", texture); // Assign texture to the Base Map
-    //        meshRenderer.material = material;
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("Texture not found. Check the Resources folder and texture path.");
-    //    }
-
-    //    Mesh mesh = new Mesh();
-    //    mesh.name = "Mesh";
-
-    //    //fieldCorners = GPSBoundingBox.GetBoundingSquare(fieldCorners);
-
-    //    Vector3[] vertices = new Vector3[fieldCorners.Length];
-    //    for (int i = 0; i < fieldCorners.Length; i++)
-    //    {
-    //        vertices[i] = GPSPositionToWorldPosition(fieldCorners[i]);
-    //        PlaceFieldMarkers(vertices[i]);
-    //    }
-
-    //    // Define UVs for texturing
-    //    Vector2[] uv = new Vector2[vertices.Length];
-    //    uv[3] = new Vector2(0, 0); // Bottom-left
-    //    uv[2] = new Vector2(1, 0); // Bottom-right
-    //    uv[1] = new Vector2(1, 1); // Top-right
-    //    uv[0] = new Vector2(0, 1); // Top-left
-    //    //uv[0] = new Vector2(0.5f, 0); // Midpoint on the bottom edge
-    //    //uv[1] = new Vector2(1f, 0.5f); // Midpoint on the right edge
-    //    //uv[2] = new Vector2(0.5f, 1); // Midpoint on the top edge
-    //    //uv[3] = new Vector2(0, 0.5f); // Midpoint on the left edge
-    //    //uv[0] = new Vector2(0.1f, 0); // Left edge of the field
-    //    //uv[1] = new Vector2(0.9f, 0); // Right edge of the field
-    //    //uv[2] = new Vector2(0.9f, 1); // Top-right
-    //    //uv[3] = new Vector2(0.1f, 1); // Top-left
-    //    //uv[0] = new Vector2(0.1f, 0.1f); // Adjusted Bottom-left
-    //    //uv[1] = new Vector2(0.9f, 0);    // Adjusted Bottom-right
-    //    //uv[2] = new Vector2(0.8f, 0.9f); // Adjusted Top-right
-    //    //uv[3] = new Vector2(0.2f, 1);    // Adjusted Top-left
-
-    //    //uv[0] = new Vector2(0, 1); // Top-left
-    //    //uv[1] = new Vector2(0, 0); // Bottom-left
-    //    //uv[2] = new Vector2(1, 0); // Bottom-right
-    //    //uv[3] = new Vector2(1, 1); // Top-right
-
-    //    //uv = TextureProcessor.AdjustUVsBasedOnRotation(uv);
-
-
-    //    // Set up how the mesh's triangles connect (counter-clockwise)
-    //    int[] triangles = new int[]
-    //    {
-    //        0, 1, 2, // First triangle
-    //        0, 2, 3  // Second triangle
-    //    };
-
-    //    mesh.vertices = vertices;
-    //    mesh.triangles = triangles;
-    //    mesh.uv = uv; // Assign UVs for texture mapping
-    //    mesh.RecalculateNormals();
-
-    //    meshFilter.mesh = mesh;
-
-    //    var meshCollider = field.AddComponent<MeshCollider>();
-    //    meshCollider.sharedMesh = mesh;
-
-    //    var rigidbody = field.AddComponent<Rigidbody>();
-    //    rigidbody.isKinematic = true;
-
-
-
-
-
-
-    //    //var manipulator = field.AddComponent<XRGrabInteractable>();
-    //    //// Can grab with both hands to rotate and scale field mesh
-    //    //manipulator.selectMode = UnityEngine.XR.Interaction.Toolkit.Interactables.InteractableSelectMode.Multiple;
-
-    //    //RotationAxisConstraint rotationConstraint = field.AddComponent<RotationAxisConstraint>();
-
-    //    //// Disable manipulation on all axes, except y
-    //    //rotationConstraint.ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
-
-    //    //MoveAxisConstraint moveConstraint = field.AddComponent<MoveAxisConstraint>();
-
-    //    //// Disable manipulation on y axis
-    //    //moveConstraint.ConstraintOnMovement = AxisFlags.YAxis;
-
-    //    //// Make movement, rotation and scaling of field mesh smoother / slower
-    //    //manipulator.MoveLerpTime = 0.3f;
-    //    //manipulator.RotateLerpTime = 0.3f;
-    //    //manipulator.ScaleLerpTime = 0.3f;
-
-    //    //// Allow manipulation for movement and rotation only
-    //    //manipulator.AllowedManipulations = TransformFlags.Move | TransformFlags.Rotate;
-
-    //    //manipulator.enabled = false;
-
-    //    var grabInteractable = field.AddComponent<XRGrabInteractable>();
-
-    //    // Set the grab interactable to allow rotation and scaling
-    //    grabInteractable.trackRotation = true; // Allows rotation
-    //    grabInteractable.trackPosition = true; // Allows position changes
-    //    grabInteractable.throwOnDetach = false; // Prevent throwing on release
-
-    //    // Implement rotation constraints (Custom Script)
-    //    var rotationConstraint = field.AddComponent<CustomRotationConstraint>();
-    //    rotationConstraint.RestrictedAxes = CustomRotationConstraint.AxisFlags.XAxis | CustomRotationConstraint.AxisFlags.ZAxis;
-
-    //    // Implement movement constraints (Custom Script)
-    //    var movementConstraint = field.AddComponent<CustomMovementConstraint>();
-    //    movementConstraint.RestrictedAxes = CustomMovementConstraint.AxisFlags.YAxis;
-
-    //    // Configure grab interaction settings
-    //    grabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
-
-    //    // To simulate "smoother/slower" movement/rotation
-    //    grabInteractable.attachEaseInTime = 0.3f; // Smooth interaction attachment
-
-    //    // If you want to disable interactions initially
-    //    grabInteractable.enabled = false;
-
-    //    CreateFieldMesh2(texture);
-    //}
+   
 
 
 
@@ -466,17 +266,44 @@ public class ARFieldVisualizer : MonoBehaviour
         Material material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
         //Texture texture = Resources.Load<Texture>("Sprites/test");
 
+        //if (texture != null)
+        //{
+        //    material.SetTexture("_BaseMap", texture); // Assign texture to the Base Map
+
+        //    // Enables alpha clipping to hide white pixels by disabling pixels below the threshold of transparency I set
+        //    material.SetFloat("_Cutoff", 0.3f); // Set alpha clip threshold 
+        //    material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
+        //    material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
+        //    material.SetFloat("_ZWrite", 1);
+        //    material.EnableKeyword("_ALPHATEST_ON");
+        //    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+
+        //    meshRenderer.material = material;
+        //}
+        //else
+        //{
+        //    Debug.LogError("Texture not found. Check the Resources folder and texture path.");
+        //}
+
+
         if (texture != null)
         {
             material.SetTexture("_BaseMap", texture); // Assign texture to the Base Map
 
-            // Enables alpha clipping to hide white pixels by disabling pixels below the threshold of transparency I set
-            material.SetFloat("_Cutoff", 0.5f); // Set alpha clip threshold 
-            material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
-            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
-            material.SetFloat("_ZWrite", 1);
-            material.EnableKeyword("_ALPHATEST_ON");
-            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+            // Set Surface Type to Transparent
+            material.SetFloat("_Surface", 1); // 0 = Opaque, 1 = Transparent
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+            // Enable Alpha Blending for transparency
+            material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_ZWrite", 0); // Disable depth writing for proper transparency
+
+            // Adjust transparency (optional)
+            Color color = material.GetColor("_BaseColor");
+            color.a = 0.5f; // Adjust alpha (0 = fully transparent, 1 = opaque)
+            material.SetColor("_BaseColor", color);
 
             meshRenderer.material = material;
         }
@@ -484,6 +311,8 @@ public class ARFieldVisualizer : MonoBehaviour
         {
             Debug.LogError("Texture not found. Check the Resources folder and texture path.");
         }
+
+
 
         Mesh mesh = new Mesh();
         mesh.name = "Mesh";
@@ -609,17 +438,18 @@ public class ARFieldVisualizer : MonoBehaviour
 #if UNITY_EDITOR
         //Vector2 userReferenceGPS = new Vector2(40.62573397234498f, 22.959545477275366f);
         //Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 currentPosition in this script
-        Vector2 userReferenceGPS = new Vector2(39.63610f, 21.69290f);
-        foreach (var parcel in parcels)
-        {
-            if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
-            {
-                userReferenceGPS.x = parcel.shape.coordinates[0][0][1]; // NOTE: also see Vector2 currentPosition in this script
-                userReferenceGPS.y = parcel.shape.coordinates[0][0][0];
-            }
-        }
+        Vector2 userReferenceGPS = new Vector2(40.8311696f, 22.8861256f);
+        //foreach (var parcel in parcels)
+        //{
+        //    if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
+        //    {
+        //        userReferenceGPS.x = parcel.shape.coordinates[0][0][1]; // NOTE: also see Vector2 currentPosition in this script
+        //        userReferenceGPS.y = parcel.shape.coordinates[0][0][0];
+        //    }
+        //}
 #else
-        Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
+        //Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
+        Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
 #endif
 
         // The scale factor to convert GPS degrees into meters (approximately, varies with location)
@@ -634,8 +464,17 @@ public class ARFieldVisualizer : MonoBehaviour
         float xOffset = deltaLon * metersPerLon;
         float zOffset = deltaLat * metersPerLat;
 
+#if UNITY_EDITOR
         // Return the calculated Unity world position (on a flat plane)
-        return new Vector3(xOffset, 0, zOffset);
+        return new Vector3(xOffset, -1.5f, zOffset);
+#else
+        // Apply device orientation        
+        float heading = Input.compass.trueHeading;
+        Quaternion rotation = Quaternion.Euler(0, -heading, 0);
+        Vector3 rotatedPosition = rotation * new Vector3(xOffset, -1.5f, zOffset);
+
+        return rotatedPosition;
+#endif
     }
 
 
@@ -738,10 +577,13 @@ public class ARFieldVisualizer : MonoBehaviour
         }
 
         // Calculate the center of the field
-        Vector3 centerOfField = CalculateFieldCenter(fieldCorners);
+        //Vector3 centerOfField = CalculateFieldCenter(fieldCorners);
+
+        Vector3 centerOfField = GPSPositionToWorldPosition(new Vector2(40.82966118357083f, 22.890211542201744f));
 
         // Position the hologram above the center of the field
-        Vector3 hologramPosition = centerOfField + new Vector3(0, heightAboveField, 0);
+        //Vector3 hologramPosition = centerOfField + new Vector3(0, heightAboveField, 0); 
+        Vector3 hologramPosition = centerOfField + new Vector3(0, 0, 0);
 
         // Instantiate the hologram prefab at the desired position
         hologramInstance = Instantiate(hologramPrefab, hologramPosition, Quaternion.identity);

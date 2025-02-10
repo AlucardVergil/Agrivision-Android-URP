@@ -22,34 +22,34 @@ public class UDPListener : MonoBehaviour
 
     public TMP_Text debugText; // Reference to the TextMeshPro UI component
 
-    void Start()
-    {
-        try
-        {
-            udpClient = new UdpClient(port);
-            cts = new CancellationTokenSource();
-            lastReceivedMessage = $"UDP Listener started on port {port}";
-            lastReceivedTime = Time.time;
-            ReceiveData(cts.Token);
-        }
-        catch (Exception e)
-        {
-            lastReceivedMessage = $"Error initializing UDP listener: {e.Message}";
-        }
-    }
+    //void Start()
+    //{
+    //    try
+    //    {
+    //        udpClient = new UdpClient(port);
+    //        cts = new CancellationTokenSource();
+    //        lastReceivedMessage = $"UDP Listener started on port {port}";
+    //        lastReceivedTime = Time.time;
+    //        ReceiveData(cts.Token);
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        lastReceivedMessage = $"Error initializing UDP listener: {e.Message}";
+    //    }
+    //}
 
-    void Update()
-    {
-        // Check for timeout
-        if (Time.time - lastReceivedTime > timeoutDuration)
-        {
-            debugText.text = lastReceivedMessage + $"\nNo data received for {timeoutDuration} seconds.";
-        }
-        else
-        {
-            debugText.text = lastReceivedMessage;
-        }
-    }
+    //void Update()
+    //{
+    //    // Check for timeout
+    //    if (Time.time - lastReceivedTime > timeoutDuration)
+    //    {
+    //        debugText.text = lastReceivedMessage + $"\nNo data received for {timeoutDuration} seconds.";
+    //    }
+    //    else
+    //    {
+    //        debugText.text = lastReceivedMessage;
+    //    }
+    //}
 
     async void ReceiveData(CancellationToken token)
     {
@@ -98,17 +98,17 @@ public class UDPListener : MonoBehaviour
         }
     }
 
-    void OnApplicationQuit()
-    {
-        cts.Cancel();
-        udpClient.Close();
-        udpClient.Dispose();
-    }
+    //void OnApplicationQuit()
+    //{
+    //    cts.Cancel();
+    //    udpClient.Close();
+    //    udpClient.Dispose();
+    //}
 
-    void OnDestroy()
-    {
-        cts.Cancel();
-        udpClient.Close();
-        udpClient.Dispose();
-    }
+    //void OnDestroy()
+    //{
+    //    cts.Cancel();
+    //    udpClient.Close();
+    //    udpClient.Dispose();
+    //}
 }

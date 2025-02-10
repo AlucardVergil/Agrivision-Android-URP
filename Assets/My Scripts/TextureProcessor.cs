@@ -193,6 +193,10 @@ public static class TextureProcessor
                 // Set alpha to 0 to make it fully transparent
                 pixels[i] = new Color(pixel.r, pixel.g, pixel.b, 0f);
             }
+            else
+            {
+                pixels[i] = new Color(pixel.r, pixel.g, pixel.b, 0.4f);
+            }
         }
 
         // Create a new texture and apply the modified pixels
