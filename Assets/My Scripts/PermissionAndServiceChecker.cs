@@ -23,6 +23,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
     {
         bool cameraPermissionAsked = false;
         bool micPermissionAsked = false;
+        bool locationPermissionAsked = false;
 
 
         if (!Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
@@ -45,6 +46,16 @@ public class PermissionAndServiceChecker : MonoBehaviour
             }
 
             yield return new WaitUntil(() => Permission.HasUserAuthorizedPermission("android.permission.RECORD_AUDIO"));
+        }
+
+
+        if (!Permission.HasUserAuthorizedPermission("android.permission.ACCESS_FINE_LOCATION"))
+        {
+            if (!locationPermissionAsked)
+            {
+                Permission.RequestUserPermission("android.permission.ACCESS_FINE_LOCATION");
+                locationPermissionAsked = true;
+            }
         }
 
     }

@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Unity.Mathematics;
+using UnityEngine.UIElements.Experimental;
 
 public class ARFieldVisualizer : MonoBehaviour
 {
@@ -79,6 +80,7 @@ public class ARFieldVisualizer : MonoBehaviour
     void Start()
     {
         Input.compass.enabled = true;
+        Input.gyro.enabled = true;    // Enable the gyroscope for better accuracy
 
         fieldCorners = OrderFieldCornersClockwise(fieldCorners2);
 
@@ -317,12 +319,18 @@ public class ARFieldVisualizer : MonoBehaviour
         Mesh mesh = new Mesh();
         mesh.name = "Mesh";
 
+#if !UNITY_EDITOR
+        float compassHeading = Input.compass.trueHeading;
+#else
+        float compassHeading = 0;
+#endif
+
         fieldCorners = GPSBoundingBox.GetBoundingSquare(fieldCorners);
 
         Vector3[] vertices = new Vector3[fieldCorners.Length];
         for (int i = 0; i < fieldCorners.Length; i++)
         {
-            vertices[i] = GPSPositionToWorldPosition(fieldCorners[i]);
+            vertices[i] = GPSPositionToWorldPosition(fieldCorners[i], compassHeading);
             //PlaceFieldMarkers(vertices[i]);
         }
 
@@ -432,13 +440,13 @@ public class ARFieldVisualizer : MonoBehaviour
 
 
     // This method will convert GPS coordinates to Unity world coordinates based on a reference point.
-    private Vector3 GPSPositionToWorldPosition(Vector2 gpsPosition)
+    private Vector3 GPSPositionToWorldPosition(Vector2 gpsPosition, float compassHeading = 0)
     {
         // Reference point (the "origin" GPS point to convert everything relative to)
 #if UNITY_EDITOR
-        //Vector2 userReferenceGPS = new Vector2(40.62573397234498f, 22.959545477275366f);
-        //Vector2 userReferenceGPS = new Vector2(21.69290f, 39.63610f); // NOTE: also see Vector2 currentPosition in this script
-        Vector2 userReferenceGPS = new Vector2(40.8311696f, 22.8861256f);
+        //Vector2 userReferenceGPS = new Vector2(40.8311696f, 22.8861256f);
+        //Vector2 userReferenceGPS = new Vector2(40.832382312341956f, 22.886331353681967f); 
+        Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
         //foreach (var parcel in parcels)
         //{
         //    if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
@@ -462,19 +470,15 @@ public class ARFieldVisualizer : MonoBehaviour
 
         // Convert GPS offset into meters
         float xOffset = deltaLon * metersPerLon;
-        float zOffset = deltaLat * metersPerLat;
+        float zOffset = deltaLat * metersPerLat;        
 
-#if UNITY_EDITOR
         // Return the calculated Unity world position (on a flat plane)
-        return new Vector3(xOffset, -1.5f, zOffset);
-#else
-        // Apply device orientation        
-        float heading = Input.compass.trueHeading;
-        Quaternion rotation = Quaternion.Euler(0, -heading, 0);
-        Vector3 rotatedPosition = rotation * new Vector3(xOffset, -1.5f, zOffset);
+        Quaternion rotation = Quaternion.Euler(0, -compassHeading, 0);
+        Vector3 rotatedPosition = rotation * new Vector3(xOffset, -3.5f, zOffset);
+
+        Debug.Log($"rotation => {rotation} , xOffset => {xOffset} , zOffset => {zOffset} , rotatedPosition => {rotatedPosition}");
 
         return rotatedPosition;
-#endif
     }
 
 

@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using TMPro;
 using System.Threading.Tasks;
+using UnityEngine.UIElements.Experimental;
 
 public class GPSSender : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class GPSSender : MonoBehaviour
         udpListener = GetComponent<UDPListener>();
 
         Input.compass.enabled = true;
+        Input.gyro.enabled = true;    // Enable the gyroscope for better accuracy
         Input.location.Start(0.5f, 0.5f); // Update every 0.5m change
 
         InvokeRepeating("GetGPSDataDirectly", 4.0f, 1.0f); // Send GPS data every second        
@@ -41,6 +43,18 @@ public class GPSSender : MonoBehaviour
             return;
         }
         Input.location.Start(1f, 1f); // Start location service with desired accuracy and update frequency
+    }
+
+    void Update()
+    {
+        if (Input.compass.enabled && Input.compass.timestamp > 0)
+        {
+            debugText.text = "Compass Heading: " + Input.compass.trueHeading + "\nGyro: " + Input.gyro.attitude;
+        }
+        else
+        {
+            debugText.text = "Initializing compass...";
+        }
     }
 
     void UpdateServerIp(string newIp)
