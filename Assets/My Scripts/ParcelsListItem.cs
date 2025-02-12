@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using Newtonsoft.Json;
 
 public class ParcelsListItem : MonoBehaviour
 {
@@ -43,7 +44,7 @@ public class ParcelsListItem : MonoBehaviour
             {
                 if (jsonResponsePests != "[]") // There are no pest data for this parcel at these dates
                 {
-                    pestsData = JsonUtility.FromJson<PestDiseaseData>(jsonResponsePests);
+                    pestsData = JsonConvert.DeserializeObject<PestDiseaseData>(jsonResponsePests);
 
                     Debug.Log("CodlingMoth " + pestsData.diseases);
 
@@ -272,6 +273,7 @@ public class ParcelsListItem : MonoBehaviour
                             Debug.Log("FruitFly");
                         }
 
+                        Debug.Log($"Leafspot: {pestsData.diseases?.LeafSpot}");
                         if (pestsData.diseases?.LeafSpot != null && pestsData.diseases.LeafSpot[0])
                         {
                             numOfDiseasesToday++;

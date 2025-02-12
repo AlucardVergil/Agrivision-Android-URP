@@ -322,8 +322,10 @@ public class ARFieldVisualizer : MonoBehaviour
 #if !UNITY_EDITOR
         float compassHeading = Input.compass.trueHeading;
 #else
-        float compassHeading = 0;
+        float compassHeading = 30;
 #endif
+
+        apisManager.GetComponent<FertilizationAPI>().label.text = $"Compass Heading:\n {compassHeading}";
 
         fieldCorners = GPSBoundingBox.GetBoundingSquare(fieldCorners);
 
