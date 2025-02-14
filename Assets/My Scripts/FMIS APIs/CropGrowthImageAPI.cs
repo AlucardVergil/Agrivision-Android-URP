@@ -44,7 +44,7 @@ public class CropGrowthImageAPI : FMIS_API
 
         Debug.Log($"bbox ===> {bbox2}");
 
-        string url = $"https://api.cropapp.gr/external/crop-growth-image?parcel_id={parcelID}&sensing_date={sensingDate}&WIDTH={width}&HEIGHT={height}&BBOX={bbox}";
+        string url = $"https://api.cropapp.gr/external/crop-growth-image?parcel_id={parcelID}&sensing_date={sensingDate}&WIDTH={width}&HEIGHT={height}&BBOX={bbox2}";
 
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
         request.SetRequestHeader("apiKey", apiKey);
@@ -95,14 +95,17 @@ public class CropGrowthImageAPI : FMIS_API
     }
 
 
+    // Calculates the correct bbox based on parcel coordinates (bottom-left corner and top-right corner). These are not the actual parcel coords but the box surrounding the parcel
     private string GetSelectedParcelBbox()
     {
-        Debug.Log($"arFieldVisualizer.fieldCorners => {arFieldVisualizer.fieldCorners}");
         Vector2[] fieldCorners = GPSBoundingBox.GetBoundingSquare(arFieldVisualizer.fieldCorners);
 
-        Debug.Log($"BBOX => {fieldCorners[1].x}, {fieldCorners[1].y}, {fieldCorners[3].x}, {fieldCorners[3].y}");
+        //float bboxAdjustmentValue = 0.00119f;
+        float bboxAdjustmentValue = 0.0013f; // Adjust the bbox to make it slightly bigger that the actual parcel coordinates so it doesn't cut off a little bit of the edges
 
-        return $"{fieldCorners[1].x.ToString(CultureInfo.InvariantCulture)}, {fieldCorners[1].y.ToString(CultureInfo.InvariantCulture)}, {fieldCorners[3].x.ToString(CultureInfo.InvariantCulture)}, {fieldCorners[3].y.ToString(CultureInfo.InvariantCulture)}";        
+        // Return the bbox coords and replace the decimal from comma to dot
+        return $"{(fieldCorners[1].x - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[1].y - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, " +
+            $"{(fieldCorners[3].x + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[3].y + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}";        
     }
 
 }
