@@ -3,17 +3,27 @@ using UnityEngine.Networking;
 using System.Collections;
 using System;
 using UnityEngine.UI;
+using System.Globalization;
 
 public class CropGrowthImageAPI : FMIS_API
 {
 
     private string sensingDate = "2024-09-04";//"2025-01-04"; // Replace with the sensing date (YYYY-MM-DD)
-    private int width = 800; // Replace with desired image width
+    private int width = 400; // Replace with desired image width
     private int height = 400; // Replace with desired image height
-    private string bbox = "39.62955272340573,21.68499768346035,39.64197943254144,21.702216607555318"; // Replace with the bounding box coordinates
+    //private string bbox = "39.62955272340573,21.68499768346035,39.64197943254144,21.702216607555318"; // Replace with the bounding box coordinates
+    //private string bbox = "39.63779011, 21.691270232, 39.634601604, 21.694571705"; // Replace with the bounding box coordinates
+    //private string bbox = "39.636541, 21.692269, 39.635877, 21.693572";    
+    //private string bbox = "39.635601, 21.693132, 39.636791, 21.692695";
+    //private string bbox = "39.634601604, 21.691270232, 39.63779011, 21.694571705";
+    //private string bbox =  "39.63571733485831, 21.69207602226019, 39.63726890772919, 21.694413601235784";
+    private string bbox = "39.635601, 21.692269, 39.636791, 21.693572";
 
-    public SpriteRenderer spriteRenderer; // Renderer to display the texture
+    public SpriteRenderer spriteRenderer; // Renderer to display the texture 
     public Image test;
+
+    public ARFieldVisualizer arFieldVisualizer;
+
 
     public void GetCropGrowthImage(string parcelID, Action<Texture2D> onCropGrowthImageDataReceived)
     {
@@ -29,6 +39,10 @@ public class CropGrowthImageAPI : FMIS_API
             Debug.LogError("API key, Parcel ID, or BBOX is missing.");
             yield break;
         }
+
+        string bbox2 = GetSelectedParcelBbox();
+
+        Debug.Log($"bbox ===> {bbox2}");
 
         string url = $"https://api.cropapp.gr/external/crop-growth-image?parcel_id={parcelID}&sensing_date={sensingDate}&WIDTH={width}&HEIGHT={height}&BBOX={bbox}";
 
@@ -79,4 +93,16 @@ public class CropGrowthImageAPI : FMIS_API
             }
         }
     }
+
+
+    private string GetSelectedParcelBbox()
+    {
+        Debug.Log($"arFieldVisualizer.fieldCorners => {arFieldVisualizer.fieldCorners}");
+        Vector2[] fieldCorners = GPSBoundingBox.GetBoundingSquare(arFieldVisualizer.fieldCorners);
+
+        Debug.Log($"BBOX => {fieldCorners[1].x}, {fieldCorners[1].y}, {fieldCorners[3].x}, {fieldCorners[3].y}");
+
+        return $"{fieldCorners[1].x.ToString(CultureInfo.InvariantCulture)}, {fieldCorners[1].y.ToString(CultureInfo.InvariantCulture)}, {fieldCorners[3].x.ToString(CultureInfo.InvariantCulture)}, {fieldCorners[3].y.ToString(CultureInfo.InvariantCulture)}";        
+    }
+
 }

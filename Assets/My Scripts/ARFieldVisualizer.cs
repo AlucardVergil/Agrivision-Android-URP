@@ -25,7 +25,7 @@ public class ARFieldVisualizer : MonoBehaviour
     //    new Vector2((float)40.62579, (float)22.95937)
     //};
 
-    private Vector2[] fieldCorners;
+    public Vector2[] fieldCorners;
     private Vector2[] fieldCorners2 = {
         new Vector2(21.692269f, 39.636541f),
         new Vector2(21.693132f, 39.635601f),
@@ -448,7 +448,8 @@ public class ARFieldVisualizer : MonoBehaviour
 #if UNITY_EDITOR
         //Vector2 userReferenceGPS = new Vector2(40.8311696f, 22.8861256f);
         //Vector2 userReferenceGPS = new Vector2(40.832382312341956f, 22.886331353681967f); 
-        Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
+        //Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
+        Vector2 userReferenceGPS = new Vector2(39.635601f, 21.692269f);
         //foreach (var parcel in parcels)
         //{
         //    if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)

@@ -113,6 +113,10 @@ public class MenuManager : MonoBehaviour
                         {
                             Debug.Log("CROP IMAGE EXISTS");
 
+
+                            Texture texture = TextureProcessor.DeleteWhitePixels(jsonResponseCropGrowthImage);
+
+                            GPSReceiverGameObject.GetComponent<ARFieldVisualizer>().CreateFieldMesh(texture);
                             //CreateFieldMesh(jsonResponseCropGrowthImage);
                         }
                         else
