@@ -8,16 +8,10 @@ using System.Globalization;
 public class CropGrowthImageAPI : FMIS_API
 {
 
-    private string sensingDate = "2024-09-04";//"2025-01-04"; // Replace with the sensing date (YYYY-MM-DD)
+    //private string sensingDate = "2024-09-04";//"2025-01-04"; // Replace with the sensing date (YYYY-MM-DD)
     private int width = 400; // Replace with desired image width
     private int height = 400; // Replace with desired image height
-    //private string bbox = "39.62955272340573,21.68499768346035,39.64197943254144,21.702216607555318"; // Replace with the bounding box coordinates
-    //private string bbox = "39.63779011, 21.691270232, 39.634601604, 21.694571705"; // Replace with the bounding box coordinates
-    //private string bbox = "39.636541, 21.692269, 39.635877, 21.693572";    
-    //private string bbox = "39.635601, 21.693132, 39.636791, 21.692695";
-    //private string bbox = "39.634601604, 21.691270232, 39.63779011, 21.694571705";
-    //private string bbox =  "39.63571733485831, 21.69207602226019, 39.63726890772919, 21.694413601235784";
-    private string bbox = "39.635601, 21.692269, 39.636791, 21.693572";
+    //private string bbox = "39.635601, 21.692269, 39.636791, 21.693572";
 
     public SpriteRenderer spriteRenderer; // Renderer to display the texture 
     public Image test;
@@ -25,26 +19,24 @@ public class CropGrowthImageAPI : FMIS_API
     public ARFieldVisualizer arFieldVisualizer;
 
 
-    public void GetCropGrowthImage(string parcelID, Action<Texture2D> onCropGrowthImageDataReceived)
+    public void GetCropGrowthImage(string parcelID, string sensingDate,  Action<Texture2D> onCropGrowthImageDataReceived)
     {
         // Start the coroutine to fetch the crop growth image
-        StartCoroutine(GetCropGrowthImageEnumerator(parcelID, onCropGrowthImageDataReceived));
+        StartCoroutine(GetCropGrowthImageEnumerator(parcelID, sensingDate, onCropGrowthImageDataReceived));
     }
 
     // Coroutine to fetch the crop growth image from the API
-    IEnumerator GetCropGrowthImageEnumerator(string parcelID, Action<Texture2D> onCropGrowthImageDataReceived)
+    IEnumerator GetCropGrowthImageEnumerator(string parcelID, string sensingDate, Action<Texture2D> onCropGrowthImageDataReceived)
     {
+        string bbox = GetSelectedParcelBbox();
+
         if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(parcelID) || string.IsNullOrEmpty(bbox))
         {
             Debug.LogError("API key, Parcel ID, or BBOX is missing.");
             yield break;
         }
-
-        string bbox2 = GetSelectedParcelBbox();
-
-        Debug.Log($"bbox ===> {bbox2}");
-
-        string url = $"https://api.cropapp.gr/external/crop-growth-image?parcel_id={parcelID}&sensing_date={sensingDate}&WIDTH={width}&HEIGHT={height}&BBOX={bbox2}";
+        
+        string url = $"https://api.cropapp.gr/external/crop-growth-image?parcel_id={parcelID}&sensing_date={sensingDate}&WIDTH={width}&HEIGHT={height}&BBOX={bbox}";
 
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
         request.SetRequestHeader("apiKey", apiKey);

@@ -9,6 +9,14 @@ public class CropGrowthDatesAPI : FMIS_API
     public TMP_Text label;
     public TMP_Text infoText;
 
+    [Header("Scrollview Content That Displays Date Selections")]
+    public GameObject datesScrollViewContent;
+
+    [Header("Date Options Button Prefab")]
+    public GameObject datesPrefab;
+
+
+
     public void GetCropGrowthDatesData(string parcelID, Action<string> onCropGrowthDatesDataReceived)
     {
         StartCoroutine(GetCropGrowthDatesDataEnumerator(parcelID, onCropGrowthDatesDataReceived));
@@ -55,7 +63,7 @@ public class CropGrowthDatesAPI : FMIS_API
     }
 
 
-    void ParseCropGrowthDatesData(string jsonResponse)
+    async void ParseCropGrowthDatesData(string jsonResponse)
     {
         // Parse the JSON response using the CropGrowthData class
         CropGrowthDatesData cropGrowthData = JsonUtility.FromJson<CropGrowthDatesData>(jsonResponse);
@@ -64,6 +72,16 @@ public class CropGrowthDatesAPI : FMIS_API
         foreach (var data in cropGrowthData.timelineData)
         {
             Debug.Log($"Date: {data.date}, Image Available: {data.flag}");
+
+            if (data.flag)
+            {
+                await UnityMainThreadDispatcher.Instance().EnqueueAsync(() =>
+                {
+                    GameObject dateOption = Instantiate(datesPrefab, datesScrollViewContent.transform);
+                    dateOption.GetComponentInChildren<TMP_Text>().text = data.date;
+                    dateOption.GetComponent<CropGrowthDateOptions>().sensingDate = data.date;
+                });
+            }            
         }
     }
 }

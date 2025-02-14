@@ -107,21 +107,30 @@ public class MenuManager : MonoBehaviour
                     break;
 
                 case 5: // Crop Growth Panel
-                    apisManager.GetComponent<CropGrowthImageAPI>().GetCropGrowthImage(apisManager.GetComponent<ParcelsListAPI>().selectedParcelId, (jsonResponseCropGrowthImage) =>   // "157212"
+                    apisManager.GetComponent<CropGrowthDatesAPI>().GetCropGrowthDatesData(apisManager.GetComponent<ParcelsListAPI>().selectedParcelId, (jsonResponseCropGrowthDates) =>   // "157212"
                     {
-                        if (jsonResponseCropGrowthImage != null)
+                        if (jsonResponseCropGrowthDates != null)
                         {
-                            Debug.Log("CROP IMAGE EXISTS");
-
-
-                            Texture texture = TextureProcessor.DeleteWhitePixels(jsonResponseCropGrowthImage);
-
-                            GPSReceiverGameObject.GetComponent<ARFieldVisualizer>().CreateFieldMesh(texture);
-                            //CreateFieldMesh(jsonResponseCropGrowthImage);
+                            Debug.Log("CROP DATE EXISTS");
                         }
                         else
-                            Debug.Log("CROP IMAGE DOES NOT EXIST");
+                            Debug.Log("CROP DATE DOES NOT EXIST");
                     });
+
+                    //apisManager.GetComponent<CropGrowthImageAPI>().GetCropGrowthImage(apisManager.GetComponent<ParcelsListAPI>().selectedParcelId, "2024-09-04", (jsonResponseCropGrowthImage) =>   // "157212"
+                    //{
+                    //    if (jsonResponseCropGrowthImage != null)
+                    //    {
+                    //        Debug.Log("CROP IMAGE EXISTS");
+
+                    //        Texture texture = TextureProcessor.DeleteWhitePixels(jsonResponseCropGrowthImage);
+
+                    //        GPSReceiverGameObject.GetComponent<ARFieldVisualizer>().CreateFieldMesh(texture);
+                    //        //CreateFieldMesh(jsonResponseCropGrowthImage);
+                    //    }
+                    //    else
+                    //        Debug.Log("CROP IMAGE DOES NOT EXIST");
+                    //});
                     break;
 
                 case 6: // Fertilization Panel
