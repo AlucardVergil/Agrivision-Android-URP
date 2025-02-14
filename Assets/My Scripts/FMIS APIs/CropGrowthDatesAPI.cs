@@ -63,6 +63,7 @@ public class CropGrowthDatesAPI : FMIS_API
     }
 
 
+    // Creates the Crop Growth Dates Options so when you click on them then the image of that date is loaded
     async void ParseCropGrowthDatesData(string jsonResponse)
     {
         // Parse the JSON response using the CropGrowthData class
