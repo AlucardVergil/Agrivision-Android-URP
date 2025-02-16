@@ -69,6 +69,11 @@ public class CropGrowthDatesAPI : FMIS_API
         // Parse the JSON response using the CropGrowthData class
         CropGrowthDatesData cropGrowthData = JsonUtility.FromJson<CropGrowthDatesData>(jsonResponse);
 
+        foreach (Transform child in datesScrollViewContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
         // Example: Log the data for each date
         foreach (var data in cropGrowthData.timelineData)
         {

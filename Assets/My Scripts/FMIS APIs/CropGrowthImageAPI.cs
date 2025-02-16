@@ -93,11 +93,14 @@ public class CropGrowthImageAPI : FMIS_API
         Vector2[] fieldCorners = GPSBoundingBox.GetBoundingSquare(arFieldVisualizer.fieldCorners);
 
         //float bboxAdjustmentValue = 0.00119f;
-        float bboxAdjustmentValue = 0.0013f; // Adjust the bbox to make it slightly bigger that the actual parcel coordinates so it doesn't cut off a little bit of the edges
+        float bboxAdjustmentValue = 0.00f; // Adjust the bbox to make it slightly bigger that the actual parcel coordinates so it doesn't cut off a little bit of the edges
+
+        Debug.Log($"BBOX => {(fieldCorners[1].x - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[1].y - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, " +
+            $"{(fieldCorners[3].x + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[3].y + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}");
 
         // Return the bbox coords and replace the decimal from comma to dot
-        return $"{(fieldCorners[1].x - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[1].y - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, " +
-            $"{(fieldCorners[3].x + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[3].y + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}";        
+        return $"{(fieldCorners[3].x - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[3].y - bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, " +
+            $"{(fieldCorners[1].x + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}, {(fieldCorners[1].y + bboxAdjustmentValue).ToString(CultureInfo.InvariantCulture)}";        
     }
 
 }

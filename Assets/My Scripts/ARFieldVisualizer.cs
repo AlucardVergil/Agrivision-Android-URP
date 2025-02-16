@@ -202,8 +202,8 @@ public class ARFieldVisualizer : MonoBehaviour
             }
         }
 #else
-        //Vector2 currentPosition = new Vector2(latitude, longitude);
-        Vector2 currentPosition = new Vector2(40.83121833672052f, 22.886030551804623f);
+        Vector2 currentPosition = new Vector2(latitude, longitude);
+        //Vector2 currentPosition = new Vector2(40.83121833672052f, 22.886030551804623f);
 #endif
 
 
@@ -450,17 +450,17 @@ public class ARFieldVisualizer : MonoBehaviour
         //Vector2 userReferenceGPS = new Vector2(40.832382312341956f, 22.886331353681967f); 
         //Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
         Vector2 userReferenceGPS = new Vector2(39.635601f, 21.692269f);
-        //foreach (var parcel in parcels)
-        //{
-        //    if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
-        //    {
-        //        userReferenceGPS.x = parcel.shape.coordinates[0][0][1]; // NOTE: also see Vector2 currentPosition in this script
-        //        userReferenceGPS.y = parcel.shape.coordinates[0][0][0];
-        //    }
-        //}
+        foreach (var parcel in parcels)
+        {
+            if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
+            {
+                userReferenceGPS.x = parcel.shape.coordinates[0][0][1]; // NOTE: also see Vector2 currentPosition in this script
+                userReferenceGPS.y = parcel.shape.coordinates[0][0][0];
+            }
+        }
 #else
-        //Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
-        Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
+        Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
+        //Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
 #endif
 
         // The scale factor to convert GPS degrees into meters (approximately, varies with location)
@@ -477,7 +477,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
         // Return the calculated Unity world position (on a flat plane)
         Quaternion rotation = Quaternion.Euler(0, -compassHeading, 0);
-        Vector3 rotatedPosition = rotation * new Vector3(xOffset, -3.5f, zOffset);
+        Vector3 rotatedPosition = rotation * new Vector3(xOffset, -2.5f, zOffset);
 
         Debug.Log($"rotation => {rotation} , xOffset => {xOffset} , zOffset => {zOffset} , rotatedPosition => {rotatedPosition}");
 
