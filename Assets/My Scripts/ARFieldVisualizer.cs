@@ -12,6 +12,8 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Unity.Mathematics;
 using UnityEngine.UIElements.Experimental;
+using Unity.XR.CoreUtils;
+using UnityEngine.XR.ARFoundation;
 
 public class ARFieldVisualizer : MonoBehaviour
 {
@@ -68,11 +70,16 @@ public class ARFieldVisualizer : MonoBehaviour
 
     public Parcel[] parcels;
 
+    public XROrigin xrOrigin;
+    private float compassHeading;
+
 
     void Awake()
     {
         panelsThatDisplayFieldMesh = GameObject.FindGameObjectsWithTag("panelsThatDisplayFieldMesh");
         Debug.Log("panelsThatDisplayFieldMesh => " + panelsThatDisplayFieldMesh.Length);
+
+
     }
 
 
@@ -92,6 +99,10 @@ public class ARFieldVisualizer : MonoBehaviour
             return;
         }
         debugText.text = Input.compass.trueHeading.ToString();
+
+        StartCoroutine(WaitForCompass()); // Start waiting for compass data
+
+
         // Calculate and log the area of the field
         //float area = CalculateArea(fieldCorners);
         //lastReceivedMessage = $"Field Area: {area} square meters";
@@ -107,6 +118,26 @@ public class ARFieldVisualizer : MonoBehaviour
         // Update the field coloring based on the current position
         InvokeRepeating("UpdateFieldVisualization", 1.0f, 1.0f);
     }
+
+
+    // Wait for compass initialization and then get the compass heading once at start bcz the XR Origin sets the user AR position in world space when
+    // the app starts and doesn't reset every time i create the mesh so the first time it places the mesh correctly but then if you move the device and re create the mesh it placed it wrong, and this fixes it
+    IEnumerator WaitForCompass()
+    {
+        while (Input.compass.trueHeading == 0) // Wait until a valid heading is received
+        {
+            yield return new WaitForSeconds(0.1f); // Check every 0.1 sec
+        }
+
+        // Now it's ready
+#if !UNITY_EDITOR
+        compassHeading = Input.compass.trueHeading;
+#else
+        compassHeading = 30;
+#endif 
+        Debug.Log($"Compass initialized! Heading: {compassHeading}");
+    }
+
 
 
 
@@ -202,8 +233,8 @@ public class ARFieldVisualizer : MonoBehaviour
             }
         }
 #else
-        Vector2 currentPosition = new Vector2(latitude, longitude);
-        //Vector2 currentPosition = new Vector2(40.83121833672052f, 22.886030551804623f);
+        //Vector2 currentPosition = new Vector2(latitude, longitude);
+        Vector2 currentPosition = new Vector2(40.83121833672052f, 22.886030551804623f);
 #endif
 
 
@@ -314,18 +345,15 @@ public class ARFieldVisualizer : MonoBehaviour
             Debug.LogError("Texture not found. Check the Resources folder and texture path.");
         }
 
-
+        //ARSession session = FindObjectOfType<ARSession>();
+        //session.Reset();
 
         Mesh mesh = new Mesh();
         mesh.name = "Mesh";
 
-#if !UNITY_EDITOR
-        float compassHeading = Input.compass.trueHeading;
-#else
-        float compassHeading = 30;
-#endif
 
-        apisManager.GetComponent<FertilizationAPI>().label.text = $"Compass Heading:\n {compassHeading}";
+
+        apisManager.GetComponent<FertilizationAPI>().label.text = $"Compass Heading:\n {compassHeading} \nXR Origin: \n{xrOrigin.transform.position}";
 
         fieldCorners = GPSBoundingBox.GetBoundingSquare(fieldCorners);
 
@@ -449,7 +477,7 @@ public class ARFieldVisualizer : MonoBehaviour
         //Vector2 userReferenceGPS = new Vector2(40.8311696f, 22.8861256f);
         //Vector2 userReferenceGPS = new Vector2(40.832382312341956f, 22.886331353681967f); 
         //Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
-        Vector2 userReferenceGPS = new Vector2(39.635601f, 21.692269f);
+        Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
         foreach (var parcel in parcels)
         {
             if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
@@ -459,8 +487,8 @@ public class ARFieldVisualizer : MonoBehaviour
             }
         }
 #else
-        Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
-        //Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
+        //Vector2 userReferenceGPS = new Vector2(GetComponent<UDPListener>().latitude, GetComponent<UDPListener>().longitude);
+        Vector2 userReferenceGPS = new Vector2(40.83121833672052f, 22.886030551804623f);
 #endif
 
         // The scale factor to convert GPS degrees into meters (approximately, varies with location)
@@ -477,11 +505,15 @@ public class ARFieldVisualizer : MonoBehaviour
 
         // Return the calculated Unity world position (on a flat plane)
         Quaternion rotation = Quaternion.Euler(0, -compassHeading, 0);
-        Vector3 rotatedPosition = rotation * new Vector3(xOffset, -2.5f, zOffset);
+        Vector3 rotatedPosition = rotation * new Vector3(xOffset, -6.5f, zOffset);
 
-        Debug.Log($"rotation => {rotation} , xOffset => {xOffset} , zOffset => {zOffset} , rotatedPosition => {rotatedPosition}");
+        Vector3 finalPosition = rotatedPosition + xrOrigin.transform.position;
 
-        return rotatedPosition;
+        Debug.Log($"rotation => {rotation} , xOffset => {xOffset} , zOffset => {zOffset} , rotatedPosition => {rotatedPosition} , finalPosition => {finalPosition}");
+
+        apisManager.GetComponent<FertilizationAPI>().label.text += $"\nGPS: {new Vector2(xOffset, zOffset)} \nuserGPS: \n{finalPosition}";
+
+        return finalPosition;
     }
 
 
