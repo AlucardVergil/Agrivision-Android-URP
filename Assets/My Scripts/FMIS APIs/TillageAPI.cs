@@ -69,6 +69,8 @@ public class TillageAPI : FMIS_API
             infoText.text = "Date: " + tillageData.tillage_chart_data[0].date;
             infoText.text += "\nSoil Moisture: " + tillageData.tillage_chart_data[0].value;
         }
+        else
+            infoText.text = "";
 
         // Log the thresholds
         Debug.Log("Threshold 1 (Ideal): " + tillageData.threshold_1);
