@@ -335,7 +335,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
             // Adjust transparency (optional)
             Color color = material.GetColor("_BaseColor");
-            color.a = 0.5f; // Adjust alpha (0 = fully transparent, 1 = opaque)
+            color.a = 1f; // Adjust alpha (0 = fully transparent, 1 = opaque)
             material.SetColor("_BaseColor", color);
 
             meshRenderer.material = material;
