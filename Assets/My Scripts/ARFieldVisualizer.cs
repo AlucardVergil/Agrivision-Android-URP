@@ -159,7 +159,7 @@ public class ARFieldVisualizer : MonoBehaviour
                 }
 
                 fieldCorners = OrderFieldCornersClockwise(tempFieldCorners);
-            }            
+            }
         }
 
     }
@@ -248,7 +248,7 @@ public class ARFieldVisualizer : MonoBehaviour
             foreach (var panel in panelsThatDisplayFieldMesh)
             {
                 if (panel.activeSelf)
-                {                    
+                {
                     allFieldMeshPanelsDisabled = false;
 
                     if (doOnceBool)
@@ -257,7 +257,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
                         RecalibrateFieldMesh();
                         ColorFieldArea(true);
-                    }                    
+                    }
                 }
             }
 
@@ -282,7 +282,7 @@ public class ARFieldVisualizer : MonoBehaviour
     }
 
 
-   
+
 
 
 
@@ -501,7 +501,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
         // Convert GPS offset into meters
         float xOffset = deltaLon * metersPerLon;
-        float zOffset = deltaLat * metersPerLat;        
+        float zOffset = deltaLat * metersPerLat;
 
         // Return the calculated Unity world position (on a flat plane)
         Quaternion rotation = Quaternion.Euler(0, -compassHeading, 0);
@@ -533,7 +533,7 @@ public class ARFieldVisualizer : MonoBehaviour
         {
             foreach (var marker in fieldMarkers)
                 DestroyImmediate(marker);
-        }        
+        }
 
         if (field != null)
             DestroyImmediate(field);
@@ -552,7 +552,7 @@ public class ARFieldVisualizer : MonoBehaviour
         }
     }
 
-        
+
 
 
     #region Corner Markers Not Sure If Will Be Used
@@ -560,7 +560,7 @@ public class ARFieldVisualizer : MonoBehaviour
     void PlaceFieldMarkers(Vector3 corner)
     {
         GameObject marker = Instantiate(fieldMarkerPrefab, corner, Quaternion.identity);
-        
+
         marker.AddComponent<BoxCollider>();
         marker.AddComponent<XRGrabInteractable>();
 
@@ -643,13 +643,13 @@ public class ARFieldVisualizer : MonoBehaviour
         {
             var dissolveController = wateringCan.GetComponent<DissolvingController>();
             dissolveController.CallDissolve();
-        }        
+        }
     }
 
 
     #region Order Field Gps Coordinates Clockwise
 
-    Vector2 GetCentroid(Vector2 [] corners)
+    Vector2 GetCentroid(Vector2[] corners)
     {
         float sumX = 0;
         float sumY = 0;
@@ -663,7 +663,7 @@ public class ARFieldVisualizer : MonoBehaviour
     }
 
 
-    Vector2 [] OrderFieldCornersClockwise(Vector2[] corners)
+    Vector2[] OrderFieldCornersClockwise(Vector2[] corners)
     {
         Vector2 centroid = GetCentroid(corners);
         return corners.OrderBy(p => Mathf.Atan2(p.y - centroid.y, p.x - centroid.x)).ToArray();
@@ -733,7 +733,7 @@ public class ARFieldVisualizer : MonoBehaviour
 
 
         Debug.Log("Cropped w: " + croppedWidth + " h: " + croppedHeight);
-        Debug.Log("minX: " + minX + " minY: " + minY + " maxX: " + maxX + " maxY: "  + maxY);
+        Debug.Log("minX: " + minX + " minY: " + minY + " maxX: " + maxX + " maxY: " + maxY);
 
         // Get the cropped pixels
         Color[] croppedPixels = originalTexture.GetPixels(minX, minY, croppedWidth, croppedHeight);

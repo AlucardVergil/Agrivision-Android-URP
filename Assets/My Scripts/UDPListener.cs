@@ -58,7 +58,7 @@ public class UDPListener : MonoBehaviour
             try
             {
                 lastReceivedMessage += "\nWaiting for data...";
-                UdpReceiveResult result = await udpClient.ReceiveAsync();                
+                UdpReceiveResult result = await udpClient.ReceiveAsync();
                 if (token.IsCancellationRequested) break;
 
                 string receivedData = Encoding.UTF8.GetString(result.Buffer);
@@ -82,7 +82,7 @@ public class UDPListener : MonoBehaviour
         if (parts.Length == 2)
         {
             //NumberStyles.Float, CultureInfo.InvariantCulture are used to keep the decimal format
-            if (float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out latitude) 
+            if (float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out latitude)
                 && float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out longitude))
             {
                 lastReceivedMessage += $"\nLatitude: {latitude}, Longitude: {longitude}";
