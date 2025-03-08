@@ -554,6 +554,14 @@ public class ConversationsManager : MonoBehaviour
             TMP_Text messageTextComponent = newMessage.GetNamedChild("Message").GetComponent<TMP_Text>();
             messageTextComponent.text = messageText;
 
+            // Save to conversation history memory for use with AI meeting summarization
+            if (currentSelectedConversation.Type == Conversation.ConversationType.Room)
+            {
+                string user = $"{contact.FirstName} {contact.LastName}";
+                GetComponent<AI>().AddMessage(user, messageText);
+            }
+                
+
 
             if (!isOwnMessage)
             {
@@ -1262,6 +1270,10 @@ public class ConversationsManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
+
+
+        // Clear conversation history in order to save the next one for use with meeting summarization
+        GetComponent<AI>().ClearConversationHistory();
     }
 
 
