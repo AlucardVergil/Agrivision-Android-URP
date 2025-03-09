@@ -13,10 +13,13 @@ public class AI : MonoBehaviour
     private const string USERNAME = "cortex2";
     private const string PASSWORD = "Fx!wPyCL-T5V3U2";
 
+
+    #region Open Close AI panel & Save Chat history
+
     [Header("Main AI panel to show or hide")]
     public GameObject meetingSummarizationPanel;
-    [Header("Panel that will display the response of meeting summarization")]
-    public GameObject meetingSummarizationScrollViewContent;
+    [Header("Text that will display the response of meeting summarization")]
+    public TMP_Text meetingSummarizationText;
     private StringBuilder conversationHistory = new StringBuilder();
 
     public void AddMessage(string user, string message)
@@ -54,7 +57,7 @@ public class AI : MonoBehaviour
             StartAI();
         }
     }
-
+    #endregion
 
 
     public void StartAI()
@@ -83,8 +86,8 @@ public class AI : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post($"{API_BASE_URL}/services/summarize/en", form))
         {
             request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "multipart/form-data");
-            request.SetRequestHeader("Authorization", $"{USERNAME}:{PASSWORD}");//GetBasicAuthHeader());
+            //request.SetRequestHeader("Content-Type", "multipart/form-data");
+            request.SetRequestHeader("Authorization", GetBasicAuthHeader());//GetBasicAuthHeader());
             yield return request.SendWebRequest();
 
             try
@@ -119,7 +122,7 @@ public class AI : MonoBehaviour
             using (UnityWebRequest request = UnityWebRequest.Get(url))
             {
                 request.SetRequestHeader("accept", "application/json");
-                //request.SetRequestHeader("Authorization", GetBasicAuthHeader());
+                request.SetRequestHeader("Authorization", GetBasicAuthHeader());
                 yield return request.SendWebRequest();
 
                 if (request.result == UnityWebRequest.Result.Success)
@@ -132,13 +135,16 @@ public class AI : MonoBehaviour
 
                         // ToDo
                         // Add the response.summarization to a view or in the chat...
-                        meetingSummarizationScrollViewContent.transform.GetChild(0).GetComponent<TMP_Text>().text = response.summarization;
+                        meetingSummarizationText.alignment = TextAlignmentOptions.TopLeft;
+                        meetingSummarizationText.text = response.summarization;
 
                         break;
                     }
                     else
                     {
                         Debug.Log("Waiting for summarization... Retrying in 5 seconds.");
+                        meetingSummarizationText.alignment = TextAlignmentOptions.Center;
+                        meetingSummarizationText.text = "\n\n\n\n\n\nWaiting for summarization... \n\nRetrying in 5 seconds.";
                         yield return new WaitForSeconds(5);
                     }
                 }
@@ -160,12 +166,12 @@ public class AI : MonoBehaviour
         }
     }
 
-    /*private string GetBasicAuthHeader()
+    private string GetBasicAuthHeader()
     {
         string credentials = $"{USERNAME}:{PASSWORD}";
-        string encodedCredentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
+        string encodedCredentials = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
         return $"Basic {encodedCredentials}";
-    }*/
+    }
 
     [System.Serializable]
     private class JobResponse

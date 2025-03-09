@@ -411,6 +411,8 @@ public class ARFieldVisualizer : MonoBehaviour
         var rigidbody = field.AddComponent<Rigidbody>();
         rigidbody.isKinematic = true;
 
+        field.isStatic = true; // Prevents accidental updates for mesh drift
+
 
 
 
