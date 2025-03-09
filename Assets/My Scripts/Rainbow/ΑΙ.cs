@@ -50,6 +50,7 @@ public class AI : MonoBehaviour
         if (meetingSummarizationPanel.activeSelf)
         {
             meetingSummarizationPanel.SetActive(false);
+            meetingSummarizationText.text = "";
         }
         else
         {
