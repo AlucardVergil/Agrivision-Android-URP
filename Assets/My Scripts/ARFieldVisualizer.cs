@@ -370,26 +370,6 @@ public class ARFieldVisualizer : MonoBehaviour
         uv[2] = new Vector2(1, 0); // Bottom-right
         uv[1] = new Vector2(1, 1); // Top-right
         uv[0] = new Vector2(0, 1); // Top-left
-        //uv[0] = new Vector2(0.5f, 0); // Midpoint on the bottom edge
-        //uv[1] = new Vector2(1f, 0.5f); // Midpoint on the right edge
-        //uv[2] = new Vector2(0.5f, 1); // Midpoint on the top edge
-        //uv[3] = new Vector2(0, 0.5f); // Midpoint on the left edge
-        //uv[0] = new Vector2(0.1f, 0); // Left edge of the field
-        //uv[1] = new Vector2(0.9f, 0); // Right edge of the field
-        //uv[2] = new Vector2(0.9f, 1); // Top-right
-        //uv[3] = new Vector2(0.1f, 1); // Top-left
-        //uv[0] = new Vector2(0.1f, 0.1f); // Adjusted Bottom-left
-        //uv[1] = new Vector2(0.9f, 0);    // Adjusted Bottom-right
-        //uv[2] = new Vector2(0.8f, 0.9f); // Adjusted Top-right
-        //uv[3] = new Vector2(0.2f, 1);    // Adjusted Top-left
-
-        //uv[0] = new Vector2(0, 1); // Top-left
-        //uv[1] = new Vector2(0, 0); // Bottom-left
-        //uv[2] = new Vector2(1, 0); // Bottom-right
-        //uv[3] = new Vector2(1, 1); // Top-right
-
-        //uv = TextureProcessor.AdjustUVsBasedOnRotation(uv);
-
 
         // Set up how the mesh's triangles connect (counter-clockwise)
         int[] triangles = new int[]
@@ -413,8 +393,18 @@ public class ARFieldVisualizer : MonoBehaviour
 
         field.isStatic = true; // Prevents accidental updates for mesh drift
 
+        // Add ARAnchor to lock the field in place
+        //ARAnchor arAnchor = field.AddComponent<ARAnchor>();
 
+        // Create a new ARAnchor component manually
+        ARAnchor arAnchor = field.AddComponent<ARAnchor>();
 
+        // Set the position and rotation of the anchor manually
+        arAnchor.transform.position = field.transform.position;
+        arAnchor.transform.rotation = field.transform.rotation;
+
+        // Lock the field mesh to the anchor
+        field.transform.SetParent(arAnchor.transform);
 
 
 
