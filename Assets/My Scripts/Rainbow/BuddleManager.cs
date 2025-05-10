@@ -189,7 +189,46 @@ public class BubbleManager : MonoBehaviour
         });
     }
 
+    public void UpdateMemberRole(Bubble bubble, Contact contact, string newPrivilege)
+    {
+        // Check if the user is a member of the bubble
+        if (!bubble.UsersById.ContainsKey(contact.Id))
+        {
+            Debug.Log($"User {contact.FirstName} {contact.LastName} is not a member of this bubble");
+            return;
+        }
 
+        // Check if the current user is the bubble creator
+        if (bubble.Creator != myContact.Id)
+        {
+            Debug.Log("Only the bubble creator can change member roles");
+            return;
+        }
+
+        // Check if trying to change creator's role
+        if (contact.Id == bubble.Creator)
+        {
+            Debug.Log("Cannot change the creator's role");
+            return;
+        }
+
+        rbBubbles.UpdateContactPrivilege(bubble.Id, contact.Id, newPrivilege, callback =>
+        {
+            if (callback.Result.Success)
+            {
+                Debug.Log($"Successfully updated {contact.DisplayName}'s role to {newPrivilege}");
+                // Refresh the bubble details UI if needed
+                if (currentSelectedBubble != null && currentSelectedBubble.Id == bubble.Id)
+                {
+                    GetBubbleMembers(bubble);
+                }
+            }
+            else
+            {
+                HandleError(callback.Result);
+            }
+        });
+    }
 
     // If I am the owner of the bubble, delete it, otherwise leave bubble
     public void LeaveOrDeleteSelectedBubble()

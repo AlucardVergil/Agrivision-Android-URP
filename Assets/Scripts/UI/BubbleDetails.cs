@@ -377,6 +377,7 @@ namespace Cortex
                     // Vagelis start
 
                     item.GetNamedChild("RemoveContactButton").SetActive(false);
+                    item.GetNamedChild("MenuButton").SetActive(false);
 
                     // Vagelis end
 
