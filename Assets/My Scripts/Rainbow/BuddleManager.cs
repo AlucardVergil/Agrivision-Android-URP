@@ -18,7 +18,7 @@ public class BubbleManager : MonoBehaviour
 {
     private Rainbow.Application rbApplication;
     private Contacts rbContacts;
-    private Contact myContact;
+    [HideInInspector] public Contact myContact;
     private Bubbles rbBubbles;
     private Conferences rbConferences;
 

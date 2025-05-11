@@ -175,7 +175,19 @@ namespace Cortex
             }
         }
 
-        // Vagelis
+        // Add this method to check if current user is bubble owner
+        private bool IsCurrentUserBubbleOwner()
+        {
+            if (currentBubble == null || bubbleManager == null) return false;
+            
+            Contact currentUser = bubbleManager.myContact;
+            if (currentUser == null) return false;
+
+            bool isOwner = currentBubble.Creator == currentUser.Id;
+            Debug.Log($"Current user {currentUser.DisplayName} is {(isOwner ? "" : "not ")}the owner of bubble {currentBubble.Name}");
+            return isOwner;
+        }
+
         private void Start()
         {
             contactGameobject = GameObject.FindGameObjectWithTag("Contacts");
@@ -183,10 +195,18 @@ namespace Cortex
             confirmationDialog = rainbowGameobject.GetComponent<ConfirmationDialog>();
             bubbleManager = rainbowGameobject.GetComponent<BubbleManager>();
             currentBubble = bubbleManager.currentSelectedBubble;
-            // Show/hide member management button based on whether this is a bubble member entry
+
+            // Show/hide member management button based on whether this is a bubble member entry AND current user is the owner
             if (memberManagementButton != null)
             {
-                memberManagementButton.SetActive(currentBubble != null);
+                bool shouldShowButton = currentBubble != null && IsCurrentUserBubbleOwner();
+                memberManagementButton.SetActive(shouldShowButton);
+                
+                // Also disable the menu buttons if not owner
+                if (memberManagementMenu != null)
+                {
+                    memberManagementMenu.SetActive(false);
+                }
             }
 
             //// Check if this component exists, which means it is a contact entry in the contacts list and so it has a button to remove contact
@@ -201,6 +221,8 @@ namespace Cortex
 
 
             //Check if this button exists, which means it is a contact entry in the contacts list and so it has a button to remove contact
+
+            // Handle contact removal button (for contacts list)
             var removeContactButton = gameObject.GetNamedChild("RemoveContactButton");
             if (removeContactButton != null)
             {
@@ -216,7 +238,7 @@ namespace Cortex
 
         private void OnMemberManagementButtonClick()
         {
-            if (memberManagementMenu != null)
+            if (memberManagementMenu != null && IsCurrentUserBubbleOwner())
             {
                 memberManagementMenu.SetActive(!memberManagementMenu.activeSelf);
             }
