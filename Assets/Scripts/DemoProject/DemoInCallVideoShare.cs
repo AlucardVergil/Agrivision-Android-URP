@@ -30,8 +30,14 @@ public class DemoInCallVideoShare : BaseStartOrEnabled
 
     private ConnectionModel model;
 
+    public GameObject ARCamera;
+    public GameObject CallCamera;
+
     protected override void OnStartOrEnable()
     {
+        //CallCamera.SetActive(true);
+        //ARCamera.SetActive(false);
+
         // callbacks
         InCallMenu.OnRequestShareVideo += OnRequestShareVideo;
         InCallMenu.OnRequestShare += OnRequestShare;
@@ -47,6 +53,9 @@ public class DemoInCallVideoShare : BaseStartOrEnabled
 
     void OnDisable()
     {
+        //ARCamera.SetActive(true);
+        //CallCamera.SetActive(false);
+
         InCallMenu.OnRequestShareVideo -= OnRequestShareVideo;
         InCallMenu.OnRequestShare -= OnRequestShare;
         InCallMenu.OnStopShare -= OnStopShare;
