@@ -148,7 +148,7 @@ public class ARFieldVisualizer : MonoBehaviour
         {
             if (apisManager.GetComponent<ParcelsListAPI>().selectedParcelId != null && parcel.id.ToString() == apisManager.GetComponent<ParcelsListAPI>().selectedParcelId)
             {
-                Vector2[] tempFieldCorners = new Vector2[4];
+                Vector2[] tempFieldCorners = new Vector2[parcel.shape.coordinates[0].Length - 1];
 
                 for (int i = 0; i < parcel.shape.coordinates[0].Length - 1; i++)
                 {
